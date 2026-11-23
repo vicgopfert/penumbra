@@ -15,6 +15,7 @@
     "tags:probe": "tsx src/probe-steam.ts",
     "recommendations:snapshot": "node dist/snapshot-recommendations.js",
     "recommendations:evaluate": "node dist/evaluate-recommendations.js",
+    "similar:measure": "node --expose-gc dist/measure-similar-games.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.e2e.config.js --runInBand"
   },
