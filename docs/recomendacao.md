@@ -1471,10 +1471,38 @@ Observado na conferência: a seção chega no contêiner oculto do streaming e o
 lugar logo depois do `load`; a navegação entre fichas pelo link traz a ficha nova em cerca de
 0,3 s e a seção cerca de 0,1 s depois, sem bloquear a página.
 
-### Tempo em produção
+### Tempo em produção (23/11/2026)
 
-A medir depois do merge, pela metodologia do B-33 e pelas regras 1 a 3 do B-76, com 100 amostras
-por linha (decisão 9 do plano): 200 slugs distintos sorteados com semente fixa, 100 pedidos direto
-no Render e 100 pela Vercel, cada um pela primeira vez (o cache vazio daquele jogo), e depois os
-mesmos de novo (o cache cheio), com a rota de saúde na mesma rodada. Se o p95 com o cache vazio
-passar de 1 s pela regra 3, os vizinhos passam a ser calculados na carga do índice.
+Pela metodologia do B-33 e pelas regras 1 a 3 do B-76, com 100 amostras por linha (decisão 9 do
+plano). O desenho foi registrado às 15:47 UTC, antes de medir:
+- **Amostra:** 200 jogos distintos do catálogo de produção (23.177 jogos), um de cada página
+  sorteada de `GET /api/games?pageSize=48`, com semente fixa (50). O `hollow-knight`, pedido antes
+  numa conferência avulsa, ficou de fora.
+- **Cache vazio:** 100 jogos direto no Render e outros 100 pela Vercel, cada um pedido pela
+  primeira vez.
+- **Cache cheio:** os mesmos jogos pedidos de novo.
+- **Saúde:** a rota de saúde nos dois caminhos em cada rodada.
+
+Janela de 15:49:01 a 15:51:09 UTC. Mediana (p95):
+
+| Linha | Direto no Render | Pela Vercel |
+|---|---|---|
+| Semelhantes, cache vazio | 142 ms (151) | 171 ms (238) |
+| Semelhantes, cache cheio | 138 ms (150) | 170 ms (244) |
+| `GET /api/health` | 134 ms (158) | 163 ms (201) |
+
+- **Resultado (regra 1):** todas as linhas de semelhantes ficaram com p95 abaixo de 1 s; o maior
+  foi 244 ms. **Atingido.** A alternativa dos vizinhos na carga do índice não é necessária.
+- Os 400 pedidos responderam 200, e nenhum dos 200 jogos da amostra veio sem a seção. A saúde teve
+  no máximo 805 ms.
+- Com o cache vazio, a mediana ficou só 4 ms acima da do cache cheio e 8 ms acima da rota de saúde
+  (direto no Render): na instância de produção, a varredura do índice pesa pouco perto da rede. De
+  fora não dá para confirmar que cada pedido do cache vazio foi mesmo o primeiro daquele jogo; o
+  sorteio entre cerca de 23 mil jogos torna improvável que um robô tenha pedido algum antes.
+
+### Conferência em produção (23/11/2026)
+
+O roteiro `check-b50.mjs` contra https://penumbraindie.com.br, a 390 px e a 1280 px: 26 de 26
+conferências passaram. São as mesmas do local, sem criar conta: a comparação com e sem sessão usou
+a conta reutilizável do B-76. Em produção, Disco Elysium também tem 6 semelhantes, 4 deles "Em
+breve", e `how-do-you-do-it` continua sem a seção.
