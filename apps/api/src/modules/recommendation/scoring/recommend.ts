@@ -9,7 +9,7 @@ import { buildProfile, hasPositiveComponent, type Interaction } from './profile'
 import { scoreCandidates } from './score';
 import type { ScoringConfig } from './scoring-config';
 import type { SimilarityOf } from './source-similarity';
-import { userTieBreak } from './tie-break';
+import { seededTieBreak } from './tie-break';
 
 export interface RecommendationInput {
   userId: string;
@@ -44,7 +44,7 @@ export function recommend(
 ): RecommendationLists {
   const { mode, interactions, preferencePositions } = input;
   const excludedGameIds = new Set(interactions.map(({ gameId }) => gameId));
-  const tieBreak = userTieBreak(input.userId);
+  const tieBreak = seededTieBreak(input.userId);
   const profile = buildProfile(interactions, preferencePositions, index.features.length, config);
 
   if (!hasPositiveComponent(profile)) {

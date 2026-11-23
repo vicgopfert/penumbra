@@ -1,7 +1,7 @@
 import type { ContentIndex, IndexedGame } from '../modules/recommendation/content-index';
 import { isLabeledFeatureType } from '../modules/recommendation/content-index';
 import { popularFallback } from '../modules/recommendation/scoring/fallback';
-import { userTieBreak } from '../modules/recommendation/scoring/tie-break';
+import { seededTieBreak } from '../modules/recommendation/scoring/tie-break';
 import type { RatedGame } from './profiles';
 import { mulberry32 } from './random';
 
@@ -49,6 +49,6 @@ export function popularBaseline(
     limit,
     excludedGameIds,
     preferencePositions: [...new Set([...liked, ...preferencePositions])],
-    tieBreak: userTieBreak(userId),
+    tieBreak: seededTieBreak(userId),
   }).map(({ game }) => game);
 }

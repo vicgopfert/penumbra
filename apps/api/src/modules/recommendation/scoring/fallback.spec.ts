@@ -1,6 +1,6 @@
 import { popularFallback } from './fallback';
 import { featurePosition, gameId, scoringIndex } from './scoring.fixture';
-import { userTieBreak } from './tie-break';
+import { seededTieBreak } from './tie-break';
 
 describe('popularFallback', () => {
   const index = scoringIndex();
@@ -10,7 +10,7 @@ describe('popularFallback', () => {
       limit,
       excludedGameIds: new Set(excluded.map(gameId)),
       preferencePositions: preferences.map((p) => featurePosition(index, p)),
-      tieBreak: userTieBreak('u-1'),
+      tieBreak: seededTieBreak('u-1'),
     });
   }
 

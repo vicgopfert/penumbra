@@ -1,21 +1,19 @@
 import type {
   Recommendation,
-  RecommendationFeature,
   RecommendationLikedGame,
   RecommendationOverview,
   RecommendationPage,
-  RecommendationReason,
   RecommendationShelf,
 } from '@indie/contracts';
 import { Inject, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
-import { type DiscoveryMode, FeatureType } from '../../generated/prisma/client';
+import type { DiscoveryMode } from '../../generated/prisma/client';
 import { CatalogService } from '../catalog/catalog.service';
 import { FeatureLabels } from '../catalog/feature-labels';
-import { type ContentIndex, hiddenPositionsOf, isLabeledFeatureType } from './content-index';
+import { type ContentIndex, hiddenPositionsOf } from './content-index';
 import { ContentIndexService } from './content-index.service';
 import { type RecommendedGameRow, RecommendationRepository } from './recommendation.repository';
-import type { ScoredReason } from './scoring/explain';
-import { MAIN_LIST_KEY, type RankedList, type ShelfAttribute } from './scoring/lists';
+import { presentFeature, presentReason } from './present-attributes';
+import { MAIN_LIST_KEY, type RankedList } from './scoring/lists';
 import { listPage, overview, type ShownGame } from './scoring/overview';
 import { interactionsOf } from './scoring/profile';
 import { recommend, type RecommendationLists } from './scoring/recommend';
@@ -88,7 +86,7 @@ export class GenerateRecommendationsUseCase {
       mode,
       basis: result.basis,
       key,
-      feature: this.feature(list.attribute),
+      feature: presentFeature(this.labels, list.attribute),
       game: this.likedGame(list, games),
       page,
       items: presented!,
@@ -177,7 +175,13 @@ export class GenerateRecommendationsUseCase {
       list.flatMap(({ game, reason, lowKnown }) => {
         const row = games.get(game.id);
         if (!row?.inCatalog) return [];
-        return [{ game: this.catalog.toSummary(row), reason: this.reason(reason), lowKnown }];
+        return [
+          {
+            game: this.catalog.toSummary(row),
+            reason: presentReason(this.labels, reason),
+            lowKnown,
+          },
+        ];
       }),
     );
     return { items, games };
@@ -199,7 +203,7 @@ export class GenerateRecommendationsUseCase {
         ? [{ key: list.key, kind: 'liked-game', feature: null, game, items, hasMore }]
         : [];
     }
-    const feature = this.feature(list.attribute)!;
+    const feature = presentFeature(this.labels, list.attribute)!;
     return [{ key: list.key, kind: 'interest', feature, items, hasMore }];
   }
 
@@ -209,30 +213,5 @@ export class GenerateRecommendationsUseCase {
   ): RecommendationLikedGame | null {
     const row = likedGameId === null ? undefined : games.get(likedGameId);
     return row ? { slug: row.slug, name: row.name, inCatalog: row.inCatalog } : null;
-  }
-
-  // O nome da etiqueta já está em português, gravado do vocabulário; palavra-chave não tem nome
-  // exibido. O título da prateleira é o do vocabulário ou, sem ele, o nome.
-  private feature(attribute: ShelfAttribute | null): RecommendationFeature | null {
-    if (attribute === null) return null;
-    const { type, slug, title } = attribute;
-    if (type !== FeatureType.TAG && !isLabeledFeatureType(type)) return null;
-    const name =
-      type === FeatureType.TAG ? attribute.name : this.labels.name(type, slug, attribute.name);
-    return { type, slug, name, title: title ?? name };
-  }
-
-  // O motivo não mostra os gêneros e temas escondidos dos filtros.
-  private reason(reason: ScoredReason | null): RecommendationReason | null {
-    if (reason === null) return null;
-    const features = reason.features.flatMap((attribute) => {
-      const feature = this.feature({ ...attribute, title: null });
-      if (feature === null) return [];
-      if (feature.type !== FeatureType.TAG && this.labels.isHidden(feature.type, feature.slug)) {
-        return [];
-      }
-      return [{ slug: feature.slug, name: feature.name }];
-    });
-    return features.length > 0 ? { kind: 'features', features } : null;
   }
 }
