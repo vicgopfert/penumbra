@@ -229,26 +229,26 @@ Entrega: todos os P0 prontos; pesos calibrados; **congelamento**.
   - [x] Testes: unitários da seleção e do motivo; e2e com o próprio jogo excluído, o "Em breve" incluído, a mesma resposta com e sem sessão, e 404 e 503 — também o mínimo de jogos aplicado depois de tirar o vizinho que saiu do catálogo, e, na web, a seção sem lista, com erro e passado o tempo-limite
   - [x] p95 fim a fim em produção pela metodologia do B-33, com o cache vazio e cheio. Se passar de 1 s com o cache vazio, os vizinhos passam a ser calculados na carga do índice (a alternativa já registrada em `docs/recomendacao.md`; na ficha ela não muda a lista, porque não há filtro pelo perfil) — medido em 23/11/2026 com 100 amostras por linha: com o cache vazio, mediana de 142 ms e p95 de 151 ms direto no Render e 171 ms (238) pela Vercel; com o cache cheio, 138 ms (150) e 170 ms (244); saúde, 134 ms (158) e 163 ms (201). Regra 1 do B-76: atingido, sem a alternativa. Conferência no navegador em produção com 26 de 26, a 390 e a 1280 px, sem conta nova
 - [ ] **B-84** (M, E3) "Onde jogar" na ficha (F-34). Acrescentado em 11/11/2026 (decisão do autor). Dados só da IGDB e do id da Steam já gravado, sem API externa nova. Plataforma é onde o jogo roda e loja é onde ele é vendido; o "Site oficial" continua separado. Lojas em ordem alfabética, links da IGDB ou da Steam pelo id, sem afiliado, e link regional como a IGDB o registra (neutralidade, princípio 7 da proposta conceitual)
-  - [ ] **Medição antes de implementar, com as regras escritas no plano antes de medir (como no B-77):**
+  - [x] **Medição antes de implementar, com as regras escritas no plano antes de medir (como no B-77):** — feita em 23/11/2026 (`pnpm stores:measure`): plataforma em 98,7% do catálogo local; amostra de 10 links por loja, preparada com apoio de IA e aprovada pelo autor, com os 10 da Epic conferidos à mão por ele; ganham botão App Store (9), Epic (10), GOG (9), Microsoft Store (10), PlayStation Store (10) e Steam (10); ficam sem botão Google Play (7), itch.io (8) e Nintendo eShop (8), registrado como limitação conhecida em `docs/ingestao.md`. Meta e GameJolt, que a IGDB também classifica como loja, ficam fora das nove (decisão do autor)
     - cobertura de plataforma no catálogo;
     - cobertura de link por loja, entre os jogos que têm a plataforma daquela loja;
     - amostra de 10 links por loja conferida à mão, para ver se o link abre a página do jogo e não a página inicial da loja ou uma busca.
     - **Regra (valor inicial, decisão do autor):** a loja com menos de 9 de 10 links corretos na amostra não ganha botão e fica só como plataforma.
     - Resultado registrado em `docs/ingestao.md`.
-  - [ ] Ingestão:
+  - [x] Ingestão:
     - `platforms` (nome e abreviação) na consulta de jogos, sem requisição a mais;
     - `websites` de loja gravados por inteiro, além do `storeUrl`, que fica como está;
     - classificação de loja como função pura, com testes por tipo e por endereço: pelo tipo quando a IGDB tem tipo próprio (13 Steam, 15 itch.io, 16 Epic, 17 GOG), pelo endereço nos outros casos (`playstation.com`, `xbox.com` ou `microsoft.com`, `nintendo.` com `eshop` ou `store`, App Store, Google Play); o link da Steam montado pelo `steamAppId` (`https://store.steampowered.com/app/<id>`);
     - critério indie, vetor e popularidade sem mudança.
-  - [ ] Modelagem (seção 10):
+  - [x] Modelagem (seção 10):
     - `Platform`, com o id da IGDB e o nome curto de exibição vindo de `config/platforms.json`;
     - `GamePlatform`;
     - `GameStoreLink`, com o jogo, a loja e a URL;
     - migration.
-  - [ ] Contrato de `GET /games/:slug` com `platforms` e `stores` (loja, nome e URL), Swagger com exemplo
-  - [ ] Seção "Onde jogar" na ficha. Conferir, para cada loja, as regras de uso do logotipo antes de usar o ícone; sem permissão clara, o botão fica só com o nome. O visual definitivo fica com a designer
+  - [x] Contrato de `GET /games/:slug` com `platforms` e `stores` (loja, nome e URL), Swagger com exemplo — `platforms: { slug, name }` e `stores: { store, name, url }`, só das lojas com botão; `officialUrl` nulo quando o `storeUrl` é uma loja (decisão do autor)
+  - [x] Seção "Onde jogar" na ficha. Conferir, para cada loja, as regras de uso do logotipo antes de usar o ícone; sem permissão clara, o botão fica só com o nome. O visual definitivo fica com a designer — logo abaixo da "Página oficial"; botões só com o nome, sem logotipo: as regras das marcas não foram conferidas, e os ícones ficam para a fase da designer (decisão do autor)
   - [ ] Nova ingestão em produção, com a cobertura final registrada em `docs/ingestao.md`
-  - [ ] Testes: unitários da classificação e do mapeamento de plataformas; e2e da ficha com loja por tipo, loja por endereço, Steam pelo id, plataforma sem loja e jogo sem plataforma
+  - [x] Testes: unitários da classificação e do mapeamento de plataformas; e2e da ficha com loja por tipo, loja por endereço, Steam pelo id, plataforma sem loja e jogo sem plataforma — loja por tipo, por endereço e Steam pelo id no e2e da ingestão, que grava e depois tira o que saiu da IGDB; na ficha, plataforma sem loja, jogo sem plataforma, loja sem botão e `officialUrl`
 - [ ] **B-85** (P, E3) Filtro por plataforma no catálogo (F-35). Acrescentado em 11/11/2026 (decisão do autor): P0 porque o custo é baixo depois que o dado existe; pelo mesmo raciocínio do B-75, é navegação e fica fora do núcleo da tese, por isso entra no plano de corte. Depende do B-84
   - [ ] Parâmetro `platform` repetível em `GET /api/games`, combinável com os outros filtros
   - [ ] Opções numa rota com a contagem de jogos, só com plataformas de 20 jogos ou mais
