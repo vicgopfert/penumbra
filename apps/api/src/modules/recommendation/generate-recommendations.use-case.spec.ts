@@ -3,6 +3,7 @@ import { DiscoveryMode, ListType } from '../../generated/prisma/client';
 import type { CatalogRepository } from '../catalog/catalog.repository';
 import { CatalogService } from '../catalog/catalog.service';
 import { FeatureLabels, featureLabelsConfigSchema } from '../catalog/feature-labels';
+import { WhereToPlay } from '../catalog/where-to-play';
 import type { ContentIndex } from './content-index';
 import type { ContentIndexService } from './content-index.service';
 import {
@@ -100,7 +101,7 @@ describe('GenerateRecommendationsUseCase', () => {
     new GenerateRecommendationsUseCase(
       { index } as ContentIndexService,
       repository as unknown as RecommendationRepository,
-      new CatalogService({} as CatalogRepository, labels, 20, new Map()),
+      new CatalogService({} as CatalogRepository, labels, 20, new Map(), WhereToPlay.fromFiles()),
       labels,
       config,
     );

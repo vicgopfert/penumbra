@@ -67,6 +67,15 @@ const GAME_DETAIL_EXAMPLE = {
   ],
   officialUrl: 'https://www.celestegame.com',
   collections: [],
+  platforms: [
+    { slug: 'mac', name: 'Mac' },
+    { slug: 'win', name: 'PC' },
+    { slug: 'switch', name: 'Switch' },
+  ],
+  stores: [
+    { store: 'GOG', name: 'GOG', url: 'https://www.gog.com/en/game/celeste' },
+    { store: 'STEAM', name: 'Steam', url: 'https://store.steampowered.com/app/504230' },
+  ],
 };
 
 const COLLECTION_EXAMPLE = {
@@ -146,7 +155,7 @@ export class CatalogController {
   @ApiParam({ name: 'slug', description: 'Slug do jogo, o mesmo da IGDB' })
   @ApiOkResponse({
     description:
-      'Ficha do jogo com empresas, país do estúdio e a origem desse dado, etiquetas da comunidade Steam e a origem delas, idiomas, link oficial e as coleções culturais em que o jogo está ({ slug, name }, na ordem do arquivo de curadoria; o Celeste do exemplo não está em nenhuma)',
+      'Ficha do jogo com empresas, país do estúdio e a origem desse dado, etiquetas da comunidade Steam e a origem delas, idiomas, link oficial e as coleções culturais em que o jogo está ({ slug, name }, na ordem do arquivo de curadoria; o Celeste do exemplo não está em nenhuma). "Onde jogar": platforms com o nome curto de exibição e stores, um link direto à página do jogo por loja, só das lojas com botão (config/stores.json), as duas listas em ordem alfabética do nome. officialUrl é nulo quando o único link é de loja',
     schema: { example: GAME_DETAIL_EXAMPLE },
   })
   @ApiNotFoundResponse({ description: 'Slug inexistente ou jogo fora do catálogo' })

@@ -12,11 +12,20 @@ import type { App } from 'supertest/types';
 import { seedReferenceData } from '../prisma/seed/reference-data';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
-import { ReleaseStatus, StudioCountrySource, TagSource } from '../src/generated/prisma/client';
+import {
+  ReleaseStatus,
+  Store,
+  StudioCountrySource,
+  TagSource,
+} from '../src/generated/prisma/client';
 import { COUNTRY_OPTION_MIN_GAMES } from '../src/modules/catalog/catalog.service';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { CatalogBuilder } from './support/catalog-builder';
 import { contentIndexLoaded } from './support/content-index';
+
+const PC = { igdbId: 6, slug: 'win', name: 'PC (Microsoft Windows)', abbreviation: 'PC' };
+const MAC = { igdbId: 14, slug: 'mac', name: 'Mac', abbreviation: 'Mac' };
+const SWITCH = { igdbId: 130, slug: 'switch', name: 'Nintendo Switch', abbreviation: 'Switch' };
 
 describe('Catálogo', () => {
   let app: INestApplication<App>;
@@ -34,7 +43,7 @@ describe('Catálogo', () => {
 
     const prisma = app.get(PrismaService);
     await prisma.$executeRaw`
-      TRUNCATE "IngestionRun", "Game", "Company", "Feature", "Collection" CASCADE`;
+      TRUNCATE "IngestionRun", "Game", "Company", "Feature", "Collection", "Platform" CASCADE`;
     await seedReferenceData(prisma);
     const catalog = new CatalogBuilder(prisma);
     const { UPCOMING } = ReleaseStatus;
@@ -57,6 +66,15 @@ describe('Catálogo', () => {
           { locale: 'pt-BR', interface: true, subtitles: true },
           { locale: 'en-US', interface: true, subtitles: true, audio: true },
         ],
+        platforms: [SWITCH, PC, MAC],
+        stores: [
+          { store: Store.STEAM, url: 'https://store.steampowered.com/app/504230' },
+          {
+            store: Store.NINTENDO,
+            url: 'https://www.nintendo.com/us/store/products/celeste-switch/',
+          },
+          { store: Store.GOG, url: 'https://www.gog.com/en/game/celeste' },
+        ],
       },
       {
         name: 'Hollow Knight',
@@ -65,6 +83,8 @@ describe('Catálogo', () => {
         tags: ['Metroidvania', 'Difficult'],
         popularity: 0.8,
         releasedOn: '2017-02-24',
+        storeUrl: 'https://store.steampowered.com/app/367520/Hollow_Knight/',
+        platforms: [PC],
         studioCountry: { alpha2: 'AU', source: IGDB },
         languages: [english],
       },
@@ -338,6 +358,33 @@ describe('Catálogo', () => {
         ],
         officialUrl: 'https://www.celestegame.com',
         collections: [{ slug: 'plataformas', name: 'Coleção plataformas' }],
+        platforms: [
+          { slug: 'mac', name: 'Mac' },
+          { slug: 'win', name: 'PC' },
+          { slug: 'switch', name: 'Switch' },
+        ],
+        stores: [
+          { store: 'GOG', name: 'GOG', url: 'https://www.gog.com/en/game/celeste' },
+          { store: 'STEAM', name: 'Steam', url: 'https://store.steampowered.com/app/504230' },
+        ],
+      });
+    });
+
+    it('"Onde jogar": a loja sem botão fica de fora, e a plataforma dela continua', async () => {
+      const response = await game('celeste').expect(200);
+      const { platforms, stores } = GameDetailSchema.parse(response.body);
+
+      expect(platforms.map(({ name }) => name)).toContain('Switch');
+      expect(stores.map(({ store }) => store)).not.toContain('NINTENDO');
+    });
+
+    it('"Onde jogar": plataforma sem loja, e o link de loja do storeUrl não vira página oficial', async () => {
+      const response = await game('hollow-knight').expect(200);
+
+      expect(GameDetailSchema.parse(response.body)).toMatchObject({
+        platforms: [{ slug: 'win', name: 'PC' }],
+        stores: [],
+        officialUrl: null,
       });
     });
 
@@ -375,6 +422,8 @@ describe('Catálogo', () => {
         steamAppId: null,
         languages: [],
         officialUrl: null,
+        platforms: [],
+        stores: [],
       });
     });
 

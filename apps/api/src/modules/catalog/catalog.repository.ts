@@ -77,6 +77,10 @@ const gameDetailSelect = {
     select: { collection: { select: { slug: true, name: true } } },
     orderBy: { collection: { sortOrder: 'asc' } },
   },
+  platforms: {
+    select: { platform: { select: { igdbId: true, slug: true, name: true, abbreviation: true } } },
+  },
+  storeLinks: { select: { store: true, url: true } },
 } satisfies Prisma.GameSelect;
 
 export type GameDetailRow = Prisma.GameGetPayload<{ select: typeof gameDetailSelect }>;

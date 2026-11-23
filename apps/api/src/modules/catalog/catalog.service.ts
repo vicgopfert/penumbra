@@ -18,7 +18,9 @@ import {
   type GameDetailRow,
   type GameSummaryRow,
 } from './catalog.repository';
+import { classifyStore } from '../ingestion/igdb/store-links';
 import { FeatureLabels, type LabeledFeatureType } from './feature-labels';
+import { WhereToPlay } from './where-to-play';
 
 const FEATURE_TYPES: Record<FeatureQuery['type'], FilterFeatureType> = {
   genre: 'GENRE',
@@ -32,6 +34,9 @@ export const TAG_ALIASES = Symbol('TAG_ALIASES');
 
 const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name, 'pt-BR');
 
+// Código do site oficial na IGDB (website_types).
+const OFFICIAL_WEBSITE = 1;
+
 const sortedNames = (names: string[]) => names.sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
 @Injectable()
@@ -41,6 +46,7 @@ export class CatalogService {
     private readonly labels: FeatureLabels,
     @Inject(COUNTRY_OPTION_MIN_GAMES) private readonly countryOptionMinGames: number,
     @Inject(TAG_ALIASES) private readonly tagAliases: ReadonlyMap<string, readonly string[]>,
+    private readonly whereToPlay: WhereToPlay,
   ) {}
 
   async searchGames(query: GameSearchQuery): Promise<GamePage> {
@@ -83,8 +89,10 @@ export class CatalogService {
           ...support,
         }))
         .sort(byName),
-      officialUrl: webUrl(game.storeUrl),
+      officialUrl: officialUrl(game.storeUrl),
       collections: game.collections.map(({ collection }) => collection),
+      platforms: this.whereToPlay.platformsOf(game.platforms.map(({ platform }) => platform)),
+      stores: this.whereToPlay.storesOf(game.storeLinks),
     };
   }
 
@@ -182,6 +190,13 @@ function toStudioCountry({
 }
 
 // O link vem da IGDB e vira href na ficha: só passa endereço web.
+// O storeUrl guarda o site oficial antes da loja: sem site oficial, ele é uma loja, que já aparece
+// em "Onde jogar" (B-84).
+function officialUrl(url: string | null) {
+  const web = webUrl(url);
+  return web === null || classifyStore({ type: OFFICIAL_WEBSITE, url: web }) !== null ? null : web;
+}
+
 function webUrl(url: string | null) {
   if (!url || !URL.canParse(url)) return null;
   return ['http:', 'https:'].includes(new URL(url).protocol) ? url : null;

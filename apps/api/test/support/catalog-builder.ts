@@ -1,6 +1,7 @@
 import {
   FeatureType,
   ReleaseStatus,
+  type Store,
   StudioCountrySource,
   TagSource,
 } from '../../src/generated/prisma/client';
@@ -27,6 +28,15 @@ export interface GameSpec {
   developers?: string[];
   publishers?: string[];
   languages?: LanguageSpec[];
+  platforms?: PlatformSpec[];
+  stores?: { store: Store; url: string }[];
+}
+
+export interface PlatformSpec {
+  igdbId: number;
+  slug: string;
+  name: string;
+  abbreviation?: string;
 }
 
 export interface LanguageSpec {
@@ -66,6 +76,8 @@ export class CatalogBuilder {
     developers = [],
     publishers = [],
     languages = [],
+    platforms = [],
+    stores = [],
   }: GameSpec) {
     const featureIds = [
       ...(await Promise.all(genres.map((genre) => this.feature(FeatureType.GENRE, genre)))),
@@ -89,6 +101,17 @@ export class CatalogBuilder {
       languages.map(async ({ locale, ...support }) => ({
         languageId: (await this.prisma.language.findFirstOrThrow({ where: { locale } })).id,
         ...support,
+      })),
+    );
+    const gamePlatforms = await Promise.all(
+      platforms.map(async ({ igdbId, slug, name, abbreviation = null }) => ({
+        platformId: (
+          await this.prisma.platform.upsert({
+            where: { igdbId },
+            create: { igdbId, slug, name, abbreviation },
+            update: {},
+          })
+        ).id,
       })),
     );
     const country =
@@ -116,6 +139,8 @@ export class CatalogBuilder {
         features: { create: [...featureIds, ...tagLinks] },
         companies: { create: companies },
         languages: { create: gameLanguages },
+        platforms: { create: gamePlatforms },
+        storeLinks: { create: stores },
       },
     });
   }

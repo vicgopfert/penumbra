@@ -1,0 +1,200 @@
+{
+  "namesRationale": "Nome curto de exibição de cada plataforma na ficha (F-34), pelo id da IGDB. Medido no catálogo local em 23/11/2026 (pnpm stores:measure): 89 plataformas; o arquivo cobre as que têm 5 jogos ou mais e as que a IGDB abrevia de um jeito pouco legível. Plataforma fora do arquivo usa a abreviação da IGDB e, sem ela, o nome. Os nomes foram revisados e aprovados pelo autor em 23/11/2026; os de realidade virtual ficam sem tradução, porque são nomes de produto. O nome é resolvido na leitura: mudar um nome não exige nova ingestão.",
+  "names": [
+    {
+      "igdbId": 6,
+      "igdbName": "PC (Microsoft Windows)",
+      "name": "PC"
+    },
+    {
+      "igdbId": 14,
+      "igdbName": "Mac",
+      "name": "Mac"
+    },
+    {
+      "igdbId": 130,
+      "igdbName": "Nintendo Switch",
+      "name": "Switch"
+    },
+    {
+      "igdbId": 3,
+      "igdbName": "Linux",
+      "name": "Linux"
+    },
+    {
+      "igdbId": 48,
+      "igdbName": "PlayStation 4",
+      "name": "PS4"
+    },
+    {
+      "igdbId": 49,
+      "igdbName": "Xbox One",
+      "name": "Xbox One"
+    },
+    {
+      "igdbId": 167,
+      "igdbName": "PlayStation 5",
+      "name": "PS5"
+    },
+    {
+      "igdbId": 169,
+      "igdbName": "Xbox Series X|S",
+      "name": "Xbox Series X|S"
+    },
+    {
+      "igdbId": 39,
+      "igdbName": "iOS",
+      "name": "iOS"
+    },
+    {
+      "igdbId": 34,
+      "igdbName": "Android",
+      "name": "Android"
+    },
+    {
+      "igdbId": 163,
+      "igdbName": "SteamVR",
+      "name": "SteamVR"
+    },
+    {
+      "igdbId": 82,
+      "igdbName": "Web browser",
+      "name": "Navegador"
+    },
+    {
+      "igdbId": 46,
+      "igdbName": "PlayStation Vita",
+      "name": "PS Vita"
+    },
+    {
+      "igdbId": 508,
+      "igdbName": "Nintendo Switch 2",
+      "name": "Switch 2"
+    },
+    {
+      "igdbId": 9,
+      "igdbName": "PlayStation 3",
+      "name": "PS3"
+    },
+    {
+      "igdbId": 41,
+      "igdbName": "Wii U",
+      "name": "Wii U"
+    },
+    {
+      "igdbId": 386,
+      "igdbName": "Meta Quest 2",
+      "name": "Meta Quest 2"
+    },
+    {
+      "igdbId": 12,
+      "igdbName": "Xbox 360",
+      "name": "Xbox 360"
+    },
+    {
+      "igdbId": 165,
+      "igdbName": "PlayStation VR",
+      "name": "PS VR"
+    },
+    {
+      "igdbId": 170,
+      "igdbName": "Google Stadia",
+      "name": "Stadia"
+    },
+    {
+      "igdbId": 390,
+      "igdbName": "PlayStation VR2",
+      "name": "PS VR2"
+    },
+    {
+      "igdbId": 384,
+      "igdbName": "Oculus Quest",
+      "name": "Oculus Quest"
+    },
+    {
+      "igdbId": 385,
+      "igdbName": "Oculus Rift",
+      "name": "Oculus Rift"
+    },
+    {
+      "igdbId": 37,
+      "igdbName": "Nintendo 3DS",
+      "name": "3DS"
+    },
+    {
+      "igdbId": 162,
+      "igdbName": "Oculus VR",
+      "name": "Oculus VR"
+    },
+    {
+      "igdbId": 74,
+      "igdbName": "Windows Phone",
+      "name": "Windows Phone"
+    },
+    {
+      "igdbId": 471,
+      "igdbName": "Meta Quest 3",
+      "name": "Meta Quest 3"
+    },
+    {
+      "igdbId": 72,
+      "igdbName": "Ouya",
+      "name": "Ouya"
+    },
+    {
+      "igdbId": 161,
+      "igdbName": "Windows Mixed Reality",
+      "name": "Windows Mixed Reality"
+    },
+    {
+      "igdbId": 5,
+      "igdbName": "Wii",
+      "name": "Wii"
+    },
+    {
+      "igdbId": 55,
+      "igdbName": "Legacy Mobile Device",
+      "name": "Celular antigo"
+    },
+    {
+      "igdbId": 38,
+      "igdbName": "PlayStation Portable",
+      "name": "PSP"
+    },
+    {
+      "igdbId": 13,
+      "igdbName": "DOS",
+      "name": "DOS"
+    },
+    {
+      "igdbId": 472,
+      "igdbName": "visionOS",
+      "name": "visionOS"
+    },
+    {
+      "igdbId": 132,
+      "igdbName": "Amazon Fire TV",
+      "name": "Fire TV"
+    },
+    {
+      "igdbId": 11,
+      "igdbName": "Xbox",
+      "name": "Xbox"
+    },
+    {
+      "igdbId": 137,
+      "igdbName": "New Nintendo 3DS",
+      "name": "New 3DS"
+    },
+    {
+      "igdbId": 20,
+      "igdbName": "Nintendo DS",
+      "name": "DS"
+    },
+    {
+      "igdbId": 381,
+      "igdbName": "Playdate",
+      "name": "Playdate"
+    }
+  ]
+}

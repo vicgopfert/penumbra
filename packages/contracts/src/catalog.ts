@@ -146,10 +146,36 @@ export const GameCollectionSchema = z.object({ slug: z.string(), name: z.string(
 
 export type GameCollection = z.infer<typeof GameCollectionSchema>;
 
+// As lojas de "Onde jogar" (B-84), com os valores do banco.
+export const STORES = [
+  'APP_STORE',
+  'EPIC',
+  'GOG',
+  'GOOGLE_PLAY',
+  'ITCH',
+  'MICROSOFT',
+  'NINTENDO',
+  'PLAYSTATION',
+  'STEAM',
+] as const;
+
+// O nome é o curto de exibição; o slug é o da IGDB.
+export const GamePlatformSchema = z.object({ slug: z.string(), name: z.string() });
+
+// Só as lojas com botão, em ordem alfabética do nome; o link vai direto à página do jogo.
+export const GameStoreSchema = z.object({
+  store: z.enum(STORES),
+  name: z.string(),
+  url: z.url({ protocol: /^https?$/ }),
+});
+
+export type GameStore = z.infer<typeof GameStoreSchema>;
+
 // As etiquetas vêm da comunidade Steam, da mais votada para a menos, ou, sem nenhuma aceita lá,
 // da reserva pelas palavras-chave e pelo resumo da IGDB, em ordem alfabética (B-78). O id da Steam
 // leva à página do jogo na loja, na atribuição. As coleções vêm na ordem do arquivo de curadoria;
-// sem o campo, valem vazias: a Vercel publica a web antes de o Render publicar a API (B-58).
+// sem o campo, valem vazias: a Vercel publica a web antes de o Render publicar a API (B-58). As
+// plataformas e as lojas também (B-84).
 export const GameDetailSchema = GameSummarySchema.extend({
   summary: z.string(),
   themes: z.array(FeatureLabelSchema),
@@ -162,6 +188,8 @@ export const GameDetailSchema = GameSummarySchema.extend({
   languages: z.array(GameLanguageSchema),
   officialUrl: z.url({ protocol: /^https?$/ }).nullable(),
   collections: z.array(GameCollectionSchema).default([]),
+  platforms: z.array(GamePlatformSchema).default([]),
+  stores: z.array(GameStoreSchema).default([]),
 });
 
 export type GameDetail = z.infer<typeof GameDetailSchema>;
