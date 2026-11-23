@@ -429,3 +429,117 @@ cresceria cerca de 13%.
 passa a ser sinal de interesse, e a carência continua. A medição refeita, com a cobertura
 de etiquetas por limite e o motivo de manter a carência, está em
 `docs/criterio-indie-casos.md` (seção "Sinal de interesse"). A implementação é o B-69.
+
+## Plataformas e lojas (B-84)
+
+A ficha mostra "Onde jogar" (F-34): as plataformas em que o jogo roda e um botão por loja que
+leva direto à página do jogo nela. Os dados vêm só da IGDB e do id da Steam já gravado, sem API
+externa nova.
+
+### Na ingestão
+
+- **Plataformas:** `platforms.name`, `platforms.abbreviation` e `platforms.slug` na mesma consulta
+  de jogos, sem requisição a mais. Gravadas em `Platform` e `GamePlatform`. O nome curto de
+  exibição (PC, PS5, Switch…) vem de `config/platforms.json`, na leitura; fora do arquivo, vale a
+  abreviação da IGDB e, sem ela, o nome.
+- **Links de loja:** os `websites` da IGDB são classificados por uma função pura
+  (`store-links.ts`):
+  - pelo tipo, quando a IGDB tem tipo próprio para a loja: 10 e 11 App Store, 12 Google Play, 13
+    Steam, 15 itch.io, 16 Epic, 17 GOG, 22 Xbox (Microsoft Store), 23 PlayStation e 24 Nintendo,
+    conferidos em `website_types` em 23/11/2026;
+  - pelo endereço nos outros casos, inclusive no site oficial que aponta para uma loja.
+- **Um link por loja:** o de menor id na IGDB. O da Steam é montado pelo `steamAppId`
+  (`https://store.steampowered.com/app/<id>`) e, sem ele, vem do link da IGDB. O link fica como a
+  IGDB o registra, inclusive o regional, sem afiliado. Gravado em `GameStoreLink`.
+- **Lojas fora das nove:** Meta (tipo 25) e GameJolt (tipo 26) ficam de fora, por decisão do autor.
+- **Sem mudança:** critério indie, vetor e popularidade. A plataforma não entra no vetor, na
+  pontuação nem nas prateleiras (congelamento do modelo).
+
+### Medição antes de implementar (23/11/2026)
+
+**Regras fixadas pelo autor antes de medir** (registradas às 16:09 UTC, antes da primeira
+execução):
+- a loja com menos de 9 de 10 links certos na amostra não ganha botão; o link continua gravado, e
+  a plataforma continua aparecendo;
+- link certo: depois dos redirecionamentos, abre a página daquele jogo naquela loja; verificação
+  de idade ou escolha de região antes conta como certo, se a página seguinte for a do jogo;
+- link errado: página inicial da loja, busca, outro jogo ou produto, outra loja, erro ou 404, ou
+  aviso de jogo indisponível ou retirado;
+- amostra: semente 84, 10 links por loja entre os jogos do catálogo com link daquela loja, depois
+  da regra de um link por loja; a Steam pelos links montados com o `steamAppId`;
+- loja com menos de 10 links: todos conferidos, com pelo menos 90% certos;
+- coberturas e demais contagens só registradas, sem regra.
+
+**Reprodução:** `pnpm stores:measure --cache <pasta fora do repositório>` (em `apps/api`), só
+leitura no banco; grava também a amostra sorteada.
+
+**Plataforma** em 22.701 dos 23.001 jogos do catálogo local (98,7%): todos os lançados e 94,9%
+dos "Em breve". São 89 plataformas; as maiores são PC (22.159 jogos), Mac (6.494), Switch
+(4.716), Linux (4.648), PS4 (3.481), Xbox One (3.310), PS5 (2.555), Xbox Series X|S (2.303), iOS
+(1.946) e Android (1.824).
+
+**Link por loja**, entre os jogos que têm a plataforma dela:
+
+| Loja | Plataformas que contam | Jogos com a plataforma | Com link |
+|---|---|---|---|
+| Steam | PC, Mac, Linux | 22.170 | 21.590 (97,4%) |
+| Nintendo eShop | Switch, Switch 2, Wii U, 3DS, New 3DS | 4.974 | 4.345 (87,4%) |
+| PlayStation Store | PS3, PS4, PS5, PS Vita | 4.718 | 4.024 (85,3%) |
+| App Store | iOS | 1.946 | 1.504 (77,3%) |
+| Microsoft Store | Xbox 360, Xbox One, Xbox Series X\|S | 4.355 | 3.297 (75,7%) |
+| Google Play | Android | 1.824 | 1.291 (70,8%) |
+| itch.io | PC, Mac, Linux | 22.170 | 3.047 (13,7%) |
+| GOG | PC, Mac, Linux | 22.170 | 2.916 (13,2%) |
+| Epic Games Store | PC, Mac | 22.170 | 2.270 (10,2%) |
+
+**Outras contagens:**
+- mais de um link da mesma loja: App Store em 1.230 jogos (links de iPhone e de iPad), itch.io em
+  45, Steam em 44, PlayStation e Google Play em 1 cada;
+- 6.946 jogos (30,2%) tinham uma loja no `storeUrl`, e o botão "Página oficial" levava a ela; a
+  ficha passa a mostrar a loja só em "Onde jogar" (`officialUrl` nulo nesse caso);
+- Steam: 91 jogos com o link da IGDB e sem `steamAppId`, e 98 com o `steamAppId` e sem o link;
+- nenhum domínio de loja ficou sem classificação.
+
+**Amostra**, 90 links conferidos no Chrome sem interface (URL final, status, título e captura);
+preparada com apoio de IA e aprovada pelo autor linha por linha. A Epic bloqueou o robô (403), e
+o autor conferiu os 10 links dela à mão:
+
+| Loja | Certos | Erros | Botão |
+|---|---|---|---|
+| App Store | 9 | 1 app retirado (404) | sim |
+| Epic Games Store | 10 | — | sim |
+| GOG | 9 | 1 redireciona para a listagem de jogos | sim |
+| Microsoft Store | 10 | — | sim |
+| PlayStation Store | 10 | — | sim |
+| Steam | 10 | — | sim |
+| Google Play | 7 | 3 apps retirados (404) | não |
+| itch.io | 8 | 1 página removida (404); 1 abre outro produto (o protótipo da Ludum Dare de Dorfromantik) | não |
+| Nintendo eShop | 8 | 1 página removida; 1 link do eShop do 3DS, que fechou, cai no seletor de região do suporte | não |
+
+Dois apps renomeados (Sniper 3D e Kingdom of Arcadia) e três páginas da Nintendo com verificação
+de idade antes da página do jogo contaram como certos, pelas definições.
+
+**Limitação conhecida:** Nintendo eShop e Google Play ficaram sem botão pelos links quebrados,
+quase todos de apps retirados das lojas e do fechamento do eShop do 3DS, e não de links montados
+errado; o itch.io, por um link removido e um que abre outro produto. As plataformas desses jogos
+continuam aparecendo em "Onde jogar" (Switch, Android e as demais), e os links continuam
+gravados: a regra pode ser refeita com uma amostra nova, sem nova ingestão, mudando só
+`config/stores.json`.
+
+### Ingestão local e conferência (23/11/2026)
+
+Uma ingestão completa no banco local, com o código do B-84, gravou o catálogo em 22 s (23.598
+jogos no catálogo). As consultas da seção nova do resumo do workflow "Ingestão" ("Plataformas e
+lojas", também escrita no log da execução) deram:
+- plataforma em todos os 17.616 lançados e em 5.674 dos 5.982 "Em breve" (94,9%);
+- jogos do catálogo com link de cada loja: Steam 22.640 (95,9%), Nintendo 4.392 (18,6%),
+  PlayStation 4.265 (18,1%), Microsoft 3.391 (14,4%), itch.io 3.179 (13,5%), GOG 2.930 (12,4%),
+  Epic 2.293 (9,7%), App Store 1.701 (7,2%) e Google Play 1.443 (6,1%);
+- `GameStoreLink` com 7,0 MB e `GamePlatform` com 7,6 MB.
+
+No navegador local (build de produção, 390 e 1280 px), 18 de 18 conferências passaram:
+plataformas e botões na ordem e com os links da API, abrindo em nova aba; nenhuma loja sem botão;
+seção logo depois da "Página oficial" e antes do resumo; "Não informado" para jogo sem
+plataforma; jogo com a Steam no `storeUrl` sem "Página oficial"; sem rolagem horizontal.
+
+A cobertura em produção é registrada depois da ingestão de produção.

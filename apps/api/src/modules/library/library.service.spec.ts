@@ -4,6 +4,7 @@ import type { FeatureType, ListType } from '../../generated/prisma/client';
 import type { CatalogRepository, FeatureCountRow } from '../catalog/catalog.repository';
 import { CatalogService } from '../catalog/catalog.service';
 import { FeatureLabels, featureLabelsConfigSchema } from '../catalog/feature-labels';
+import { WhereToPlay } from '../catalog/where-to-play';
 import type { LibraryGameRow, LibraryRepository, PreferenceRow } from './library.repository';
 import { LibraryService } from './library.service';
 
@@ -178,7 +179,7 @@ describe('LibraryService', () => {
     } as unknown as CatalogRepository;
     service = new LibraryService(
       library as unknown as LibraryRepository,
-      new CatalogService(catalog, labels, 20, new Map()),
+      new CatalogService(catalog, labels, 20, new Map(), WhereToPlay.fromFiles()),
       PREFERENCE_TAGS,
     );
   });

@@ -7,6 +7,7 @@ import {
 } from '../../../generated/prisma/client';
 import type { PrismaService } from '../../../prisma/prisma.service';
 import type { CollectionWrite } from '../collections/collections';
+import type { StoreLink } from '../igdb/store-links';
 import type { MappedGame } from '../model/mapped-game';
 import type { ReviewFlag } from '../model/review-flag';
 import type { StoredGame } from '../model/stored-game';
@@ -22,6 +23,7 @@ export interface CatalogGame {
   studioCountry: StudioCountry;
   steamAppId: number | null;
   tagSource: TagSource | null;
+  storeLinks: StoreLink[];
 }
 
 export interface OutOfCatalogGame {
@@ -158,12 +160,15 @@ export class IngestionRepository {
     await this.prisma.$transaction(
       [
         ...this.upsertCompanies(write.catalog),
+        ...this.upsertPlatforms(write.catalog),
         ...this.upsertFeatures(write),
         ...this.upsertCatalogGames(write),
         ...this.markOutOfCatalog(write),
         ...this.syncGameCompanies(write.catalog),
         ...this.syncGameFeatures(write.catalog),
         ...this.syncGameLanguages(write.catalog),
+        ...this.syncGamePlatforms(write.catalog),
+        ...this.syncGameStoreLinks(write.catalog),
         ...this.syncCollections(write.collections),
         ...this.insertFlags(runId, write.flags),
       ],
@@ -189,6 +194,28 @@ export class IngestionRepository {
       ON CONFLICT ("igdbId") DO UPDATE
       SET "name" = EXCLUDED."name", "countryCode" = EXCLUDED."countryCode"
       WHERE (co."name", co."countryCode") IS DISTINCT FROM (EXCLUDED."name", EXCLUDED."countryCode")`,
+    );
+  }
+
+  private upsertPlatforms(catalog: CatalogGame[]) {
+    const platforms = new Map(
+      catalog.flatMap(({ game }) => game.platforms.map((p) => [p.igdbId, p] as const)),
+    );
+    return chunked(
+      [...platforms.values()],
+      (rows) => this.prisma.$executeRaw`
+      INSERT INTO "Platform" AS p ("id", "igdbId", "slug", "name", "abbreviation")
+      SELECT gen_random_uuid(), t.igdb_id, t.slug, t.name, t.abbreviation
+      FROM unnest(
+        ${rows.map((r) => r.igdbId)}::int[],
+        ${rows.map((r) => r.slug)}::text[],
+        ${rows.map((r) => r.name)}::text[],
+        ${rows.map((r) => r.abbreviation)}::text[]
+      ) AS t(igdb_id, slug, name, abbreviation)
+      ON CONFLICT ("igdbId") DO UPDATE
+      SET "slug" = EXCLUDED."slug", "name" = EXCLUDED."name", "abbreviation" = EXCLUDED."abbreviation"
+      WHERE (p."slug", p."name", p."abbreviation") IS DISTINCT FROM
+        (EXCLUDED."slug", EXCLUDED."name", EXCLUDED."abbreviation")`,
     );
   }
 
@@ -391,6 +418,69 @@ export class IngestionRepository {
           JOIN "Feature" f ON f."type" = t.type::"FeatureType" AND f."igdbId" = t.feature_id
           ON CONFLICT ("gameId", "featureId") DO UPDATE SET "rank" = EXCLUDED."rank"
           WHERE gf."rank" IS DISTINCT FROM EXCLUDED."rank"`,
+        ];
+      },
+      GAMES_PER_LINK_STATEMENT,
+    );
+  }
+
+  private syncGamePlatforms(catalog: CatalogGame[]) {
+    return chunked(
+      catalog,
+      (games) => {
+        const ids = games.map(({ game }) => game.igdbId);
+        const rows = games.flatMap(({ game }) =>
+          game.platforms.map((p) => ({ gameId: game.igdbId, platformId: p.igdbId })),
+        );
+        const gameIds = rows.map((r) => r.gameId);
+        const platformIds = rows.map((r) => r.platformId);
+        return [
+          this.prisma.$executeRaw`
+          DELETE FROM "GamePlatform" gp USING "Game" g, "Platform" p
+          WHERE gp."gameId" = g."id" AND gp."platformId" = p."id" AND g."igdbId" = ANY(${ids}::int[])
+            AND NOT EXISTS (
+              SELECT 1 FROM unnest(${gameIds}::int[], ${platformIds}::int[]) AS t(game_id, platform_id)
+              WHERE t.game_id = g."igdbId" AND t.platform_id = p."igdbId"
+            )`,
+          this.prisma.$executeRaw`
+          INSERT INTO "GamePlatform" ("gameId", "platformId")
+          SELECT g."id", p."id"
+          FROM unnest(${gameIds}::int[], ${platformIds}::int[]) AS t(game_id, platform_id)
+          JOIN "Game" g ON g."igdbId" = t.game_id
+          JOIN "Platform" p ON p."igdbId" = t.platform_id
+          ON CONFLICT ("gameId", "platformId") DO NOTHING`,
+        ];
+      },
+      GAMES_PER_LINK_STATEMENT,
+    );
+  }
+
+  private syncGameStoreLinks(catalog: CatalogGame[]) {
+    return chunked(
+      catalog,
+      (games) => {
+        const ids = games.map(({ game }) => game.igdbId);
+        const rows = games.flatMap(({ game, storeLinks }) =>
+          storeLinks.map((link) => ({ gameId: game.igdbId, ...link })),
+        );
+        const gameIds = rows.map((r) => r.gameId);
+        const stores = rows.map((r) => r.store);
+        return [
+          this.prisma.$executeRaw`
+          DELETE FROM "GameStoreLink" gs USING "Game" g
+          WHERE gs."gameId" = g."id" AND g."igdbId" = ANY(${ids}::int[])
+            AND NOT EXISTS (
+              SELECT 1 FROM unnest(${gameIds}::int[], ${stores}::text[]) AS t(game_id, store)
+              WHERE t.game_id = g."igdbId" AND t.store::"Store" = gs."store"
+            )`,
+          this.prisma.$executeRaw`
+          INSERT INTO "GameStoreLink" AS gs ("gameId", "store", "url")
+          SELECT g."id", t.store::"Store", t.url
+          FROM unnest(${gameIds}::int[], ${stores}::text[], ${rows.map((r) => r.url)}::text[])
+            AS t(game_id, store, url)
+          JOIN "Game" g ON g."igdbId" = t.game_id
+          ON CONFLICT ("gameId", "store") DO UPDATE SET "url" = EXCLUDED."url"
+          WHERE gs."url" IS DISTINCT FROM EXCLUDED."url"`,
         ];
       },
       GAMES_PER_LINK_STATEMENT,

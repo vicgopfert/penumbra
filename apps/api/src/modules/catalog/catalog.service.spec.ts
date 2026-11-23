@@ -11,6 +11,7 @@ import type {
 } from './catalog.repository';
 import { CatalogService } from './catalog.service';
 import { FeatureLabels, featureLabelsConfigSchema } from './feature-labels';
+import { WhereToPlay } from './where-to-play';
 
 const labels = new FeatureLabels(
   featureLabelsConfigSchema.parse({
@@ -54,6 +55,38 @@ const language = (locale: string, namePt: string, support: Partial<Record<string
   language: { locale, namePt },
 });
 
+const store = (name: string, button = true) => ({ name, button });
+
+// Só PC e Switch têm nome curto no arquivo; Nintendo eShop e itch.io ficam sem botão.
+const whereToPlay = new WhereToPlay(
+  {
+    namesRationale: 'motivo',
+    names: [
+      { igdbId: 6, igdbName: 'PC (Microsoft Windows)', name: 'PC' },
+      { igdbId: 130, igdbName: 'Nintendo Switch', name: 'Switch' },
+    ],
+  },
+  {
+    stores: {
+      APP_STORE: store('App Store'),
+      EPIC: store('Epic Games Store'),
+      GOG: store('GOG'),
+      GOOGLE_PLAY: store('Google Play'),
+      ITCH: store('itch.io', false),
+      MICROSOFT: store('Microsoft Store'),
+      NINTENDO: store('Nintendo eShop', false),
+      PLAYSTATION: store('PlayStation Store'),
+      STEAM: store('Steam'),
+    },
+    buttonRationale: 'motivo',
+    namesRationale: 'motivo',
+  },
+);
+
+const platform = (igdbId: number, slug: string, name: string, abbreviation: string | null) => ({
+  platform: { igdbId, slug, name, abbreviation },
+});
+
 const celesteDetail: GameDetailRow = {
   slug: 'celeste',
   name: 'Celeste',
@@ -84,6 +117,17 @@ const celesteDetail: GameDetailRow = {
     language('en-US', 'Inglês', { interface: true, subtitles: true, audio: true }),
   ],
   collections: [],
+  platforms: [
+    platform(130, 'switch', 'Nintendo Switch', 'Switch'),
+    platform(6, 'win', 'PC (Microsoft Windows)', 'PC'),
+    platform(14, 'mac', 'Mac', 'Mac'),
+  ],
+  storeLinks: [
+    { store: 'STEAM', url: 'https://store.steampowered.com/app/504230' },
+    { store: 'NINTENDO', url: 'https://www.nintendo.com/us/store/products/celeste-switch/' },
+    { store: 'GOG', url: 'https://www.gog.com/en/game/celeste' },
+    { store: 'EPIC', url: 'https://store.epicgames.com/p/celeste' },
+  ],
 };
 
 class FakeCatalog implements Pick<
@@ -130,7 +174,7 @@ class FakeCatalog implements Pick<
 }
 
 const service = (catalog: FakeCatalog) =>
-  new CatalogService(catalog as unknown as CatalogRepository, labels, 20, new Map());
+  new CatalogService(catalog as unknown as CatalogRepository, labels, 20, new Map(), whereToPlay);
 
 describe('CatalogService', () => {
   describe('searchGames', () => {
@@ -222,7 +266,63 @@ describe('CatalogService', () => {
         ],
         officialUrl: 'https://www.celestegame.com',
         collections: [],
+        platforms: [
+          { slug: 'mac', name: 'Mac' },
+          { slug: 'win', name: 'PC' },
+          { slug: 'switch', name: 'Switch' },
+        ],
+        stores: [
+          { store: 'EPIC', name: 'Epic Games Store', url: 'https://store.epicgames.com/p/celeste' },
+          { store: 'GOG', name: 'GOG', url: 'https://www.gog.com/en/game/celeste' },
+          { store: 'STEAM', name: 'Steam', url: 'https://store.steampowered.com/app/504230' },
+        ],
       });
+    });
+
+    it('"Onde jogar": nome curto do arquivo, senão a abreviação da IGDB, senão o nome', async () => {
+      const detail = await findGame({
+        ...celesteDetail,
+        platforms: [
+          platform(6, 'win', 'PC (Microsoft Windows)', 'PC'),
+          platform(49, 'xboxone', 'Xbox One', 'XONE'),
+          platform(384, 'oculus-quest', 'Oculus Quest', null),
+        ],
+      });
+
+      expect(detail.platforms).toEqual([
+        { slug: 'oculus-quest', name: 'Oculus Quest' },
+        { slug: 'win', name: 'PC' },
+        { slug: 'xboxone', name: 'XONE' },
+      ]);
+    });
+
+    it('"Onde jogar": só as lojas com botão, em ordem alfabética do nome', async () => {
+      const detail = await findGame({
+        ...celesteDetail,
+        storeLinks: [
+          { store: 'ITCH', url: 'https://maddy.itch.io/celeste' },
+          { store: 'PLAYSTATION', url: 'https://store.playstation.com/concept/1' },
+          { store: 'APP_STORE', url: 'https://apps.apple.com/app/id1' },
+        ],
+      });
+
+      expect(detail.stores.map(({ store }) => store)).toEqual(['APP_STORE', 'PLAYSTATION']);
+    });
+
+    it('sem plataforma nem loja, as listas vêm vazias', async () => {
+      const detail = await findGame({ ...celesteDetail, platforms: [], storeLinks: [] });
+
+      expect(detail).toMatchObject({ platforms: [], stores: [] });
+    });
+
+    it('sem site oficial, o link de loja do storeUrl não vira "Página oficial"', async () => {
+      for (const storeUrl of [
+        'https://store.steampowered.com/app/504230/Celeste/',
+        'https://maddy.itch.io/celeste',
+        'https://www.nintendo.com/us/store/products/celeste-switch/',
+      ]) {
+        expect((await findGame({ ...celesteDetail, storeUrl })).officialUrl).toBeNull();
+      }
     });
 
     it('traz as coleções do jogo na ordem em que o repositório as lê', async () => {
@@ -402,6 +502,7 @@ describe('CatalogService', () => {
         labels,
         20,
         new Map([['difficult', ['Impiedoso']]]),
+        whereToPlay,
       );
 
       expect(await withAliases.listFeatures({ type: 'tag' })).toEqual([

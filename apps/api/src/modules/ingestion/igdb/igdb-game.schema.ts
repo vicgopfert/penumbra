@@ -28,7 +28,17 @@ export const igdbGameSchema = z.object({
       z.object({ language: z.object({ id: igdbId }), language_support_type: z.number().int() }),
     )
     .default([]),
-  websites: z.array(z.object({ type: z.number().int(), url: z.string() })).default([]),
+  platforms: z
+    .array(
+      z.object({
+        id: igdbId,
+        name: z.string(),
+        abbreviation: z.string().optional(),
+        slug: z.string(),
+      }),
+    )
+    .default([]),
+  websites: z.array(z.object({ id: igdbId, type: z.number().int(), url: z.string() })).default([]),
   total_rating_count: z.number().int().optional(),
   hypes: z.number().int().optional(),
 });
@@ -51,6 +61,10 @@ export const IGDB_GAME_FIELDS = [
   'involved_companies.company.country',
   'language_supports.language.id',
   'language_supports.language_support_type',
+  'platforms.name',
+  'platforms.abbreviation',
+  'platforms.slug',
+  'websites.id',
   'websites.type',
   'websites.url',
   'total_rating_count',

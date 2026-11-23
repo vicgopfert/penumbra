@@ -1,0 +1,42 @@
+{
+  "stores": {
+    "APP_STORE": {
+      "name": "App Store",
+      "button": true
+    },
+    "EPIC": {
+      "name": "Epic Games Store",
+      "button": true
+    },
+    "GOG": {
+      "name": "GOG",
+      "button": true
+    },
+    "GOOGLE_PLAY": {
+      "name": "Google Play",
+      "button": false
+    },
+    "ITCH": {
+      "name": "itch.io",
+      "button": false
+    },
+    "MICROSOFT": {
+      "name": "Microsoft Store",
+      "button": true
+    },
+    "NINTENDO": {
+      "name": "Nintendo eShop",
+      "button": false
+    },
+    "PLAYSTATION": {
+      "name": "PlayStation Store",
+      "button": true
+    },
+    "STEAM": {
+      "name": "Steam",
+      "button": true
+    }
+  },
+  "buttonRationale": "Regra fixada pelo autor antes de medir (B-84): a loja com menos de 9 de 10 links certos numa amostra sorteada (semente 84) não ganha botão; o link continua gravado, e a plataforma continua aparecendo. Amostra conferida em 23/11/2026, preparada com apoio de IA e aprovada pelo autor; os links da Epic, que bloqueia o robô, foram conferidos à mão pelo autor. Certos: App Store 9, Epic 10, GOG 9, Microsoft Store 10, PlayStation Store 10, Steam 10, Google Play 7, itch.io 8, Nintendo eShop 8. Nos três sem botão, os erros vêm sobretudo de apps retirados das lojas e do fechamento do eShop do 3DS (docs/ingestao.md).",
+  "namesRationale": "Nome de exibição de cada loja, sempre visível no botão; sem logotipo, porque as regras de uso das marcas não foram conferidas (os ícones ficam para a fase da designer). Os botões aparecem em ordem alfabética do nome, sem destaque para nenhuma loja (neutralidade, princípio 7 da proposta conceitual)."
+}

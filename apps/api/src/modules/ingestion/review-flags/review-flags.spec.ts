@@ -43,6 +43,8 @@ const game = (changes: Partial<MappedGame> = {}): MappedGame => ({
   companies: [],
   features: [],
   languages: [],
+  platforms: [],
+  websites: [],
   ...changes,
 });
 

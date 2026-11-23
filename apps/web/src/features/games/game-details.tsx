@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { CATALOG_PATH } from '@/features/catalog/search-params';
 import { collectionHref } from '@/features/collections/paths';
 import { GameLibraryControls } from '@/features/library/game-library-controls';
+import { externalLink } from './external-link';
 import { GameCover } from './game-cover';
 import {
   companyNames,
@@ -16,8 +17,7 @@ import {
 } from './game-facts';
 import { releaseLabel } from './release-label';
 import { UpcomingBadge } from './upcoming-badge';
-
-const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
+import { WhereToPlay } from './where-to-play';
 
 const catalogFilteredBy = (param: string, value: string) =>
   `${CATALOG_PATH}?${new URLSearchParams({ [param]: value }).toString()}`;
@@ -35,13 +35,15 @@ export function GameDetails({ game }: { game: GameDetail }) {
 
         {game.officialUrl ? (
           <Button asChild>
-            <a href={game.officialUrl} {...external}>
+            <a href={game.officialUrl} {...externalLink}>
               Página oficial
             </a>
           </Button>
         ) : (
           <p className="text-sm text-muted-foreground">Link oficial não informado</p>
         )}
+
+        <WhereToPlay platforms={game.platforms} stores={game.stores} />
 
         <GameLibraryControls slug={game.slug} />
 
@@ -117,7 +119,11 @@ export function GameDetails({ game }: { game: GameDetail }) {
 
         <p className="text-sm text-muted-foreground">
           Dados do{' '}
-          <a href={`https://www.igdb.com/games/${game.slug}`} {...external} className="underline">
+          <a
+            href={`https://www.igdb.com/games/${game.slug}`}
+            {...externalLink}
+            className="underline"
+          >
             IGDB
           </a>
           .
@@ -142,7 +148,7 @@ function TagSource({ game }: { game: GameDetail }) {
   return (
     <p className="mt-1 text-sm text-muted-foreground">
       {attribution.href ? (
-        <a href={attribution.href} {...external} className="underline">
+        <a href={attribution.href} {...externalLink} className="underline">
           {attribution.text}
         </a>
       ) : (

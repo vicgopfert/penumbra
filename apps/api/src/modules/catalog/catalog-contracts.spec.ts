@@ -109,6 +109,8 @@ describe('GameDetailSchema', () => {
     ],
     officialUrl: 'https://www.celestegame.com',
     collections: [{ slug: 'brasil', name: 'Brasil' }],
+    platforms: [{ slug: 'win', name: 'PC' }],
+    stores: [{ store: 'STEAM', name: 'Steam', url: 'https://store.steampowered.com/app/504230' }],
   };
 
   it('aceita a ficha completa e a ficha sem os dados opcionais', () => {
@@ -139,6 +141,29 @@ describe('GameDetailSchema', () => {
   it('só aceita link http ou https', () => {
     expect(
       GameDetailSchema.safeParse({ ...detail, officialUrl: 'javascript:alert(1)' }).success,
+    ).toBe(false);
+    expect(
+      GameDetailSchema.safeParse({
+        ...detail,
+        stores: [{ store: 'STEAM', name: 'Steam', url: 'steam://run/504230' }],
+      }).success,
+    ).toBe(false);
+  });
+
+  it('sem plataformas e lojas, como na API anterior ao B-84, valem as listas vazias', () => {
+    const withoutWhereToPlay: Record<string, unknown> = { ...detail };
+    delete withoutWhereToPlay.platforms;
+    delete withoutWhereToPlay.stores;
+
+    expect(GameDetailSchema.parse(withoutWhereToPlay)).toMatchObject({ platforms: [], stores: [] });
+  });
+
+  it('só aceita as lojas conhecidas', () => {
+    expect(
+      GameDetailSchema.safeParse({
+        ...detail,
+        stores: [{ store: 'META', name: 'Meta', url: 'https://www.meta.com/experiences/1' }],
+      }).success,
     ).toBe(false);
   });
 });

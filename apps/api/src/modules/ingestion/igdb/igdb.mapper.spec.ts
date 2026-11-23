@@ -130,6 +130,37 @@ describe('mapIgdbGame', () => {
     ]);
   });
 
+  it('mapeia as plataformas sem repetir e guarda os links da IGDB para as lojas', () => {
+    const game = igdbGameSchema.parse({
+      id: 1,
+      name: 'Jogo',
+      slug: 'jogo',
+      platforms: [
+        { id: 6, name: 'PC (Microsoft Windows)', abbreviation: 'PC', slug: 'win' },
+        { id: 6, name: 'PC (Microsoft Windows)', abbreviation: 'PC', slug: 'win' },
+        { id: 384, name: ' Oculus Quest ', slug: 'oculus-quest' },
+      ],
+      websites: [{ id: 9, type: 13, url: 'https://store.steampowered.com/app/1' }],
+    });
+
+    const mapped = mapIgdbGame(game, NOW);
+
+    expect(mapped.platforms).toEqual([
+      { igdbId: 6, slug: 'win', name: 'PC (Microsoft Windows)', abbreviation: 'PC' },
+      { igdbId: 384, slug: 'oculus-quest', name: 'Oculus Quest', abbreviation: null },
+    ]);
+    expect(mapped.websites).toEqual([
+      { id: 9, type: 13, url: 'https://store.steampowered.com/app/1' },
+    ]);
+  });
+
+  it('sem plataformas nem links na IGDB, as listas vêm vazias', () => {
+    const mapped = mapIgdbGame(igdbGameSchema.parse({ id: 1, name: 'Jogo', slug: 'jogo' }), NOW);
+
+    expect(mapped.platforms).toEqual([]);
+    expect(mapped.websites).toEqual([]);
+  });
+
   it('recusa uma resposta sem os campos obrigatórios', () => {
     expect(() => igdbGameSchema.parse({ id: 1, slug: 'sem-nome' })).toThrow();
   });

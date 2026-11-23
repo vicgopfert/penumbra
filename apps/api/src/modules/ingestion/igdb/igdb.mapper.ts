@@ -4,6 +4,7 @@ import type {
   MappedFeature,
   MappedGame,
   MappedLanguageSupport,
+  MappedPlatform,
 } from '../model/mapped-game';
 import type { IgdbGame } from './igdb-game.schema';
 
@@ -43,7 +44,19 @@ export function mapIgdbGame(game: IgdbGame, now: Date): MappedGame {
       ...mapFeatures(FeatureType.KEYWORD, game.keywords),
     ],
     languages: mapLanguages(game.language_supports),
+    platforms: mapPlatforms(game.platforms),
+    websites: game.websites,
   };
+}
+
+function mapPlatforms(platforms: IgdbGame['platforms']): MappedPlatform[] {
+  const unique = new Map(platforms.map((platform) => [platform.id, platform]));
+  return [...unique.values()].map(({ id, slug, name, abbreviation }) => ({
+    igdbId: id,
+    slug,
+    name: name.trim(),
+    abbreviation: abbreviation?.trim() || null,
+  }));
 }
 
 function mapCompanies(game: IgdbGame): MappedCompany[] {

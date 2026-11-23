@@ -148,6 +148,25 @@ jobs:
               FROM pg_stat_user_tables ORDER BY pg_total_relation_size(relid) DESC LIMIT 8"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          # Também no log da execução, para a cobertura ser lida sem abrir o resumo (B-84).
+          {
+            echo '## Plataformas e lojas'
+            echo '```'
+            psql "$PSQL_URL" -X -q -c "
+              SELECT CASE WHEN \"releaseStatus\" = 'UPCOMING' THEN 'por lançar' ELSE 'lançado' END AS grupo,
+                count(*) AS jogos,
+                count(*) FILTER (WHERE EXISTS (
+                  SELECT 1 FROM \"GamePlatform\" gp WHERE gp.\"gameId\" = g.id)) AS com_plataforma,
+                round(100.0 * count(*) FILTER (WHERE EXISTS (
+                  SELECT 1 FROM \"GamePlatform\" gp WHERE gp.\"gameId\" = g.id)) / count(*), 1) AS percentual
+              FROM \"Game\" g WHERE g.\"inCatalog\" GROUP BY 1 ORDER BY 1"
+            psql "$PSQL_URL" -X -q -c "
+              SELECT sl.store AS loja, count(*) AS jogos_com_link,
+                round(100.0 * count(*) / (SELECT count(*) FROM \"Game\" WHERE \"inCatalog\"), 1) AS percentual_do_catalogo
+              FROM \"GameStoreLink\" sl JOIN \"Game\" g ON g.id = sl.\"gameId\"
+              WHERE g.\"inCatalog\" GROUP BY sl.store ORDER BY sl.store"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
 
   steam-probe:
     name: Sonda da Steam (só leitura)

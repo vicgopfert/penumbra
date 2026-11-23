@@ -32,6 +32,19 @@ enum TagSource {
   IGDB
 }
 
+// As lojas de "Onde jogar" (B-84). O botão de cada uma é decidido em config/stores.json.
+enum Store {
+  APP_STORE
+  EPIC
+  GOG
+  GOOGLE_PLAY
+  ITCH
+  MICROSOFT
+  NINTENDO
+  PLAYSTATION
+  STEAM
+}
+
 enum IngestionStatus {
   RUNNING
   SUCCEEDED
@@ -218,6 +231,8 @@ model Game {
   companies           GameCompany[]
   features            GameFeature[]
   languages           GameLanguage[]
+  platforms           GamePlatform[]
+  storeLinks          GameStoreLink[]
   collections         CollectionGame[]
   ratings             Rating[]
   listEntries         ListEntry[]
@@ -247,6 +262,36 @@ model GameFeature {
 
   @@id([gameId, featureId])
   @@index([featureId])
+}
+
+// O nome curto de exibição vem de config/platforms.json, na leitura (B-84).
+model Platform {
+  id           String         @id @default(uuid()) @db.Uuid
+  igdbId       Int            @unique
+  slug         String
+  name         String
+  abbreviation String?
+  games        GamePlatform[]
+}
+
+model GamePlatform {
+  gameId     String   @db.Uuid
+  platformId String   @db.Uuid
+  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  platform   Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
+
+  @@id([gameId, platformId])
+  @@index([platformId])
+}
+
+// Um link por loja, como a IGDB o registra; o da Steam, pelo id do jogo nela (B-84).
+model GameStoreLink {
+  gameId String @db.Uuid
+  store  Store
+  url    String
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@id([gameId, store])
 }
 
 model GameLanguage {
