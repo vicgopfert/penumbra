@@ -132,3 +132,17 @@ export const RecommendationPageSchema = z.object({
 });
 
 export type RecommendationPage = z.infer<typeof RecommendationPageSchema>;
+
+// Um jogo semelhante ao da ficha (B-50), com o que os dois têm em comum: os mesmos atributos do
+// motivo das recomendações, pela contribuição de cada um ao cosseno.
+export const SimilarGameSchema = z.object({
+  game: GameSummarySchema,
+  reason: RecommendationReasonSchema.nullable(),
+});
+
+export type SimilarGame = z.infer<typeof SimilarGameSchema>;
+
+// A mesma lista para qualquer visitante, em ordem de semelhança; vazia quando a seção não aparece.
+export const SimilarGamesSchema = z.object({ items: z.array(SimilarGameSchema) });
+
+export type SimilarGames = z.infer<typeof SimilarGamesSchema>;

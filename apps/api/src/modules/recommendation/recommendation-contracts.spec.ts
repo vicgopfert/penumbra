@@ -3,6 +3,7 @@ import {
   RecommendationPageQuerySchema,
   RecommendationPageSchema,
   RecommendationQuerySchema,
+  SimilarGamesSchema,
 } from '@indie/contracts';
 
 const messages = (schema: typeof RecommendationPageQuerySchema, input: unknown) => {
@@ -190,5 +191,36 @@ describe('Respostas das recomendações', () => {
     expect(valid('popular')).toBe(true);
     expect(valid(undefined)).toBe(false);
     expect(valid('cold-start')).toBe(false);
+  });
+});
+
+describe('SimilarGamesSchema', () => {
+  const game = {
+    slug: 'ori',
+    name: 'Ori',
+    coverImageId: 'co1abc',
+    releaseStatus: 'UPCOMING',
+    firstReleaseDate: null,
+    genres: [],
+  };
+  const feature = (slug: string) => ({ slug, name: slug });
+
+  it('aceita a lista vazia e o item sem o que os jogos têm em comum', () => {
+    expect(SimilarGamesSchema.parse({ items: [] })).toEqual({ items: [] });
+    expect(SimilarGamesSchema.safeParse({ items: [{ game, reason: null }] }).success).toBe(true);
+  });
+
+  it('mostra até 3 atributos em comum', () => {
+    const reason = (count: number) => ({
+      kind: 'features',
+      features: Array.from({ length: count }, (_, i) => feature(`f-${i}`)),
+    });
+
+    expect(SimilarGamesSchema.safeParse({ items: [{ game, reason: reason(3) }] }).success).toBe(
+      true,
+    );
+    expect(SimilarGamesSchema.safeParse({ items: [{ game, reason: reason(4) }] }).success).toBe(
+      false,
+    );
   });
 });
