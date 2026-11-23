@@ -36,7 +36,11 @@ export function errorMessage(error: unknown) {
   return error instanceof Error && error.message ? error.message : UNEXPECTED_ERROR_MESSAGE;
 }
 
-type RequestOptions = { method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'; body?: unknown };
+type RequestOptions = {
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  body?: unknown;
+  signal?: AbortSignal;
+};
 
 export function apiFetch(path: string, options?: RequestOptions): Promise<void>;
 export function apiFetch<T>(
@@ -56,8 +60,9 @@ export async function apiFetch<T>(
   return parsed.data;
 }
 
-async function send(path: string, { method = 'GET', body }: RequestOptions) {
+async function send(path: string, { method = 'GET', body, signal }: RequestOptions) {
   const init: RequestInit = { method, credentials: 'same-origin' };
+  if (signal) init.signal = signal;
   if (body !== undefined) {
     init.headers = { 'Content-Type': 'application/json' };
     init.body = JSON.stringify(body);

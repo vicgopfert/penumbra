@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import { CATALOG_PATH } from '@/features/catalog/search-params';
 import { getGame } from '@/features/games/api';
 import { GameDetails } from '@/features/games/game-details';
 import { metaDescription } from '@/features/games/game-facts';
 import { GameUnavailable } from '@/features/games/game-states';
+import { SimilarGames } from '@/features/games/similar-games';
 import { ApiRequestError } from '@/lib/api-client';
 import { igdbImageUrl } from '@/lib/igdb';
 
@@ -40,7 +42,8 @@ export default async function GamePage({ params }: GamePageProps) {
   const { slug } = await params;
   const { game, missing } = await loadGame(slug);
   // Jogo inexistente ou fora do catálogo responde 404. Este segmento não tem loading.tsx de
-  // propósito: com ele, a resposta começa em streaming e o 404 sairia com status 200.
+  // propósito: com ele, a resposta começa em streaming e o 404 sairia com status 200. Os jogos
+  // semelhantes chegam em streaming só depois desta decisão, sem mudar o status nem segurar a ficha.
   if (missing) notFound();
 
   return (
@@ -49,7 +52,12 @@ export default async function GamePage({ params }: GamePageProps) {
         Voltar ao catálogo
       </Link>
       {game ? (
-        <GameDetails game={game} />
+        <>
+          <GameDetails game={game} />
+          <Suspense fallback={null}>
+            <SimilarGames slug={game.slug} />
+          </Suspense>
+        </>
       ) : (
         <GameUnavailable retryHref={`/jogos/${encodeURIComponent(slug)}`} />
       )}
