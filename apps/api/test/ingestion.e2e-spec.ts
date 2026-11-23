@@ -259,6 +259,77 @@ describe('Ingestão', () => {
     });
   });
 
+  describe('plataformas e links de loja', () => {
+    const PC = { id: 6, name: 'PC (Microsoft Windows)', abbreviation: 'PC', slug: 'win' };
+    const SWITCH = { id: 130, name: 'Nintendo Switch', abbreviation: 'Switch', slug: 'switch' };
+    const [withStores, withoutPlatform] = accepted;
+    const raw = (id: number) => catalog.games.find((g) => g.id === id)!;
+    const platformsOf = async (igdbId: number) =>
+      (
+        await prisma.gamePlatform.findMany({
+          where: { game: { igdbId } },
+          select: { platform: { select: { igdbId: true, slug: true, name: true } } },
+        })
+      )
+        .map(({ platform }) => platform)
+        .sort((a, b) => a.igdbId - b.igdbId);
+    const linksOf = async (igdbId: number) =>
+      (
+        await prisma.gameStoreLink.findMany({
+          where: { game: { igdbId } },
+          select: { store: true, url: true },
+          orderBy: { store: 'asc' },
+        })
+      ).map(({ store, url }) => ({ store, url }));
+
+    beforeEach(() => {
+      catalog.steamAppIds.set(withStores!.id, [500]);
+      Object.assign(raw(withStores!.id), {
+        platforms: [PC, SWITCH],
+        websites: [
+          { id: 3, type: 13, url: 'https://store.steampowered.com/app/999/Outro/' },
+          { id: 2, type: 23, url: 'https://store.playstation.com/pt-br/concept/1' },
+          { id: 1, type: 1, url: 'https://www.nintendo.com/us/store/products/jogo-switch/' },
+          { id: 4, type: 5, url: 'https://twitter.com/jogo' },
+        ],
+      });
+      Object.assign(raw(withoutPlatform!.id), { platforms: [], websites: [] });
+    });
+
+    it('grava as plataformas e um link por loja: pelo tipo, pelo endereço e a Steam pelo id', async () => {
+      await ingest.execute(NOW);
+
+      expect(await platformsOf(withStores!.id)).toEqual([
+        { igdbId: 6, slug: 'win', name: 'PC (Microsoft Windows)' },
+        { igdbId: 130, slug: 'switch', name: 'Nintendo Switch' },
+      ]);
+      expect(await linksOf(withStores!.id)).toEqual([
+        { store: 'NINTENDO', url: 'https://www.nintendo.com/us/store/products/jogo-switch/' },
+        { store: 'PLAYSTATION', url: 'https://store.playstation.com/pt-br/concept/1' },
+        { store: 'STEAM', url: 'https://store.steampowered.com/app/500' },
+      ]);
+      expect(await platformsOf(withoutPlatform!.id)).toEqual([]);
+      expect(await linksOf(withoutPlatform!.id)).toEqual([]);
+    });
+
+    it('na execução seguinte, tira a plataforma e o link que saíram da IGDB', async () => {
+      await ingest.execute(NOW);
+      Object.assign(raw(withStores!.id), {
+        platforms: [PC],
+        websites: [{ id: 3, type: 13, url: 'https://store.steampowered.com/app/999/Outro/' }],
+      });
+
+      await ingest.execute(NOW);
+
+      expect(await platformsOf(withStores!.id)).toEqual([
+        { igdbId: 6, slug: 'win', name: 'PC (Microsoft Windows)' },
+      ]);
+      expect(await linksOf(withStores!.id)).toEqual([
+        { store: 'STEAM', url: 'https://store.steampowered.com/app/500' },
+      ]);
+    });
+  });
+
   describe('etiquetas da comunidade Steam', () => {
     const ROGUELIKE = 1716;
     const METROIDVANIA = 1628;

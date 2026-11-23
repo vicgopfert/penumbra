@@ -6,6 +6,7 @@ import type { CollectionsConfig } from './collections/collections.config';
 import type { IgdbCatalogSource } from './igdb/igdb-catalog.source';
 import { igdbGameSchema } from './igdb/igdb-game.schema';
 import { mapIgdbGame } from './igdb/igdb.mapper';
+import { storeLinks } from './igdb/store-links';
 import { evaluateIndieCriteria } from './criteria/indie-criteria';
 import type { VersionedIndieCriteria } from './criteria/indie-criteria.config';
 import type { IngestionReview } from './review-flags/ingestion-review.config';
@@ -175,6 +176,7 @@ export class RunIngestionUseCase {
         studioCountry: resolveStudioCountry(game.studioCountryCode, countries.countriesOf(game)),
         steamAppId: assigned.steamAppId,
         tagSource: assigned.source,
+        storeLinks: storeLinks(game.websites, assigned.steamAppId),
       };
     });
     const outOfCatalog: OutOfCatalogGame[] = [

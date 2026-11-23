@@ -1,4 +1,5 @@
 import type { FeatureType, ReleaseStatus } from '../../../generated/prisma/client';
+import type { IgdbWebsite } from '../igdb/store-links';
 
 // O jogo como a ingestão o entende, já traduzido da IGDB: é o que critério, alertas e gravação usam.
 export interface MappedCompany {
@@ -25,6 +26,13 @@ export interface MappedLanguageSupport {
   audio: boolean;
 }
 
+export interface MappedPlatform {
+  igdbId: number;
+  slug: string;
+  name: string;
+  abbreviation: string | null;
+}
+
 export interface MappedGame {
   igdbId: number;
   slug: string;
@@ -41,4 +49,8 @@ export interface MappedGame {
   companies: MappedCompany[];
   features: MappedFeature[];
   languages: MappedLanguageSupport[];
+  platforms: MappedPlatform[];
+  // Os links da IGDB, para os links de loja: o da Steam depende do id do jogo nela, que a ingestão
+  // só conhece depois do mapeamento.
+  websites: IgdbWebsite[];
 }
