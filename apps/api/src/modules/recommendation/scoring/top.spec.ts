@@ -1,4 +1,4 @@
-import { userTieBreak } from './tie-break';
+import { seededTieBreak } from './tie-break';
 import { kthLargest, topBy } from './top';
 
 describe('topBy', () => {
@@ -9,7 +9,7 @@ describe('topBy', () => {
 
   it('dá o mesmo resultado que ordenar tudo e cortar', () => {
     for (const limit of [1, 5, 28, 29, 30, 199, 200, 500]) {
-      const tieBreak = userTieBreak('u-1');
+      const tieBreak = seededTieBreak('u-1');
       const sorted = [...items]
         .sort((a, b) => b.value - a.value || tieBreak(a.id, b.id))
         .slice(0, limit);

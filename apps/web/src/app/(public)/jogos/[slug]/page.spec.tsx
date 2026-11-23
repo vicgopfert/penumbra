@@ -13,6 +13,11 @@ vi.mock('next/navigation', () => ({
   },
 }));
 
+// A seção é um componente assíncrono do servidor, com spec próprio; aqui só importa onde ela entra.
+vi.mock('@/features/games/similar-games', () => ({
+  SimilarGames: ({ slug }: { slug: string }) => <p data-testid="similar-games">{slug}</p>,
+}));
+
 const props = (slug = 'celeste') => ({ params: Promise.resolve({ slug }) });
 
 // Quem abre a ficha nestes testes não entrou: a sessão responde 401.
@@ -189,6 +194,18 @@ describe('GamePage', () => {
     expect(screen.queryByText('Coleções', { selector: 'dt' })).not.toBeInTheDocument();
   });
 
+  it('mostra os jogos semelhantes no fim da ficha, pelo slug do jogo', async () => {
+    stubGame(sampleGameDetail());
+
+    await renderPage();
+
+    const similar = screen.getByTestId('similar-games');
+    expect(similar).toHaveTextContent('celeste');
+    expect(screen.getByRole('article').compareDocumentPosition(similar)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+  });
+
   it('jogo inexistente ou fora do catálogo vira a página 404', async () => {
     stubFetch(() => apiError(404, 'Jogo não encontrado.'));
 
@@ -207,6 +224,7 @@ describe('GamePage', () => {
       'href',
       '/jogos/celeste',
     );
+    expect(screen.queryByTestId('similar-games')).not.toBeInTheDocument();
   });
 });
 

@@ -4,9 +4,10 @@ import { z } from 'zod';
 
 export const RECOMMENDATION_CONFIG_FILE = resolve(process.cwd(), 'config/recommendation.json');
 
-// O arquivo tem um bloco para o TF-IDF, usado pela ingestão e pelo índice, e um para a pontuação.
+// O arquivo tem um bloco para o TF-IDF, usado pela ingestão e pelo índice, um para a pontuação e
+// um para os jogos semelhantes da ficha (B-50).
 export function readRecommendationConfig<Schema extends z.ZodType>(
-  section: 'tfidf' | 'scoring',
+  section: 'tfidf' | 'scoring' | 'similarGames',
   schema: Schema,
   file = RECOMMENDATION_CONFIG_FILE,
 ): z.infer<Schema> {

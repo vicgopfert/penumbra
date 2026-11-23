@@ -1356,3 +1356,125 @@ imprimi-las. Uso: `node measure-play.mjs <repo>` e `node measure-words.mjs <repo
 
 Os dois blocos voltam como variantes do protocolo do B-37 e só entram no vetor se melhorarem o
 acerto@10, o mesmo critério do M0. Até lá, o vetor fica com três blocos.
+
+## Jogos semelhantes na ficha (B-50)
+
+A ficha de cada jogo mostra até 6 jogos parecidos com ele (F-17), pela rota pública
+`GET /api/games/:slug/similar`. É a recomendação de quem chega sem login e a partida a frio do
+item: um jogo "Em breve", sem nenhuma avaliação, já aparece ao lado dos jogos parecidos.
+
+### A regra
+
+- **Ordem:** pelo cosseno com o jogo da ficha, sem termo de popularidade (λ = 0). A lista é uma
+  propriedade do jogo: a mesma para qualquer visitante, com ou sem sessão, a mesma que os
+  buscadores indexam e a que cabe num cache. Os jogos da biblioteca de quem está logado não são
+  tirados: a exclusão é regra só das recomendações pessoais.
+- **Quem entra:** nunca o próprio jogo; os jogos "Em breve" entram, com o selo; só entra quem tem
+  cosseno de pelo menos 0,5 com o jogo da ficha (`similarGames.minSimilarity`).
+- **Mínimo:** com menos de 4 jogos (`minItems`, igual ao `shelfMinItems` da visão geral), a
+  resposta vem vazia e a ficha não mostra a seção. O mínimo vale depois de tirar os jogos que
+  saíram do catálogo desde a última carga do índice.
+- **Desempate (decisão do autor, 23/11/2026):** o mesmo sorteio fixo das recomendações, com o
+  jogo da ficha como semente no lugar do usuário (`seededTieBreak`, hash de
+  `<id do jogo da ficha>:<id do candidato>`). A lista é a mesma para todos, mas fichas com
+  vizinhos empatados mostram empatados diferentes, o que aumenta a cobertura do catálogo, pelo
+  mesmo argumento do B-32. A popularidade continua fora do desempate (B-12). No catálogo local,
+  em 17,9% dos jogos o 6º vizinho empata com o 7º, e o desempate decide quem aparece.
+- **"Em comum" (decisão do autor, 23/11/2026):** até 3 atributos, pela contribuição de cada um
+  ao cosseno, `s_k · v_jk`, com o mesmo `explainer` e a mesma ordem de grupos do motivo das
+  recomendações (B-78): primeiro as etiquetas que podem virar prateleira, depois as outras
+  etiquetas, depois gêneros e temas da IGDB, sem os escondidos dos filtros. Sem nenhum, o item
+  aparece sem a linha "Em comum".
+- **Rota:** o jogo da ficha é procurado no índice pelo slug, sem consulta ao banco; fora do
+  índice, 404 com "Jogo não encontrado.", a mesma mensagem da ficha. Com o índice carregando ou
+  com falha, 503 com "Os jogos semelhantes ainda não estão disponíveis; tente novamente em alguns
+  instantes." (mensagem própria, por decisão do autor: quem chama a rota não pediu
+  recomendações).
+
+### Cache próprio
+
+`SimilarGamesCache` guarda só as posições dos até 6 vizinhos de cada jogo, separado do cache das
+prateleiras por jogo (`SimilarityCache`, B-79), que guarda a varredura inteira, cerca de 0,2 MB
+por jogo. Esta é a primeira rota pública que faz varredura no índice, e robôs de busca percorrendo
+as fichas não podem tirar daquele cache os jogos de origem das prateleiras dos usuários. Os jogos
+usados há mais tempo saem primeiro quando o cache passa da capacidade (`cacheSize`), e a recarga do
+índice começa um cache vazio. A lista vazia também fica guardada, para não repetir a varredura.
+
+### Medição no catálogo local (23/11/2026)
+
+**Critérios fixados antes de medir** (aprovação do plano pelo autor, decisão 3; registrados às
+14:56 UTC, antes da primeira execução):
+- semelhança mínima: o maior valor da grade {0; 0,1; 0,2; 0,3; 0,4; 0,5} com no máximo 5% dos
+  jogos do catálogo sem a seção;
+- capacidade do cache: se o cache com o catálogo inteiro couber em até 10 MB medidos, 30.000;
+  senão, a maior capacidade que caiba em 10 MB;
+- só registro, sem regra: a fração de "Em breve" entre os vizinhos, os empates no corte, o tempo
+  de cada varredura e uma amostra de 10 jogos.
+
+**Reprodução:** `pnpm similar:measure` (em `apps/api`, depois do `build`), só leitura no banco.
+Catálogo local de 23.001 jogos.
+
+Cosseno do 1º e do 6º vizinho:
+
+| Vizinho | p5 | p10 | p25 | p50 | p75 | p90 |
+|---|---|---|---|---|---|---|
+| 1º | 0,708 | 0,741 | 0,787 | 0,837 | 0,877 | 0,928 |
+| 6º | 0,640 | 0,676 | 0,726 | 0,776 | 0,831 | 0,856 |
+
+Jogos sem a seção, com o mínimo de 4 jogos:
+
+| Semelhança mínima | Jogos sem a seção | Fração |
+|---|---|---|
+| 0 a 0,4 | 0 | 0,0% |
+| 0,5 | 13 | 0,1% |
+
+- **Semelhança mínima: 0,5, pela regra.** É o topo da grade: até 0,4 nenhum jogo perde a seção,
+  porque o 6º vizinho fica acima de 0,64 em 95% dos jogos. Com o catálogo atual, o mínimo só tira
+  vizinhos muito fracos dos 13 jogos com poucos atributos.
+- **"Em breve":** 22,5% dos vizinhos mostrados (31.065 de 137.911), perto dos 25,3% do catálogo.
+- **Tempo da seleção,** a varredura do índice inteiro: mediana de 4,0 ms e p95 de 5,4 ms no local.
+- **Cache: 30.000, pela regra.** O cache cheio com os 23.001 jogos ocupa 6,0 MB (274 bytes por
+  jogo, heap mais `arrayBuffers`, depois do gc). A capacidade cobre o catálogo com folga, e um robô
+  percorrendo as fichas nunca tira um jogo do cache.
+
+### Na ficha
+
+- **Streaming na mesma resposta (decisão do autor):** a seção é um componente de servidor dentro
+  de um `Suspense`, no fim da ficha. Os links já vêm no HTML da primeira resposta, o que os
+  buscadores leem, e a ficha não espera pela seção. Ela só entra depois de a página decidir o 404,
+  que continua com status 404.
+- **Tempo-limite de 3 s (acrescentado pelo autor na aprovação do plano):** com o `Suspense`, a
+  resposta da ficha fica aberta até a seção resolver, e numa API lenta o carregamento da página
+  ficaria pendurado. A busca da seção usa `AbortSignal.timeout(3000)`
+  (`SIMILAR_GAMES_TIMEOUT_MS`); passado o tempo, a ficha termina sem a seção, como nos outros
+  casos de falha (503, erro, lista vazia).
+- **Forma:** a fileira de capas das recomendações (`CoverRow`, agora em `features/games`), com 6
+  colunas a partir de 640 px e, abaixo de cada capa, o selo "Em breve" e "Em comum: …". O visual
+  definitivo fica com a designer.
+
+### Conferência no navegador local (23/11/2026)
+
+Build de produção da API (porta 3001) e da web (porta 3006), catálogo local. 27 de 27
+conferências passaram, a 390 px e a 1280 px (roteiro `check-b50.mjs`, fora do repositório):
+- a rota devolve 6 jogos para Disco Elysium, sem ele, e lista vazia para um dos 13 jogos sem a
+  seção; slug inexistente dá 404;
+- a mesma resposta sem sessão e com a sessão de uma conta local criada para a conferência e
+  apagada no fim;
+- o HTML da primeira resposta da ficha já traz a seção e os links; a ficha inexistente continua
+  com status 404;
+- a seção vem depois da ficha, com os mesmos jogos e a mesma ordem da API, o selo "Em breve" nos 4
+  jogos em breve e o "Em comum" de cada um; a página não rola na horizontal;
+- o link leva à ficha do semelhante, que também tem a seção; a ficha com lista vazia abre sem
+  ela.
+
+Observado na conferência: a seção chega no contêiner oculto do streaming e o React a mostra no
+lugar logo depois do `load`; a navegação entre fichas pelo link traz a ficha nova em cerca de
+0,3 s e a seção cerca de 0,1 s depois, sem bloquear a página.
+
+### Tempo em produção
+
+A medir depois do merge, pela metodologia do B-33 e pelas regras 1 a 3 do B-76, com 100 amostras
+por linha (decisão 9 do plano): 200 slugs distintos sorteados com semente fixa, 100 pedidos direto
+no Render e 100 pela Vercel, cada um pela primeira vez (o cache vazio daquele jogo), e depois os
+mesmos de novo (o cache cheio), com a rota de saúde na mesma rodada. Se o p95 com o cache vazio
+passar de 1 s pela regra 3, os vizinhos passam a ser calculados na carga do índice.

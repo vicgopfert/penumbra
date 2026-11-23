@@ -21,7 +21,7 @@ import {
   tasteIndex,
 } from './scoring.fixture';
 import { SimilarityCache } from './source-similarity';
-import { userTieBreak } from './tie-break';
+import { seededTieBreak } from './tie-break';
 
 const game = (id: string) => ({ id }) as IndexedGame;
 const ids = (games: readonly IndexedGame[]) => games.map(({ id }) => id);
@@ -94,7 +94,7 @@ describe('buildLists', () => {
     const built = buildLists(
       scored,
       index,
-      { mode, popularityWeight: 0, interests, likedGames: [], tieBreak: userTieBreak('u-1') },
+      { mode, popularityWeight: 0, interests, likedGames: [], tieBreak: seededTieBreak('u-1') },
       { ...scoringConfig.lists, ...lists },
     );
     const byKey = new Map(built.map((list) => [list.key, list]));
@@ -215,7 +215,7 @@ describe('buildLists com etiquetas', () => {
       popularityWeight: 0,
       interests: pickInterests(profile, [], index, new Set(), scoringConfig),
       likedGames: [],
-      tieBreak: userTieBreak('u-1'),
+      tieBreak: seededTieBreak('u-1'),
     },
     scoringConfig.lists,
   );
@@ -263,7 +263,7 @@ describe('buildLists: prateleiras por jogo', () => {
         popularityWeight: scoringConfig.popularityWeightByMode[mode],
         interests,
         likedGames,
-        tieBreak: userTieBreak('u-1'),
+        tieBreak: seededTieBreak('u-1'),
       },
       scoringConfig.lists,
     );
@@ -343,7 +343,7 @@ describe('buildLists: só a lista pedida', () => {
         popularityWeight: scoringConfig.popularityWeightByMode[mode],
         interests,
         likedGames,
-        tieBreak: userTieBreak('u-1'),
+        tieBreak: seededTieBreak('u-1'),
         ...extra,
       },
       scoringConfig.lists,

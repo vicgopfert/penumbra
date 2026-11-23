@@ -29,8 +29,12 @@ function reasonGroup({ type, shelf }: IndexedFeature): number | null {
 // Os atributos de maior contribuição positiva, u_k · v_jk / (‖u‖ · ‖v_j‖), do primeiro grupo que
 // tem alguma: o motivo só mostra o que contribuiu para a pontuação (B-74). Todo candidato tem
 // cosseno positivo, e todo atributo do vetor está num dos grupos: o motivo só fica vazio se entrar
-// no vetor um tipo de atributo que não vira motivo.
-export function explainer(profile: Profile, { features }: Pick<ContentIndex, 'features'>) {
+// no vetor um tipo de atributo que não vira motivo. Nos jogos semelhantes, o perfil é o vetor do
+// jogo da ficha, com norma 1, e o motivo é o que os dois jogos têm em comum (B-50).
+export function explainer(
+  profile: Pick<Profile, 'vector' | 'norm'>,
+  { features }: Pick<ContentIndex, 'features'>,
+) {
   return (game: IndexedGame): ScoredReason | null => {
     const groups = Array.from({ length: REASON_GROUPS }, () => [] as Contribution[]);
     for (let i = 0; i < game.featurePositions.length; i++) {

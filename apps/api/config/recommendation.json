@@ -58,5 +58,14 @@
       "shelfCap": 200,
       "pagingRationale": "O \"ver mais\" pagina cada lista de 20 em 20 até o teto: menor na principal (100) e maior nas prateleiras (200), porque nas páginas fundas a afinidade cai muito. Valores iniciais do registro da correção do F-11; o teto da principal não pode passar o das prateleiras, que são a fonte dela."
     }
+  },
+  "similarGames": {
+    "size": 6,
+    "minItems": 4,
+    "sizeRationale": "Até 6 jogos semelhantes na ficha (F-17), numa fileira de capas. Com menos de 4, a seção não aparece, como as prateleiras da visão geral (shelfMinItems): com 1 a 3 jogos ela parece quebrada. O mínimo vale depois de tirar os jogos que saíram do catálogo desde a última carga do índice.",
+    "minSimilarity": 0.5,
+    "minSimilarityRationale": "Um jogo só entra na seção com cosseno de pelo menos 0,5 com o jogo da ficha. Regra fixada pelo autor antes de medir (23/11/2026): o maior valor da grade de 0 a 0,5, de 0,1 em 0,1, com no máximo 5% dos jogos sem a seção. Medido no catálogo local em 23/11/2026 (23.001 jogos, pnpm similar:measure): com 0,5, só 13 jogos (0,1%) ficam sem a seção, e o 6º vizinho tem cosseno de 0,640 no p5 e de 0,776 na mediana. O valor é o topo da grade: até 0,4 nenhum jogo perde a seção.",
+    "cacheSize": 30000,
+    "cacheSizeRationale": "Quantos jogos guardam a lista de vizinhos entre requisições (B-50). Cada um guarda só as posições dos até 6 vizinhos: medido em 23/11/2026, 274 bytes por jogo e 6,0 MB com o catálogo local inteiro (23.001 jogos). Pela regra fixada antes de medir (o catálogo inteiro cabe em 10 MB), a capacidade cobre o catálogo com folga, e robôs de busca percorrendo as fichas nunca tiram um jogo do cache. Fica separado do cache das prateleiras por jogo (likedGameCacheSize). A recarga do índice começa um cache vazio."
   }
 }

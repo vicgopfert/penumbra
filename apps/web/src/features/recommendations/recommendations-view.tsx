@@ -4,7 +4,7 @@ import type { DiscoveryMode, RecommendationOverview } from '@indie/contracts';
 import Link from 'next/link';
 import { type ReactNode, useId } from 'react';
 import { SessionGate, useClearAccountWhenUnauthorized } from '@/features/auth/session-gate';
-import { CoverRow } from './cover-row';
+import { CoverRow } from '@/features/games/cover-row';
 import { useRecommendationOverview } from './hooks';
 import { listHref, listTitle, RECOMMENDATIONS_PATH } from './lists';
 import {
