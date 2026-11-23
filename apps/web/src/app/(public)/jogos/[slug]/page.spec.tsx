@@ -194,6 +194,23 @@ describe('GamePage', () => {
     expect(screen.queryByText('Coleções', { selector: 'dt' })).not.toBeInTheDocument();
   });
 
+  it('mostra "Onde jogar" logo depois da página oficial, antes do resumo', async () => {
+    stubGame(sampleGameDetail());
+
+    await renderPage();
+
+    const whereToPlay = screen.getByRole('region', { name: 'Onde jogar' });
+    expect(whereToPlay).toHaveTextContent('Plataformas: PC, Switch');
+    expect(within(whereToPlay).getByRole('link', { name: 'Steam' })).toHaveAttribute(
+      'href',
+      'https://store.steampowered.com/app/504230',
+    );
+    const official = screen.getByRole('link', { name: 'Página oficial' });
+    const summary = screen.getByRole('heading', { name: 'Resumo' });
+    expect(official.compareDocumentPosition(whereToPlay)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(whereToPlay.compareDocumentPosition(summary)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
   it('mostra os jogos semelhantes no fim da ficha, pelo slug do jogo', async () => {
     stubGame(sampleGameDetail());
 

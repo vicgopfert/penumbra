@@ -37,6 +37,11 @@ export const sampleGameDetail = (overrides: Partial<GameDetail> = {}): GameDetai
   ],
   officialUrl: 'https://www.celestegame.com',
   collections: [],
+  platforms: [
+    { slug: 'win', name: 'PC' },
+    { slug: 'switch', name: 'Switch' },
+  ],
+  stores: [{ store: 'STEAM', name: 'Steam', url: 'https://store.steampowered.com/app/504230' }],
   ...overrides,
 });
 
