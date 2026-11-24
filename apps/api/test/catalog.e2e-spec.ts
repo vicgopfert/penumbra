@@ -18,7 +18,7 @@ import {
   StudioCountrySource,
   TagSource,
 } from '../src/generated/prisma/client';
-import { COUNTRY_OPTION_MIN_GAMES } from '../src/modules/catalog/catalog.service';
+import { FILTER_OPTION_MIN_GAMES } from '../src/modules/catalog/catalog.service';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { CatalogBuilder } from './support/catalog-builder';
 import { contentIndexLoaded } from './support/content-index';
@@ -33,7 +33,7 @@ describe('Catálogo', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(COUNTRY_OPTION_MIN_GAMES)
+      .overrideProvider(FILTER_OPTION_MIN_GAMES)
       .useValue(2)
       .compile();
     app = moduleRef.createNestApplication();

@@ -28,8 +28,9 @@ const FEATURE_TYPES: Record<FeatureQuery['type'], FilterFeatureType> = {
   tag: 'TAG',
 };
 
-// Mínimo de jogos para um país virar opção de filtro (F-06); injetado para o e2e testar o limite.
-export const COUNTRY_OPTION_MIN_GAMES = Symbol('COUNTRY_OPTION_MIN_GAMES');
+// Mínimo de jogos para um país (F-06) ou uma plataforma (F-35) virar opção de filtro; injetado
+// para o e2e testar o limite.
+export const FILTER_OPTION_MIN_GAMES = Symbol('FILTER_OPTION_MIN_GAMES');
 export const TAG_ALIASES = Symbol('TAG_ALIASES');
 
 const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name, 'pt-BR');
@@ -44,7 +45,7 @@ export class CatalogService {
   constructor(
     private readonly catalog: CatalogRepository,
     private readonly labels: FeatureLabels,
-    @Inject(COUNTRY_OPTION_MIN_GAMES) private readonly countryOptionMinGames: number,
+    @Inject(FILTER_OPTION_MIN_GAMES) private readonly filterOptionMinGames: number,
     @Inject(TAG_ALIASES) private readonly tagAliases: ReadonlyMap<string, readonly string[]>,
     private readonly whereToPlay: WhereToPlay,
   ) {}
@@ -117,7 +118,7 @@ export class CatalogService {
   async listCountries(): Promise<CountryOption[]> {
     const countries = await this.catalog.countGamesByCountry();
     return countries
-      .filter(({ gameCount }) => gameCount >= this.countryOptionMinGames)
+      .filter(({ gameCount }) => gameCount >= this.filterOptionMinGames)
       .map(({ alpha2, namePt, gameCount }) => ({ code: alpha2, name: namePt, gameCount }))
       .sort(byName);
   }
