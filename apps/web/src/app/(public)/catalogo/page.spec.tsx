@@ -18,10 +18,12 @@ const page = (items = [sampleGame()], total = items.length, pageNumber = 1) => (
 function stubCatalog(
   games: ReturnType<typeof page>,
   collections = () => Response.json([sampleCollection()]),
+  platforms = () => Response.json([{ slug: 'ps5', name: 'PS5', gameCount: 2581 }]),
 ) {
   return stubFetch((path) => {
     if (path.startsWith('/api/games')) return Response.json(games);
     if (path === '/api/collections') return collections();
+    if (path === '/api/platforms') return platforms();
     if (path.startsWith('/api/countries')) return Response.json([]);
     return Response.json([{ slug: 'puzzle', name: 'Quebra-cabeça', gameCount: 3607 }]);
   });
@@ -34,17 +36,24 @@ describe('CatalogPage', () => {
   it('repassa os filtros da URL à API e mostra os jogos com o total', async () => {
     const fetchMock = stubCatalog(page([sampleGame()], 30));
 
-    await renderPage({ genre: 'puzzle', portuguese: 'yes', country: 'br', page: '' });
+    await renderPage({
+      genre: 'puzzle',
+      portuguese: 'yes',
+      country: 'br',
+      platform: ['ps5', 'switch'],
+      page: '',
+    });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/games?genre=puzzle&portuguese=yes&country=BR',
+      '/api/games?platform=ps5&platform=switch&genre=puzzle&portuguese=yes&country=BR',
       expect.anything(),
     );
+    expect(screen.getByRole('checkbox', { name: 'PS5 (2.581)' })).toBeChecked();
     expect(screen.getByText('30 jogos')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Celeste' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Próxima' })).toHaveAttribute(
       'href',
-      '/catalogo?genre=puzzle&portuguese=yes&country=BR&page=2',
+      '/catalogo?platform=ps5&platform=switch&genre=puzzle&portuguese=yes&country=BR&page=2',
     );
   });
 
@@ -100,6 +109,16 @@ describe('CatalogPage', () => {
     expect(
       screen.queryByRole('navigation', { name: 'Explore por cultura' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('se as opções de plataforma falharem, o catálogo continua sem esse filtro', async () => {
+    stubCatalog(page([sampleGame()], 30), undefined, () => apiError(404, 'Não encontrado'));
+
+    await renderPage();
+
+    expect(screen.getByText('30 jogos')).toBeInTheDocument();
+    expect(screen.queryByRole('group', { name: /^Plataforma/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('group', { name: /^Gênero/ })).toBeInTheDocument();
   });
 
   it('se a API falhar, avisa e oferece tentar de novo na mesma busca', async () => {
