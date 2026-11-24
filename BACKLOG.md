@@ -250,10 +250,12 @@ Entrega: todos os P0 prontos; pesos calibrados; **congelamento**.
   - [x] Nova ingestão em produção, com a cobertura final registrada em `docs/ingestao.md` — em 23/11/2026: plataforma em 98,7% dos 23.673 jogos do catálogo (todos os lançados e 94,9% dos "Em breve"), Steam em 96,0%; conferência no navegador em produção com 18 de 18 em 24/11/2026
   - [x] Testes: unitários da classificação e do mapeamento de plataformas; e2e da ficha com loja por tipo, loja por endereço, Steam pelo id, plataforma sem loja e jogo sem plataforma — loja por tipo, por endereço e Steam pelo id no e2e da ingestão, que grava e depois tira o que saiu da IGDB; na ficha, plataforma sem loja, jogo sem plataforma, loja sem botão e `officialUrl`
 - [ ] **B-85** (P, E3) Filtro por plataforma no catálogo (F-35). Acrescentado em 11/11/2026 (decisão do autor): P0 porque o custo é baixo depois que o dado existe; pelo mesmo raciocínio do B-75, é navegação e fica fora do núcleo da tese, por isso entra no plano de corte. Depende do B-84
-  - [ ] Parâmetro `platform` repetível em `GET /api/games`, combinável com os outros filtros
-  - [ ] Opções numa rota com a contagem de jogos, só com plataformas de 20 jogos ou mais
-  - [ ] Filtro na página do catálogo, com o estado na URL
-  - [ ] Testes de contrato e e2e da combinação com os outros filtros
+  - [x] Parâmetro `platform` repetível em `GET /api/games`, combinável com os outros filtros — slug da IGDB, basta o jogo rodar numa das plataformas pedidas, como no país; `Platform.slug` passa a ser único (migration) (decisão do autor)
+  - [x] Opções numa rota com a contagem de jogos, só com plataformas de 20 jogos ou mais — `GET /api/platforms`, com o nome curto da ficha e em ordem alfabética; 32 plataformas no catálogo local em 24/11/2026; sem "Não informado" e sem agrupar em famílias (decisão do autor)
+  - [x] Filtro na página do catálogo, com o estado na URL — logo depois da busca pelo nome; se a rota de opções falhar, o catálogo aparece sem esse filtro, porque a Vercel publica antes do Render (decisão do autor)
+  - [x] Testes de contrato e e2e da combinação com os outros filtros
+  - [ ] Tempo em produção depois do merge, pela metodologia do B-33, com 100 amostras por linha, direto no Render e pela Vercel: `platform=win`, `platform=ps5&platform=switch&genre=platform`, `/api/platforms` e o catálogo sem filtro como referência. Regra fixada pelo autor antes de medir (24/11/2026, 14:50 UTC): p95 abaixo de 1 s (regra 1 do B-76); linha acima disso é registrada, e o filtro não muda neste item
+  - [ ] Conferência no navegador em produção
 - [ ] **B-86** (M, E3) Preço da Steam na ficha (F-36). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-84. Só a Steam, pela mesma `IStoreBrowseService/GetItems` das etiquetas, sem fonte nem chave nova; nenhuma requisição de usuário consulta a Steam; só loja oficial, nunca keyshops, sem afiliado e sem "média de preço"; o menor preço fica para a Fase B (F-37). Decisões e análise da GG.deals em `docs/precos.md`
   - [ ] **Sonda só de leitura antes de implementar, com a regra escrita no plano antes de medir (como no B-77 e no B-78):**
     - a `GetItems` com `country_code: 'BR'` e as opções de compra (`include_all_purchase_options`) devolve preço final, original e desconto em reais?
