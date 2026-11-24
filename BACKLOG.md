@@ -3,9 +3,9 @@
 Checklist de acompanhamento. Detalhes completos de cada item (critério de conclusão, dependências, justificativa) estão na seção 13 de `docs/proposta-tecnica.md` — aqui fica só o essencial para marcar progresso e saber o que vem a seguir.
 
 **Esforço:** P = 2–4h · M = 5–10h · G = 12–20h, já incluindo testes.
-**Marcos:** M0 (semana 2) · M1 (semana 12) · M2 (semana 16) · Congelamento (semana 20) · M3 (semana 22) · Banca (semana 24).
-**Prioridade (11/11/2026, decisão do autor):** a partir desta data, toda funcionalidade nova entra como P1 por padrão e só vai para P0 com aprovação explícita do autor. Os itens P0 acrescentados em 11/11/2026 somam cerca de 90 h no ponto médio e aproximam o plano do limite da capacidade (recálculo na seção 13 de `docs/proposta-tecnica.md`, "Capacidade").
-**Organização:** por sprint, na ordem da tabela de sprints da seção 13 de `docs/proposta-tecnica.md`. A sigla depois do esforço é o épico do item.
+**Marcos:** M0 (semana 2) · M1 (semana 12) · M2 (semana 16) · M3 (semana 18, 21/02/2027) · Congelamento para a escrita (semana 23, 28/03/2027) · Banca (data a confirmar com o orientador, até 24/04/2027). **Alterado em 24/11/2026 (decisão do autor):** eram Congelamento (semana 20), M3 (semana 22) e Banca (semana 24); o congelamento do modelo foi revogado, e o marco "Congelamento" passa a ser o congelamento para a escrita dos resultados do TCC, depois da rodada 4 da avaliação offline e do B-44.
+**Prioridade (11/11/2026, decisão do autor):** a partir desta data, toda funcionalidade nova entra como P1 por padrão e só vai para P0 com aprovação explícita do autor. Os itens P0 acrescentados em 11/11/2026 somam cerca de 90 h no ponto médio e aproximam o plano do limite da capacidade (recálculo na seção 13 de `docs/proposta-tecnica.md`, "Capacidade"). **D1 (24/11/2026, decisão do autor):** os itens marcados P0 no plano de evolução do produto aprovado pelo autor em 24/11/2026 (B-99 a B-114 e as promoções do B-52 e do B-54) estão aprovados como P0, pela mesma regra.
+**Organização:** por sprint, na ordem da tabela de sprints da seção 13 de `docs/proposta-tecnica.md`. A sigla depois do esforço é o épico do item. **Alterado em 24/11/2026 (decisão do autor):** as sprints S1 a S10 ficam como histórico; a parte aberta segue as fases do plano de evolução do produto aprovado pelo autor em 24/11/2026 (seção 14 de `docs/proposta-tecnica.md`), seguidas de P1, P2 e P3 fora das fases.
 
 Marque `[x]` ao concluir um item (quando o CI estiver verde, o teste da regra principal existir, o Swagger estiver atualizado se houver endpoint novo, e a mudança estiver implantada), e o épico quando todos os itens dele estiverem concluídos.
 
@@ -20,6 +20,12 @@ Marque `[x]` ao concluir um item (quando o CI estiver verde, o teste da regra pr
 - [ ] **E6** Implantação
 - [ ] **E7** Documentação e acabamento
 - [ ] **E8** Avaliação e defesa
+- [ ] **E9** Chegada e primeiro valor (acrescentado em 24/11/2026)
+- [ ] **E10** Confiança no que é recomendado (acrescentado em 24/11/2026)
+- [ ] **E11** Ciclo de feedback e controle (acrescentado em 24/11/2026)
+- [ ] **E12** Retorno (acrescentado em 24/11/2026)
+- [ ] **E13** Estúdios e neutralidade (acrescentado em 24/11/2026)
+- [ ] **E14** Medição e base técnica (acrescentado em 24/11/2026)
 
 ## S1 — Fundação e viabilidade dos dados (semanas 1–2)
 
@@ -151,7 +157,7 @@ Entrega: jogador avalia na ficha e vê a lista mudar; e2e de recomendação e de
   - [x] Ordem na página: principal, por jogo, por interesse, em breve; o motivo só cita etiquetas se elas entrarem no vetor — feito em 09/11/2026; o motivo "Porque você gostou de" saiu (decisão do autor)
   - [x] Vizinhos por requisição com os vetores tipados do B-76; p95 fim a fim abaixo de 1 s em produção — vizinhos por requisição feitos em 09/11/2026, numa passada para as 2 prateleiras; o tempo local ficou em 1,58 a 1,60 vez o da `main` (critério de 1,5): exceção registrada por decisão do autor, e o p95 em produção decide; se falhar pela regra 3 do B-76, os vizinhos passam para a carga do índice. **Medido em 09/11/2026: reprovado pela regra 3** (p95 de até 1.101 ms, sem cauda na rota de saúde); por decisão do autor, o "ver mais" passou a montar só a lista pedida e a semelhança das prateleiras por jogo ficou guardada entre requisições, sem mudar a saída (foto completa idêntica); **medido de novo em 10/11/2026:** as 9 linhas de "ver mais" abaixo de 1 s, p95 agregado de 987 para 723 ms direto; a visão geral reprovou pela regra 3 e fica como limitação da instância gratuita (decisão do autor); a visão geral pronta por usuário fica para a Fase B, e a defesa usa instância paga ou demonstração local, a decidir perto da data
   - [x] Nomes das etiquetas pelos termos da comunidade (Puzzle, Deckbuilding, Difícil), com o nome antigo como `aliases` e encontrado pela busca do filtro — acrescentado e feito em 09/11/2026 (decisão do autor, `docs/etiquetas.md`, seção 12)
-- [x] **Congelamento do modelo de recomendação** (depois do B-79): nenhuma fonte de dados nova e nenhuma regra nova de prateleira até a defesa; o que surgir vira calibração do B-37 ou Fase B — decidido em 05/11/2026 — em vigor desde 10/11/2026 — o B-50 é compatível com ele (11/11/2026, decisão do autor): não traz fonte de dados nova nem muda regra de pontuação ou de prateleira da visão geral; é a semelhança da prateleira "Porque você gostou de `<jogo>`" (B-79) aplicada à ficha — o B-84 e o B-85 também são compatíveis (11/11/2026, decisão do autor): a plataforma é dado novo da mesma fonte, só para exibição e filtro, e não entra no vetor, na pontuação nem nas prateleiras; recomendar só jogos da plataforma do jogador seria regra nova e fica para a Fase B — o B-86 a B-88 também são compatíveis (11/11/2026, decisão do autor): o preço não entra no vetor, na pontuação nem nas prateleiras; uma prateleira "Em promoção no seu gosto" seria regra nova e fica para a Fase B (F-37) — o B-89 não afeta o congelamento (11/11/2026, decisão do autor): só usa o `steamAppId` que já existe, sem fonte de dados nova nem regra de pontuação ou de prateleira — o B-90 e o B-91 também são compatíveis (11/11/2026, decisão do autor): a demo não entra no vetor, na pontuação nem nas prateleiras; a prateleira "Com demo no seu gosto" seria regra nova e fica para a Fase B, junto da "Em promoção no seu gosto" (F-37) — o B-92 e o B-93 também são compatíveis (11/11/2026, decisão do autor): listas, pontuação, interesses e prateleiras ficam iguais; o sorteio é outra forma de apresentar uma lista existente, e o N novo é de apresentação, não de pontuação — o B-94 também é compatível (11/11/2026, decisão do autor): nada muda na pontuação; uma prateleira "Do estúdio de `<jogo que você curtiu>`" seria regra nova e fica para a Fase B — o B-95 e o B-96 também são compatíveis (11/11/2026, decisão do autor): a pontuação, a ordem e as listas não mudam; os filtros recortam o resultado — as etiquetas na partida a frio (B-34) também são compatíveis (11/11/2026, decisão do autor): a etiqueta já estava no vetor e nas prateleiras, e a preferência segue o caminho dos gêneros e temas, sem fonte de dados nova nem regra nova de prateleira
+- [x] **Congelamento do modelo de recomendação** (depois do B-79): nenhuma fonte de dados nova e nenhuma regra nova de prateleira até a defesa; o que surgir vira calibração do B-37 ou Fase B — decidido em 05/11/2026 — em vigor desde 10/11/2026 — o B-50 é compatível com ele (11/11/2026, decisão do autor): não traz fonte de dados nova nem muda regra de pontuação ou de prateleira da visão geral; é a semelhança da prateleira "Porque você gostou de `<jogo>`" (B-79) aplicada à ficha — o B-84 e o B-85 também são compatíveis (11/11/2026, decisão do autor): a plataforma é dado novo da mesma fonte, só para exibição e filtro, e não entra no vetor, na pontuação nem nas prateleiras; recomendar só jogos da plataforma do jogador seria regra nova e fica para a Fase B — o B-86 a B-88 também são compatíveis (11/11/2026, decisão do autor): o preço não entra no vetor, na pontuação nem nas prateleiras; uma prateleira "Em promoção no seu gosto" seria regra nova e fica para a Fase B (F-37) — o B-89 não afeta o congelamento (11/11/2026, decisão do autor): só usa o `steamAppId` que já existe, sem fonte de dados nova nem regra de pontuação ou de prateleira — o B-90 e o B-91 também são compatíveis (11/11/2026, decisão do autor): a demo não entra no vetor, na pontuação nem nas prateleiras; a prateleira "Com demo no seu gosto" seria regra nova e fica para a Fase B, junto da "Em promoção no seu gosto" (F-37) — o B-92 e o B-93 também são compatíveis (11/11/2026, decisão do autor): listas, pontuação, interesses e prateleiras ficam iguais; o sorteio é outra forma de apresentar uma lista existente, e o N novo é de apresentação, não de pontuação — o B-94 também é compatível (11/11/2026, decisão do autor): nada muda na pontuação; uma prateleira "Do estúdio de `<jogo que você curtiu>`" seria regra nova e fica para a Fase B — o B-95 e o B-96 também são compatíveis (11/11/2026, decisão do autor): a pontuação, a ordem e as listas não mudam; os filtros recortam o resultado — as etiquetas na partida a frio (B-34) também são compatíveis (11/11/2026, decisão do autor): a etiqueta já estava no vetor e nas prateleiras, e a preferência segue o caminho dos gêneros e temas, sem fonte de dados nova nem regra nova de prateleira — **revogado em 24/11/2026 (decisão do autor):** o plano de evolução do produto muda o ranking (piso de qualidade, diversidade, tom e filtros de candidatos) e traz sinais novos ("não me interessa" e ajustes do perfil), que o congelamento proibia; o marco "Congelamento" passa a ser o congelamento para a escrita dos resultados do TCC, depois da rodada 4 da avaliação offline e do B-44 (semana 23, 28/03/2027)
 - [x] **B-36** (P, E5) E2e de recomendação + teste de determinismo — ampliado no B-71: cobre a visão geral sem repetição, as prateleiras, a paginação com os tetos e o determinismo de cada lista (a principal, cada prateleira e cada página) — concluído em 10/11/2026: 18 testes e2e novos (`recommendation-lists.e2e-spec.ts`); determinismo pela "foto" dos três modos em quatro situações; tetos com valores reduzidos; mutações conferidas (`docs/recomendacao.md`)
   - [x] Fixar a ordem das interações lidas do banco antes de montar o perfil: hoje vêm sem `ORDER BY`, e a soma em ponto flutuante depende da ordem (levantado no plano do B-36) — feito no B-71: a soma do perfil segue a ordem do id do jogo
 - [x] **B-30** (P, E4) E2e de biblioteca e posse dos dados (um usuário não altera dados de outro) — concluído em 10/11/2026: 10 testes e2e (`ownership.e2e-spec.ts`); todas as rotas com sessão sem efeito nos dados de outra pessoa, no banco e na API; inventário das rotas pela tabela do servidor; mutações conferidas (proposta técnica, seção 8)
@@ -162,6 +168,8 @@ Entrega: jogador avalia na ficha e vê a lista mudar; e2e de recomendação e de
 Entrega: todos os P0 prontos; pesos calibrados; **congelamento**.
 
 **Ordem (11/11/2026, decisão do autor), respeitando as dependências:** 1) o núcleo da tese, que nunca é cortado: B-34 e B-37, com o B-62 e o B-63 antes do B-37, que depende deles (o B-63 veio da S7), porque as funcionalidades novas não podem atrasar o que a banca avalia (**alterado em 11/11/2026:** o B-62 e o B-63 foram para a Fase B pela medição antes de implementar, na seção P2, e o B-37 deixou de depender deles); 2) B-29; 3) conta e acesso: B-83, B-82, B-80 e B-81 (**alterado em 17/11/2026, decisão do autor:** o B-97 entra entre o B-82 e o B-80, e o B-98, depois do B-81); 4) ficha e dados da Steam: B-50, B-84, B-85, B-86, B-87, B-88, B-89, B-90 e B-91; 5) navegação: B-95 e B-94; 6) recomendação na interface: B-92 e B-96; 7) por último, o B-25, que recebeu subitens de vários itens novos e precisa deles prontos.
+
+**Reorganizado em 24/11/2026 (decisão do autor):** os itens abertos da S10, da S11 e da Margem passaram para as fases do plano de evolução do produto, logo abaixo; a S10 fica com os itens concluídos, como histórico.
 
 - [x] **B-34** (M, E5) Partida a frio (gêneros/temas + avaliação opcional de até 4 jogos) — concluído em 11/11/2026: `/boas-vindas` em duas etapas, com as rotas `GET /api/me/preferences/options` e `GET /api/me/onboarding/games`; o cadastro leva a ela, com o destino guardado; conferido no navegador local e em produção a 390 e a 1280 px, 40 de 40 conferências em cada um (`docs/recomendacao.md`, seção "Partida a frio")
   - [x] Na página de recomendações, o estado vazio (`basis: empty`) leva ao catálogo; trocar pelo link da partida a frio (levantado no B-35) — feito em 11/11/2026: "Escolher meus gostos"; com perfil, "Mudar meus gostos" refaz a partida a frio até a página de perfil (B-29) — alterado no B-29 (16/11/2026): o link passa a ser "Ver e mudar meus gostos" e leva ao perfil
@@ -200,7 +208,7 @@ Entrega: todos os P0 prontos; pesos calibrados; **congelamento**.
   - [x] Link "Esqueci minha senha" no login e páginas `/esqueci-senha` e `/redefinir-senha`, com o token lido do `#` e `no-referrer`. Visual provisório — o link fica abaixo do campo de senha, sempre visível (decisão do autor); o token sai da barra de endereço depois de lido; `Referrer-Policy: no-referrer` pelo `next.config.ts`; `noindex` nas duas páginas; sem campo de confirmar a senha, como no cadastro (decisão do autor); o login mostra "Senha alterada" depois da redefinição; a página aberta sem token, como ao recarregá-la, pede para abrir de novo o link do e-mail, que ainda pode valer, em vez de dizer que o link é inválido (decisão do autor, 19/11/2026); o link colado na mesma aba, que só muda o `#` sem recarregar a página, também é lido (falha achada na conferência no navegador)
   - [x] e2e: mesma resposta para e-mail inexistente, token expirado, token reutilizado, pedido novo invalidando o anterior, sessões encerradas, limites — 16 testes em `password-reset.e2e-spec.ts` (também a resposta antes do envio, o `Host` ignorado no link, a senha curta sem gastar o link, dois envios simultâneos com o mesmo link, dois pedidos simultâneos e um nome de exibição com golpe fora dos e-mails) e 5 em `protections.e2e-spec.ts` (limites, log e falha no envio); mais 1 em `shutdown.e2e-spec.ts` (o trabalho em andamento termina antes de o banco ser desconectado)
   - [x] Gravar a senha nova e encerrar as sessões numa função que o B-53 possa reaproveitar — `PasswordChanger.change`, que grava o hash, encerra as sessões e os links pendentes numa transação (`UsersRepository.replacePassword`) e envia o aviso de senha alterada
-  - [ ] Observação para o B-68 (login com Google): decidir lá se uma conta criada pelo Google pode usar a redefinição para criar uma senha
+  - [ ] Observação para o B-68 (login com Google): decidir lá se uma conta criada pelo Google pode usar a redefinição para criar uma senha — alterado em 24/11/2026 (decisão do autor): vai para P3, com o B-68
 - [x] **B-81** (P, E6) Envio de e-mail em produção pela API HTTP do Resend, com domínio próprio. Acrescentado em 11/11/2026 (decisão do autor). Depende do B-80 e do B-83 — concluído em 21/11/2026 (PR #96): envio ligado em produção pelo Resend; teste real no Gmail com SPF, DKIM e DMARC aprovados e entrega na caixa de entrada; falha do provedor conferida em produção; DMARC em `p=quarantine`. **Desvio aprovado pelo autor:** o Outlook não foi testado, porque o autor não tem conta lá; a autenticação conferida no Gmail não depende do provedor de quem recebe, e só a posição na caixa do Outlook fica sem prova (subitem aberto abaixo)
   - [x] Subdomínio de envio do domínio da Penumbra verificado no Resend (SPF e DKIM), mais o registro DMARC — verificado em 19/11/2026: `mail.penumbraindie.com.br`, na região São Paulo (`sa-east-1`) (decisões do autor); no DNS do registro.br, o DKIM é um TXT em `resend._domainkey.mail`, e o envio (SPF e retorno das falhas de entrega) são dois CNAME, `send.mail` e `rsend.mail`, para o `forge.rmta.net` do Resend, no lugar do MX e do TXT previstos no plano, porque é o que o Resend pede hoje; DMARC `v=DMARC1; p=none;` no domínio principal, que vale também para o subdomínio; e `v=spf1 -all` no domínio principal, que não envia e-mail (decisão do autor). O rastreamento de abertura ficou desligado, mas o de clique não desliga no painel; como os e-mails vão só em texto, sem HTML, não há link para ele trocar, e o teste real confere que o link chega intacto
   - [x] Variáveis no Render. Remetente do tipo "Penumbra <nao-responda@…>" — `RESEND_API_KEY` criada pelo autor no painel do Render em 19/11/2026, com uma chave do Resend só de envio e restrita ao domínio, sem passar pelo chat nem pelo repositório (`sync: false` no `render.yaml`); `MAIL_FROM` = `Penumbra <nao-responda@mail.penumbraindie.com.br>`, sem endereço de resposta, versionado no `render.yaml` (decisões do autor)
@@ -256,55 +264,228 @@ Entrega: todos os P0 prontos; pesos calibrados; **congelamento**.
   - [x] Testes de contrato e e2e da combinação com os outros filtros
   - [x] Tempo em produção depois do merge, pela metodologia do B-33, com 100 amostras por linha, direto no Render e pela Vercel: `platform=win`, `platform=ps5&platform=switch&genre=platform`, `/api/platforms` e o catálogo sem filtro como referência. Regra fixada pelo autor antes de medir (24/11/2026, 14:50 UTC): p95 abaixo de 1 s (regra 1 do B-76); linha acima disso é registrada, e o filtro não muda neste item — medido em 24/11/2026 (15:48 a 15:51 UTC), mediana (p95) direto no Render e pela Vercel: `platform=win` (22.809 jogos) 218 ms (280) e 255 ms (322); `platform=ps5&platform=switch&genre=platform` (1.283 jogos) 227 ms (331) e 261 ms (384); `/api/platforms` (32 opções) 187 ms (215) e 225 ms (345); sem filtro 172 ms (288) e 207 ms (272); maior p95 384 ms, regra cumprida, sem erro
   - [x] Conferência no navegador em produção — 20 de 20 em 24/11/2026, a 390 e 1280 px
-- [ ] **B-86** (M, E3) Preço da Steam na ficha (F-36). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-84. Só a Steam, pela mesma `IStoreBrowseService/GetItems` das etiquetas, sem fonte nem chave nova; nenhuma requisição de usuário consulta a Steam; só loja oficial, nunca keyshops, sem afiliado e sem "média de preço"; o menor preço fica para a Fase B (F-37). Decisões e análise da GG.deals em `docs/precos.md`
-  - [ ] **Sonda só de leitura antes de implementar, com a regra escrita no plano antes de medir (como no B-77 e no B-78):**
-    - a `GetItems` com `country_code: 'BR'` e as opções de compra (`include_all_purchase_options`) devolve preço final, original e desconto em reais?
-    - conferir à mão 20 jogos contra a página da loja: pago, com desconto, gratuito e "Em breve".
-    - **Regra (valor inicial, decisão do autor):** preço divergente em mais de 1 dos 20 reprova a fonte.
-    - Resultado em `docs/precos.md`.
-  - [ ] Preço pedido no mesmo lote das etiquetas na ingestão
-  - [ ] Tabela `GamePrice` (jogo, loja, preço final, preço original, desconto, moeda, data da coleta) + migration (seção 10)
-  - [ ] Contrato de `GET /games/:slug` com `price`; Swagger com exemplo
-  - [ ] Preço ao lado do botão da Steam no "Onde jogar". O visual definitivo fica com a designer
-  - [ ] Testes: jogo pago, com desconto, gratuito, "Em breve", sem id da Steam e loja fora do ar (mantém o último preço gravado, com a data da coleta)
-- [ ] **B-87** (P, E6) Rodada diária de preços. Acrescentado em 11/11/2026 (decisão do autor). Depende do B-86
-  - [ ] Modo `precos` no workflow "Ingestão", só com a rodada de preços
-  - [ ] Agendada uma vez por dia depois das 15h de Brasília, no mesmo grupo de concorrência do banco de produção, para nunca rodar junto com a ingestão
-  - [ ] Grava só os preços que mudaram
-  - [ ] Falha da Steam não apaga preço gravado; o resumo da execução registra a falha
-  - [ ] Tempo da rodada, requisições e linhas gravadas por dia registrados em `docs/precos.md`
-  - [ ] Observação no B-54 (ingestão agendada, P1): ele pode reaproveitar o agendamento deste item
-  - [ ] A rodada também atualiza a demo (B-90), se a sonda aprovar a rota A
-- [ ] **B-88** (P, E3) Filtro "Em promoção" no catálogo (F-38). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-86. É navegação e entra no plano de corte com os outros filtros
-  - [ ] Parâmetro `onSale` em `GET /api/games`, combinável com os outros filtros
-  - [ ] Filtro na página do catálogo, com o estado na URL
-  - [ ] Testes de contrato e e2e da combinação com os outros filtros
-- [ ] **B-89** (P, E4) Convite para a lista de desejos da Steam (F-39). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-84. É a ligação mais direta da plataforma com o benefício para os estúdios; não depende do vínculo da Steam (B-66) e funciona para qualquer pessoa. Substitui a adição direta à lista de desejos da Steam pela plataforma, descartada por ser inviável (seção 4 da proposta técnica)
-  - [ ] Convite na ficha depois de marcar "quero jogar" num jogo com id da Steam, com link para a página do jogo na loja
-  - [ ] Sem o convite para jogos sem id da Steam, com nota ou em "concluídos"
-  - [ ] Teste do componente nos três casos: aparece, jogo sem id da Steam, jogo com nota ou em "concluídos"
-- [ ] **B-90** (M, E3) Demo da Steam (F-40). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-84, do B-86 e do B-87. Só a Steam: a IGDB não registra demos, e demos em outras lojas não têm fonte viável. O botão leva à página do jogo na Steam, não ao protocolo `steam://install/`. Caminhos A e B em `docs/precos.md`, seção 6
+
+## Fases do plano de evolução do produto (a partir de 24/11/2026)
+
+**Reorganizado em 24/11/2026 (decisão do autor):** a parte aberta do backlog (o que restava da S10, a S11, a Margem, o P1 e o P2) segue as fases do plano de evolução do produto aprovado pelo autor em 24/11/2026. A ordem segue o caminho do jogador (medir → chegar → confiar e reagir → voltar) e as dependências; dentro de cada fase, os itens estão na ordem de execução. O P0 inteiro cabe em cerca de 100 horas e termina com o teste de usabilidade (B-44) e a rodada 4 da avaliação offline, antes de mexer em retorno e algoritmo. Os itens acrescentados nesta data vão do B-99 ao B-133; os marcados P0 foram aprovados pelo autor em 24/11/2026 (D1, regra de prioridade).
+
+**Calendário indicativo (hipótese, pela premissa de 15 horas semanais):** fases 0 a 3 até o fim de janeiro de 2027; B-44 na primeira quinzena de fevereiro; M3 no fim do Portão (semana 18, 21/02/2027); fases 4 e 5 entre fevereiro e março, em paralelo à escrita; congelamento para a escrita dos resultados na semana 23 (28/03/2027); banca em data a confirmar com o orientador, até 24/04/2027.
+
+## Fase 0 — Ouvir e decidir
+
+Entrega: linha de base com jogadores reais, decisão de hospedagem e política de privacidade publicada. Esforço estimado: 12 a 16 h. O teste com 5 pessoas pode mudar a ordem das fases 2 e 3; a hospedagem decide se o B-126 entra. O B-85, que estava nesta fase no plano, foi concluído em 24/11/2026 (S10).
+
+- [ ] **B-99** (P, E8) Rodada 0: teste rápido com 5 jogadores. Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). Nenhuma pessoa real usou o ciclo principal de forma registrada, e o plano prioriza a partir de hipóteses sobre comportamento. 5 sessões de 30 a 40 minutos na produção atual, com a API acordada antes: 2 pessoas que jogaram indie nos últimos 6 meses e 3 que não. Quatro tarefas: dizer o que o site faz depois de 5 segundos na página inicial; chegar à primeira recomendação; escolher 3 itens da lista e dizer se confiaria neles e por quê; achar um jogo em português para jogar hoje. Sem mudar o produto entre as sessões. Decide a ordem entre chegada (B-104, B-105), motivo e ações (B-106, B-107) e confiança (B-108 a B-112). Sem dependências
+  - [ ] 5 sessões feitas, com o roteiro e os critérios gravados antes da primeira
+  - [ ] Tabela de problemas por gravidade (impede, atrasa, incomoda) num doc do repositório
+  - [ ] Cada problema ligado a um item deste backlog ou a um item novo
+  - [ ] Linha de base registrada: tempo até a primeira recomendação e quantas pessoas chegaram lá sem ajuda
+- [ ] **B-103** (P, E14) Decisão: hospedagem sem hibernação no período de uso real. Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). Item de decisão. A API hiberna em 15 minutos e tem 0,1 de CPU; a visão geral passa de 1 s no p95 em parte das medições (RNF-03), e "interface lenta ou confusa" foi o motivo de abandono mais citado (48,8%). Decidir e registrar uma de três: (a) instância paga de entrada do Render do teste com usuários até a defesa, conferindo preço e CPU atuais; (b) manter a gratuita com o B-102 e o cache da visão geral (B-126); (c) outro provedor. O B-102 vale em qualquer caso. Sem dependências. **D2, pendente (24/11/2026, decisão do autor):** a escolha depende de uma avaliação financeira do autor; enquanto isso, o B-102 segue e o B-126 continua condicional a esta decisão
+  - [ ] Opção, custo mensal e período registrados na proposta técnica
+  - [ ] Com a opção (a), visão geral medida em produção pela metodologia do B-33, com p95 abaixo de 1 s (regra 1 do B-76)
+- [ ] **B-101** (P, E14) Política de privacidade e termos de uso (F-58). Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). O site grava e-mail, nome, gostos e biblioteca, e vai gravar eventos (B-100) e mandar e-mails de produto (B-123), sem página que diga o quê, para quê, por quanto tempo e como apagar, como a LGPD pede. Páginas `/privacidade` e `/termos` em linguagem simples: dados coletados, finalidade, base legal de cada uso (prestação do serviço, legítimo interesse para métricas agregadas, consentimento para o Radar), provedores (Neon, Render, Vercel, Resend), retenção, direitos e como exercê-los. Não substitui orientação jurídica. Sem dependências; revisada a cada item que grave dado novo
+  - [ ] Páginas públicas, com data de vigência
+  - [ ] Links no rodapé e no formulário de cadastro
+  - [ ] Todo campo com dado pessoal do `schema.prisma` aparece na política (conferência campo a campo)
+
+## Fase 1 — Base
+
+Entrega: medição de uso, catálogo atualizado sozinho, páginas públicas sem espera e indexáveis. Esforço estimado: cerca de 24 h. Sem medição não há como saber se o resto funcionou; o SEO leva meses para render, então começa cedo.
+
+- [ ] **B-54** (P, E14) Ingestão agendada (GitHub Actions) — **Alterado em 24/11/2026 (decisão do autor):** P1 → P0, na Fase 1. Sem ela, a situação dos jogos, as análises e o Radar envelhecem
+  - [ ] Pode reaproveitar o agendamento da rodada diária de preços (B-87) — sem efeito desde 24/11/2026: o B-87 foi para P2
+  - [ ] Execução diária à noite no GitHub Actions, no grupo de concorrência do banco de produção (acrescentado em 24/11/2026)
+  - [ ] Recarga do índice no fim; depois do B-102, também a revalidação das páginas públicas
+  - [ ] Falha vira alerta no CI
+  - [ ] Resumo com os jogos que passaram de "Em breve" a lançados
+- [ ] **B-100** (M, E14) Instrumentação de produto sem dado pessoal (F-57; absorve o B-49). Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). Não dá para saber se alguém volta, onde abandona, se clica nas recomendações ou no convite à lista de desejos; sem isso, o valor para o estúdio continua hipótese e o TCC não tem dado de uso. Tabela `ProductEvent` com tipo de uma lista fechada no contrato, data, jogo e lista opcionais, modo e origem. Visitante: só um identificador de visita, hash com sal que troca todo dia e é descartado. Conta: o id da conta, para medir retorno por coorte. Nenhuma coluna de IP, e-mail ou *user agent*. Eventos: página vista, início do "experimentar", primeira recomendação vista, cadastro, exibição de lista (uma linha com os ids mostrados), clique em recomendação, "quero jogar", "não me interessa" e clique de saída (loja, site oficial, lista de desejos, demo), que era o B-49. Relatório semanal por script ou rota interna protegida por segredo. Depende do B-101, publicado antes de coletar
+  - [ ] Tipo desconhecido responde 400; limite por IP
+  - [ ] E2e confere que nenhuma coluna guarda IP, e-mail ou *user agent*
+  - [ ] A exclusão de conta (B-52) apaga os eventos dela
+  - [ ] Cliques de saída nos botões de loja do "Onde jogar" (B-84), com a loja registrada no evento (vindo do B-49); quando o B-89 e o B-90 existirem, também o convite para a lista de desejos (tipo "lista de desejos") e o botão da demo (tipo "demo")
+  - [ ] Relatório com o funil visita → experimentar → cadastro → primeira recomendação → volta em 7 dias, e taxa de clique por mil exibições por modo e por lista
+  - [ ] Linhas por dia e tamanho no Neon medidos depois de uma semana
+- [ ] **B-52** (P, E14) Exclusão da própria conta — **Alterado em 24/11/2026 (decisão do autor):** P1 → P0, na Fase 1. Com eventos (B-100) e e-mail de produto (B-123), apagar os próprios dados deixa de ser opcional
+  - [ ] Apagar as contas de teste criadas em produção: `medicao-m2-preferencias@example.com` e `medicao-m2-avaliacoes@example.com` (medição do M2, B-33), `b35-producao-2026-11-03@example.com` (conferência do B-35), `b71-producao-2026-11-03@example.com` (conferência do B-71), `b74-producao-2026-11-05@example.com` (conferência do B-74), `b76-producao-2026-11-05@example.com` e `b76-producao-2-2026-11-05@example.com` (medições do B-76), `b34-prod-390-202611112332@example.com`, `b34-prod-1280-202611112332@example.com` (conferência do B-34) `b37-producao-2026-11-16@example.com` (conferência do B-37), `b29-prod-390-202611161806@example.com` e `b29-prod-1280-202611161806@example.com` (conferência do B-29), `b83-prod-390-202611171455@example.com`, `b83-prod-1280-202611171455@example.com`, `b83-prod-390-202611171512@example.com` e `b83-prod-1280-202611171512@example.com` (conferências do B-83), `b82-prod-390-202611171547@example.com` e `b82-prod-1280-202611171547@example.com` (conferência do B-82), `b83-prod-390-202611171612@example.com` e `b83-prod-1280-202611171612@example.com` (conferência do B-97), `b98-prod-202611231405@example.com` e a conta `+b98` do Gmail do autor (conferência do B-98)
+  - [ ] Apaga conta, sessões, biblioteca, preferências e eventos (B-100) e, quando o B-123 existir, a inscrição no Radar (acrescentado em 24/11/2026)
+- [ ] **B-102** (M, E14) Páginas públicas servidas de cache. Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). Ficha, catálogo e página inicial são montados a cada requisição e esperam a API; com a API hibernando, o primeiro visitante e o robô do buscador esperam cerca de um minuto. Renderização incremental do Next (ISR) nas páginas públicas: ficha com revalidação diária e sob demanda depois da ingestão; página inicial e coleções a cada hora. O que é da conta (nota e listas) continua no navegador. Onde a API é obrigatória, mensagem "acordando o servidor" com nova tentativa automática. Depende do B-54, para revalidar depois da ingestão
+  - [ ] Com a API desligada, uma ficha já visitada responde 200 com o conteúdo
+  - [ ] O 404 da ficha continua 404 (hoje garantido pela ausência de `loading.tsx`)
+  - [ ] A ingestão dispara a revalidação e registra no resumo
+  - [ ] Tempo da primeira resposta com a API fria, antes e depois, registrado
+- [ ] **B-114** (P, E9) SEO das fichas e sitemap (F-18; absorve o B-51). Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). O título da ficha é só o nome do jogo e não há sitemap; buscas como "Hollow Knight tem português?" e "jogos parecidos com Hades" não chegam ao site, e o buscador é o canal de crescimento mais provável. Título e descrição com o que a ficha responde ("Hades: onde jogar, tem português? e jogos parecidos"); dados estruturados schema.org `VideoGame` (nome, plataformas, gênero, idiomas, desenvolvedora); `sitemap.xml` das fichas e coleções, refeito após a ingestão; `robots.txt`; *canonical*; Google Search Console configurado. Depende do B-102 (recomendado)
+  - [ ] Sitemap válido com todas as fichas do catálogo, sem páginas `noindex`
+  - [ ] Dados estruturados validados numa amostra de 10 fichas
+  - [ ] Primeira medição do Search Console registrada
+
+## Fase 2 — Chegada
+
+Entrega: o visitante entende a proposta e vê uma recomendação com motivo sem criar conta. Esforço estimado: cerca de 17 h. Nada mais importa se a pessoa não chega à recomendação.
+
+- [ ] **B-104** (P, E9) Página inicial que explica e convida a experimentar. Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). A página inicial não diz o que diferencia o site nem chama para criar um perfil; o único botão leva ao catálogo ordenado por populares. A proposta de valor no título ("Descubra indies parecidos com os que você gosta, sabendo por quê e escolhendo o quanto fugir do óbvio"); três provas curtas com um exemplo real de recomendação com motivo, o controle de popularidade e "tem português? onde jogar?"; chamada principal "Experimentar com 3 jogos ou gostos" (B-105) e secundária "Ver o catálogo"; coleções abaixo. Visual provisório, até a designer. Depende do B-105 para a chamada principal; antes dele, ela leva ao cadastro
+  - [ ] No teste de 5 segundos (B-44), ao menos 4 de 5 pessoas dizem com as próprias palavras que o site recomenda indies pelo gosto e explica o motivo
+  - [ ] Chamada principal visível sem rolar a 390 e a 1280 px
+  - [ ] Clique na chamada registrado (B-100)
+- [ ] **B-105** (M, E9) Experimentar sem conta (F-47). Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). Todo o valor exige cinco passos; 55% raramente ou nunca procuram jogos novos e 16,7% não avaliariam nenhum jogo. Rota pública `POST /api/recommendations/preview` que recebe de 3 a 10 escolhas entre jogos do catálogo e gostos (gêneros, temas, etiquetas, como na partida a frio) e o modo, monta o perfil em memória com o mesmo núcleo (`buildProfile`, `pickInterests`) e devolve a lista principal (20) com motivo e as duas primeiras prateleiras, sem gravar nada. Página `/experimentar` com os componentes de `/boas-vindas`; "Salvar e ver tudo" leva ao cadastro e grava as escolhas na conta nova. Limite por IP e cache por combinação de escolhas. Depende do B-104 (porta de entrada); B-103 recomendado (CPU); B-100 para medir
+  - [ ] A lista bate com a de uma conta com o mesmo estado, salvo a ordem dos empatados, que usa uma semente da prévia em vez do id da conta
+  - [ ] E2e confere que nenhuma linha é gravada
+  - [ ] 429 acima do limite; 503 com o índice indisponível, como em `/recommendations`
+  - [ ] Depois do cadastro, a visão geral da conta nova contém as escolhas da prévia
+  - [ ] p95 em produção pela metodologia do B-33
+- [ ] **B-113** (P, E10) Nomes e explicação dos modos. Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). "Equilibrado: só pela afinidade" promete o equilíbrio entre conhecidos e desconhecidos que 46,7% pediram, mas o modo ignora a popularidade. Rótulos que dizem o que o modo faz, com uma frase sob o seletor e o efeito na lista ("6 de 20 pouco conhecidos"). Os valores da API não mudam. Sem dependências. **D5 (24/11/2026, decisão do autor):** os modos passam a se chamar "Mais conhecidos", "Só pelo seu gosto" e "Fora do óbvio"; os enums da API (`popular`, `balanced`, `discovery`) não mudam
+  - [ ] Rótulos da D5 no seletor, com a frase e o efeito na lista
+  - [ ] No B-44, os jogadores descrevem a diferença entre os modos com as próprias palavras
+  - [ ] Textos iguais no "Como funciona" (B-25)
+- [ ] **B-25** (P, E3) Página "Como funciona" (lista grandes empresas, estúdios controlados e exceções manuais com motivo e fonte) — **Alterado em 24/11/2026 (decisão do autor):** continua P0; a primeira versão vai na Fase 2 e é atualizada com os itens das fases seguintes
+  - [ ] Se o B-75 (P1) entrar: listar também os estilos e as palavras-chave de cada um
+  - [ ] Explicar como os jogos semelhantes da ficha são escolhidos (cosseno, sem popularidade, motivo em comum)
+  - [ ] Explicar de onde vêm as plataformas e os links de loja (IGDB e id da Steam) e a ordem alfabética das lojas
+  - [ ] Explicar que o preço e a demo vêm da Steam, atualizados uma vez por dia — alterado em 24/11/2026: condicionado ao B-86 (P2) e ao B-90 (P1)
+  - [ ] Explicar que o sorteio escolhe entre os N primeiros de cada lista, sem repetir — alterado em 24/11/2026: condicionado ao B-92 (P3)
+  - [ ] Explicar de onde vêm os dados do estúdio e como o país dele é definido — alterado em 24/11/2026: quando o B-94 existir
+  - [ ] Regra de neutralidade escrita: nada que um estúdio faça muda pontuação ou ordem; as inclusões manuais ficam listadas com motivo e fonte, também as do B-125, quando ele existir (acrescentado em 24/11/2026)
+  - [ ] Explicar o que cada modo faz, com os nomes da D5 (B-113)
+  - [ ] Explicar o piso de qualidade e a joia (B-109)
+  - [ ] Explicar de onde vêm a situação, as datas e as análises (B-108, B-110)
+  - [ ] Página pública com cada regra nova da seção 12 da proposta técnica que estiver implementada e com a lista de exceções do critério
+
+## Fase 3 — Confiança e reação
+
+Entrega: toda recomendação tem motivo visível, evidência de qualidade e situação correta, e a pessoa corrige a lista na hora. Esforço estimado: cerca de 44 h. Dados antes das regras que os usam; o motivo e as ações vêm depois, para mostrar a qualidade e a situação já corretas.
+
+- [ ] **B-108** (M, E10) Análises da Steam pelo PopScore da IGDB: ingestão e exibição (F-50). Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). Não há sinal de qualidade: um jogo medíocre com as mesmas etiquetas pontua igual a uma joia. A ingestão já pede `popularity_primitives` com o tipo "Want to Play" (`igdb-catalog.source.ts`); pedir também as análises positivas e negativas da Steam (tipos 6 e 7 pela documentação da IGDB, a conferir na sonda), no mesmo endpoint e nos mesmos lotes, sem fonte nova nem ampliação do risco R-15. Gravar as duas contagens no `Game`; calcular a nota ajustada `q_j` (seção 12 da proposta técnica) na carga do índice. Mostrar na ficha e nos cartões "87% positivas em 230 análises da Steam", com atribuição à IGDB, e "Poucas análises" abaixo de um mínimo. Depende do B-54, para as contagens não envelhecerem
+  - [ ] **Medição antes de implementar, com a regra escrita antes:** a escala dos valores (o "Want to Play" veio como fração e precisou ser reconstruído em `popularity.ts`); cobertura por situação e por quartil de popularidade; 20 jogos conferidos à mão contra a página da Steam. Medição e regra registradas em `docs/ingestao.md` antes do código. Se reprovar, o plano B é a rota documentada de análises da Steam (`appreviews`), uma requisição por jogo, por decisão do autor
+  - [ ] RNF-02 mantido: nenhuma requisição de usuário chama IGDB ou Steam
+  - [ ] Atribuição visível onde o número aparece
+  - [ ] Testes do mapeamento, da escala e do cálculo de `q_j`
+- [ ] **B-110** (M, E10) Situação "jogável agora": acesso antecipado e precisão da data. Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). A situação vem só da data (`igdb.mapper.ts`), então jogos em acesso antecipado aparecem como "Em breve"; a data de muitos "Em breve" tem só precisão de ano ou trimestre e é gravada como dia exato (registrado no B-95). Medir primeiro o `game_status` da IGDB (hoje lido só para cancelados) e a indicação de acesso antecipado da Steam nos jogos com id dela, com a regra escrita antes. Nova situação `EARLY_ACCESS` e selo "Acesso antecipado". Pedir `release_dates` com `date_format` e gravar a precisão; a ficha mostra "2027" ou "1º tri. 2027" em vez de um dia inventado. Sem dependências; o B-54 mantém atualizado
+  - [ ] Medição com 20 casos conferidos à mão, como no B-84
+  - [ ] Friday Night Funkin' e Voices of the Void, que aparecem como "Em breve" (observado em produção em 24/11/2026), aparecem como acesso antecipado
+  - [ ] Filtro de situação do catálogo com o valor novo
+  - [ ] Ficha com a data na precisão gravada; testes do mapeamento
+- [ ] **B-111** (P, E10) Anúncios parados fora das recomendações. Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). Anúncio sem data fica para sempre: The Last Night continua no catálogo como "Em breve", sem data (observado em produção em 24/11/2026). Medir a distribuição de "Em breve" sem data pela última atualização na IGDB (`updated_at`) e pela idade do registro. Com a regra fixada depois de ver a distribuição e antes de aplicar, o jogo parado sai das recomendações e ganha o selo "Sem previsão" no catálogo, sem perder a ficha. Depende do B-110 (mesma consulta)
+  - [ ] Distribuição e lista dos afetados registradas e revisadas pelo autor
+  - [ ] Limite em `config/`, com justificativa
+  - [ ] Teste com The Last Night
+- [ ] **B-112** (P, E10) Lista principal só com jogáveis, "Em breve" logo abaixo. Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). "Em breve" ocupa de 21% a 28% do top-20 no Equilibrado e de 35% a 44% no Descobertas (rodada 3), diluindo "o que jogo hoje". "Para você" passa a ter só jogáveis: lançados e em acesso antecipado. "Em breve no seu gosto" sobe para a segunda fileira; a exposição do pré-lançamento continua na prateleira própria, que apareceu em todos os 400 perfis medidos no B-71. Depende do B-110. **D4 (24/11/2026, decisão do autor):** lista principal só com jogáveis e "Em breve no seu gosto" em segundo lugar
+  - [ ] Rodada 4 registra a fração de "Em breve" por lista
+  - [ ] E2e da ordem da página
+  - [ ] O "ver mais" da principal também respeita a regra
+  - [ ] Quando o B-90 existir, os jogos "Em breve" com demo entram na lista principal
+  - [ ] Quando o B-115 existir, quem preferir o comportamento antigo liga "Incluir 'Em breve' na lista principal"
+- [ ] **B-109** (M, E10) Piso de qualidade e "joia" no ranking, com a rodada 4. Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). O Descobertas troca conhecidos por desconhecidos sem garantir que valem a pena. Regras planejadas na seção 12 da proposta técnica: abaixo do piso de `q_j`, o jogo sai dos candidatos em todos os modos; o selo "Pouco conhecido" passa a exigir `q_j` acima do limite da joia e vira "Joia pouco conhecida"; jogos sem análises suficientes não são cortados nem ganham o selo. Qualidade é piso, e não bônus: um termo somado à pontuação puxaria os mais avaliados, que são os mais populares. Depende do B-108. **D6 (24/11/2026, decisão do autor):** os limiares do piso e da joia são fixados antes de medir, como nas rodadas do B-37
+  - [ ] Regras e limiares gravados antes de medir
+  - [ ] Rodada 4 em `docs/avaliacao-offline.md`: fração do top-20 abaixo do piso antes e depois, `q` médio por modo, ARP, cobertura e acerto@20
+  - [ ] Foto completa com o número de respostas mudadas
+  - [ ] "Como funciona" atualizado (B-25)
+- [ ] **B-106** (M, E10) Motivo visível na visão geral e ancorado em jogos (F-48). Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). A visão geral são fileiras de capas, sem motivo (ajuste de design do B-72), e o motivo que existe cita só atributos, nunca os jogos de que a pessoa gostou. (1) Cada capa da visão geral ganha uma linha curta, com até dois termos, e os selos. (2) Motivo ancorado: para cada jogo mostrado, os até dois jogos da biblioteca com maior contribuição `w_i · cos(v_i, v_j)` ("Parecido com Celeste e Hollow Knight"), calculado só para os jogos mostrados; perfil só de preferências fica com o motivo por atributos. (3) No "ver mais", o cartão mostra os dois. Contrato: `reason.anchors`. Sem dependências (B-72 feito); B-100 para medir
+  - [ ] Todo item da visão geral de um perfil por avaliações mostra ao menos um motivo
+  - [ ] A âncora só cita jogos de peso positivo, e nunca o próprio jogo
+  - [ ] Tempo da visão geral local com acréscimo de no máximo 10%, medido como no B-79
+  - [ ] Foto completa das respostas: só o campo novo muda
+  - [ ] Taxa de clique da principal antes e depois registrada (B-100)
+- [ ] **B-107** (M, E11) Ações no cartão: não me interessa, já joguei, quero jogar (F-49). Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). Para corrigir a lista é preciso abrir a ficha de cada jogo, e não existe um "não" leve: o único é nota 1 ou 2, que também afasta o perfil dos atributos do jogo (o "Não tenho interesse" ficou fora do B-92 por ser um sinal novo no perfil). Ações no cartão da visão geral e do "ver mais": "Quero jogar" (lista existente); "Já joguei" (nota rápida de 1 a 5 e, se quiser, "concluído"); "Não me interessa" (novo, `DISMISSED` em `ListEntry`). O cartão sai com "Desfazer" por alguns segundos, e a lista é recarregada; o perfil ganha a seção "Ocultados". Depende do B-29 (feito) e do B-100. **D3 (24/11/2026, decisão do autor):** "não me interessa" só tira o jogo dos candidatos, sem peso no perfil, como o "ignorar" da Steam; o "menos disso" fica no B-116
+  - [ ] O jogo dispensado some de todas as listas pessoais na carga seguinte e volta ao desfazer
+  - [ ] Os jogos semelhantes da ficha não mudam: são iguais para todos (F-17)
+  - [ ] A rota nova entra na matriz de posse (B-30)
+  - [ ] A nota rápida grava como a da ficha
+  - [ ] Foto completa: perfis sem dispensa não mudam
+
+## Portão — Teste de usabilidade (primeira quinzena de fevereiro de 2027)
+
+Entrega: **M3** (semana 18, 21/02/2027): critérios de prontidão atendidos, com o teste formal medindo o ciclo principal já completo, a tempo de entrar no texto.
+
+- [ ] **B-44** (G, E8) Teste de usabilidade com 8–12 jogadores — **Alterado em 24/11/2026 (decisão do autor):** continua P0; vai para o Portão, depois da Fase 3, para medir o ciclo principal já completo
+  - [ ] Observar se os jogadores percebem diferença entre os modos Populares e Equilibrado: com o λ calibrado no B-37 (−0,3), a diferença de ARP entre eles vai de 0,24 a 0,30, e de 40% a 47% dos jogos do top-20 são comuns aos dois (`docs/avaliacao-offline.md`, rodada 3) — alterado em 24/11/2026: com os nomes da D5 (B-113)
+  - [ ] Observar se os jogadores reconhecem os jogos só pela capa nas fileiras da visão geral no celular, onde não há o `title` ao passar o mouse (ajuste de design do B-72, 05/11/2026)
+  - [ ] Observar se sentem falta dos selos "Em breve" e "Pouco conhecido" e do motivo nas fileiras de capas; a página do "ver mais" continua com os cartões completos, os selos e o motivo — alterado em 24/11/2026: com o B-106, as fileiras ganham motivo e selos; a observação passa a ser a do motivo nas fileiras, abaixo
+  - [ ] Observar se o jogador percorre a visão geral até o fim, com até 10 seções (B-79)
+  - [ ] Observar se o jogador usa os jogos semelhantes para navegar entre fichas e se entende o "Em comum" (B-50)
+  - [ ] Observar se o jogador entende o convite para a lista de desejos da Steam e se clica nele (B-89) — alterado em 24/11/2026: sem efeito neste teste, o B-89 vem depois do Portão (Fase 4)
+  - [ ] Observar se o selo "Demo" chama a atenção nas listas e se o jogador clica no botão da demo (B-90) — alterado em 24/11/2026: sem efeito neste teste, o B-90 vem depois do Portão (Fase 4)
+  - [ ] Observar se o jogador usa o sorteio, quantos jogos sorteia por sessão e se usa o "Quero jogar" na carta (B-92) — alterado em 24/11/2026: sem efeito, o B-92 foi para P3
+  - [ ] Observar se o jogador encontra e usa a página do estúdio a partir da ficha (B-94) — alterado em 24/11/2026: sem efeito neste teste, o B-94 vem depois do Portão (Fase 5)
+  - [ ] Observar se o jogador usa os filtros no "ver mais" e se entende que eles recortam a lista ("X de N jogos") (B-96) — alterado em 24/11/2026: sem efeito, o B-96 foi descartado
+  - [ ] Teste de 5 segundos da página inicial (B-104) (acrescentado em 24/11/2026)
+  - [ ] Observar o "experimentar" sem conta (B-105)
+  - [ ] Observar se o jogador lê e entende o motivo nas fileiras da visão geral e o motivo ancorado em jogos (B-106)
+  - [ ] Observar se o jogador usa as ações no cartão: "não me interessa", "já joguei" e "quero jogar" (B-107)
+  - [ ] Observar se o jogador descreve a diferença entre os modos renomeados com as próprias palavras (B-113)
+  - [ ] Observar se o selo de joia é entendido e se dá confiança no jogo pouco conhecido (B-109)
+  - [ ] Comparar com e sem motivo na mesma pessoa, para testar a hipótese da proposta conceitual de que o motivo aumenta a confiança
+- [ ] **B-45** (M, E7) Correções priorizadas a partir do teste de usabilidade
+
+## Fase 4 — Controle e retorno
+
+Entrega: preferências que valem em tudo, perfil editável e um motivo semanal para voltar. Esforço estimado: cerca de 60 h. Retorno só vale a pena com a lista já confiável; o Radar usa situação, demo e qualidade.
+
+- [ ] **B-115** (M, E11) Preferências de descoberta: português e plataformas no índice (F-51). Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). Português (33,3% dizem que pesa bastante) e plataforma só filtram o catálogo; quem joga só no Switch ou só em português recebe recomendações que não pode usar. Preferências na conta: "só jogos com português", "minhas plataformas" e "incluir 'Em breve' na lista principal" (B-112). O `IndexedGame` ganha um indicador de português e uma máscara de bits de plataformas, montados na carga do índice; o filtro age nos candidatos, antes das listas e dos tetos, o "filtrar antes do teto" que o B-96 deixou para a Fase B como G. Selo "PT" nos cartões; as mesmas preferências viram filtro padrão do catálogo, que dá para desligar. Com o B-121, substitui o B-96. Depende do B-84, do B-85 e do B-112
+  - [ ] Com "só português", nenhum item de nenhuma lista sem português (e2e)
+  - [ ] Regra para idioma "não informado" decidida e registrada
+  - [ ] Sem preferências, a foto completa não muda
+  - [ ] Memória do índice e tempo local medidos antes e depois
+- [ ] **B-116** (M, E11) Perfil de gosto visível e editável (F-52). Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). O perfil calculado é invisível; quem discorda de uma prateleira só consegue corrigir dando nota a jogos. No perfil, "O que a Penumbra acha que você curte": os interesses que viraram prateleira e os 10 atributos de maior peso, cada um com "mais", "menos" e "ocultar". "Mais" e "menos" multiplicam a componente no perfil por fatores fixados antes de medir; "ocultar" tira dos candidatos os jogos com o atributo. Tabela de ajustes por usuário e atributo. Depende do B-107
+  - [ ] O ajuste vale na carga seguinte e pode ser desfeito
+  - [ ] "Ocultar Terror" tira todo jogo com Terror das listas pessoais (teste)
+  - [ ] Rota na matriz de posse (B-30)
+  - [ ] Sem ajustes, a foto completa não muda
+- [ ] **B-90** (M, E3) Demo da Steam (F-40). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-84, do B-86 e do B-87. Só a Steam: a IGDB não registra demos, e demos em outras lojas não têm fonte viável. O botão leva à página do jogo na Steam, não ao protocolo `steam://install/`. Caminhos A e B em `docs/precos.md`, seção 6 — **Alterado em 24/11/2026 (decisão do autor):** P0 → P1, na Fase 4, e deixa de depender do B-86 e do B-87: a sonda da rota A continua, e a atualização passa a ser pela ingestão agendada (B-54). A demo deixa um jogo "Em breve" jogável hoje e entra na lista principal (B-112) e no Radar (B-123). Passa a depender do B-84 e do B-54
   - [ ] **Sonda só de leitura antes de implementar, com a regra escrita no plano antes de medir (como no B-77, no B-78 e no B-86):**
     - a `GetItems` devolve os ids de demo do jogo?
     - conferir à mão 20 jogos contra a página da loja: 10 com demo, incluindo jogos "Em breve", e 10 sem.
     - **Regra (valor inicial, decisão do autor):** mais de 1 erro em 20 reprova a rota A.
     - Se a rota A for reprovada, medir a rota B nos jogos "Em breve" e nos lançados nos últimos 12 meses antes de decidir.
     - Resultado em `docs/precos.md`.
-  - [ ] Coluna `steamDemoAppId` (opcional) no `Game` + migration (seção 10), gravada pela ingestão e pela rodada diária do B-87
+  - [ ] Coluna `steamDemoAppId` (opcional) no `Game` + migration (seção 10), gravada pela ingestão e pela rodada diária do B-87 — alterado em 24/11/2026: gravada pela ingestão agendada (B-54), sem a rodada diária do B-87
   - [ ] Contrato da ficha e dos cartões com `hasDemo`; Swagger com exemplo
   - [ ] Selo "Demo" na ficha e nos cartões; botão "Jogar a demo na Steam" no "Onde jogar". O visual definitivo fica com a designer
   - [ ] Testes: jogo com demo, sem demo, sem id da Steam, e demo removida entre duas rodadas
-- [ ] **B-91** (P, E3) Filtro "Com demo" no catálogo (F-41). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-90. É navegação e entra no plano de corte com os outros filtros
-  - [ ] Parâmetro `hasDemo` em `GET /api/games`, combinável com os outros filtros
-  - [ ] Filtro na página do catálogo, com o estado na URL
-  - [ ] Testes de contrato e e2e da combinação com os outros filtros
-- [ ] **B-95** (P, E3) Filtro por período (F-46). Acrescentado em 11/11/2026, P0 com aprovação explícita do autor (regra de prioridade). Faixa de anos (De / Até) e atalhos de lançamentos recentes ("últimos 30 dias", "últimos 6 meses", "últimos 12 meses"). Data específica e mês/ano foram descartados: na IGDB, a data de muitos jogos "Em breve" só tem precisão de ano ou trimestre, e a ingestão grava um dia exato sem guardar a precisão; o ano é confiável mesmo nessas datas. Atalhos só para jogos lançados com data exata; jogos sem data ficam de fora com o filtro ativo. Pelo código: a ingestão só pede o `first_release_date` (um timestamp) e grava o dia em `Game.firstReleaseDate` (`@db.Date`), sem pedir os `release_dates` com o `date_format`, onde a IGDB diz a precisão; o código não mostra que dia a IGDB põe no timestamp de uma data imprecisa
-  - [ ] Conferir como as datas imprecisas da IGDB (só ano ou trimestre) são gravadas e garantir que os atalhos só considerem datas exatas. Se a precisão não estiver disponível no dado gravado, registrar a decisão tomada para os atalhos
-  - [ ] Parâmetros `yearFrom`, `yearTo` e `released` (`30d`, `6m`, `12m`) em `GET /api/games`; contratos Zod e Swagger
-  - [ ] Opções de ano a partir do primeiro e do último ano do catálogo
-  - [ ] Filtro na página do catálogo, com o estado na URL
-  - [ ] Testes: faixa de anos, cada atalho, jogo sem data, jogo "Em breve" com data imprecisa, combinação com os outros filtros
-- [ ] **B-94** (M, E3) Página do estúdio (F-44). Acrescentado em 11/11/2026 (decisão do autor). Foco nos jogos: publicadoras também ganham página, com "Desenvolvidos" e "Publicados" separados quando houver os dois papéis; só jogos do catálogo, com os "Em breve" primeiro e em destaque e depois os lançados, do mais recente ao mais antigo; descrição da IGDB em inglês, com atribuição; links na ficha e bloco "Estúdios" (até 5) na busca do catálogo, e a busca global no cabeçalho fica para a designer
+- [ ] **B-89** (P, E4) Convite para a lista de desejos da Steam (F-39). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-84. É a ligação mais direta da plataforma com o benefício para os estúdios; não depende do vínculo da Steam (B-66) e funciona para qualquer pessoa. Substitui a adição direta à lista de desejos da Steam pela plataforma, descartada por ser inviável (seção 4 da proposta técnica) — **Alterado em 24/11/2026 (decisão do autor):** P0 → P1, na Fase 4. Baixo custo e valor direto para o estúdio; o clique passa a ser medido como saída do tipo "lista de desejos" pelo B-100
+  - [ ] Convite na ficha depois de marcar "quero jogar" num jogo com id da Steam, com link para a página do jogo na loja
+  - [ ] Sem o convite para jogos sem id da Steam, com nota ou em "concluídos"
+  - [ ] Teste do componente nos três casos: aparece, jogo sem id da Steam, jogo com nota ou em "concluídos"
+- [ ] **B-124** (M, E12) Calendário pessoal de lançamentos (F-56). Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). O pré-lançamento não tem dimensão de tempo: "Em breve no seu gosto" não diz quando. Página `/calendario` com os próximos 90 dias: jogos de "quero jogar" e "Em breve no seu gosto" por mês, só com data de precisão de dia ou mês (B-110); "sem data" numa seção à parte. Depende do B-110
+  - [ ] Datas mostradas na precisão gravada
+  - [ ] Jogo lançado sai do calendário na ingestão seguinte
+  - [ ] E2e com jogo de data exata, só de mês e sem data
+- [ ] **B-123** (G, E12) Radar semanal por e-mail (F-55). Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). Nada traz a pessoa de volta; 55% raramente ou nunca procuram jogos novos, e o risco de esquecer o site apareceu espontaneamente na pesquisa. E-mail semanal em dia fixo, com opt-in explícito, desligado por padrão, e descadastro em um clique. Conteúdo: jogos de "quero jogar" que lançaram, entraram em acesso antecipado ou ganharam demo; até 5 "Em breve" novos no seu gosto, com motivo; até 3 joias jogáveis novas. Só texto, sem rastreamento de abertura ou clique, como os e-mails de conta; os links levam `?de=radar` para contar visitas agregadas. Sem novidade, não envia. Envio escalonado para caber em 100 por dia e 3.000 por mês do plano gratuito do Resend. Aplicação separada, agendada no GitHub Actions, como a ingestão. Depende do B-54, do B-110, do B-101 e do B-100; o B-81 e o B-98 estão feitos
+  - [ ] Só para endereço confirmado e inscrito
+  - [ ] Descadastro funciona sem login
+  - [ ] Nenhum envio vazio; limite diário respeitado
+  - [ ] E2e do conteúdo com o envio falso
+  - [ ] Volta em 7 dias de inscritos e não inscritos medida (B-100)
+- [ ] **B-122** (P, E9) Ordem padrão do catálogo neutra. Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). O catálogo abre por "Mais populares", com os mesmos jogos famosos de que 26,7% dos respondentes reclamaram nas lojas. Padrão "Variados do dia": rodízio diário, com semente da data, entre jogos jogáveis acima do piso de qualidade; "Mais populares" fica como opção. Todo jogo acima do piso tem a mesma chance de estar na primeira página. Depende do B-108, do B-109 e do B-110
+  - [ ] Mesma data, mesma ordem
+  - [ ] Nenhum jogo abaixo do piso na primeira página
+  - [ ] O cache (B-102) revalida uma vez por dia
+- [ ] **B-121** (M, E5) "Combina comigo": afinidade no catálogo e na ficha (F-54). Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). Filtro e recomendação vivem separados: não dá para pedir "os jogos de Switch com português que mais combinam comigo". Para quem tem perfil, a ordenação "Combina comigo" no catálogo: o banco devolve os ids que passam nos filtros, o índice pontua com o modo do usuário, e a página sai dessa ordem. Na ficha, "Combina com você porque…", com os atributos e a âncora (B-106). Teto de ids por consulta; sem nenhum filtro, a opção leva à lista principal. Com o B-115, substitui o B-96. Depende do B-106 e do B-115
+  - [ ] Com filtros, a ordem bate com a pontuação do núcleo (teste)
+  - [ ] Sem perfil, a opção não aparece
+  - [ ] p95 em produção pela metodologia do B-33
+
+## Fase 5 — Algoritmo e estúdios
+
+Entrega: melhorias de algoritmo medidas contra uma régua humana, gosto dito com jogos fora do recorte e um canal para os estúdios. Esforço estimado: 50 a 56 h. É a primeira fase a cortar se o prazo apertar (ordem de corte no fim deste arquivo).
+
+- [ ] **B-117** (P, E8) Painel de referência julgado por pessoas. Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). A avaliação offline favorece o TF-IDF por construção e não mede tom nem "mais do mesmo"; sem régua humana, o B-118, o B-119 e o B-130 não têm como provar ganho. 30 jogos de referência, populares e pouco conhecidos, de gêneros variados, inclusos Hades, Celeste, Disco Elysium, Stardew Valley, Outer Wilds, Dredge e Unpacking. Para cada um, os 6 vizinhos de cada variante; 3 pessoas julgam cada vizinho como bom, aceitável ou ruim, sem saber a variante. Julgamentos e script no repositório. Sem dependências
+  - [ ] 540 julgamentos da variante atual (30 × 6 × 3), com a concordância entre juízes registrada
+  - [ ] O script regenera os vizinhos de qualquer variante e calcula a precisão julgada
+- [ ] **B-118** (M, E5) Diversificação nas listas e limite por franquia. Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). Nada impede itens quase iguais numa lista (nos semelhantes de Stardew Valley, cinco simuladores de fazenda com namoro, observado em produção em 24/11/2026), e sequências da mesma série ocupam vagas. Reordenação MMR (seção 12 da proposta técnica) nos 100 primeiros de cada lista e nos jogos semelhantes; no máximo 1 jogo por franquia a cada 5 posições, com `franchises` e `collections` da IGDB pedidos na ingestão. α calibrado na rodada do protocolo. Depende do B-117
+  - [ ] Com α = 0 e sem limite, a foto completa é idêntica à de antes
+  - [ ] A diversidade intralista do top-20 sobe, com o acerto@20 dentro do intervalo da rodada 3
+  - [ ] A precisão julgada no painel não cai
+- [ ] **B-119** (M, E5) Penalidade de tom divergente. Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). A semelhança só soma sobreposição: Outer Wilds traz The Guest e Grunn, de terror psicológico (observado em produção em 24/11/2026). A fórmula de tom da seção 12 da proposta técnica nos jogos semelhantes e nas prateleiras "Porque você gostou de", com a lista de etiquetas de tom em `config/`, revisada pelo autor. Depende do B-117
+  - [ ] Com τ = 0, a foto e os semelhantes não mudam
+  - [ ] Ganho de precisão julgada no painel
+  - [ ] Outer Wilds sem jogos de terror entre os 6 vizinhos
+  - [ ] O cache dos semelhantes é refeito na recarga
+- [ ] **B-120** (G, E9) Referências fora do catálogo para dizer o gosto (F-53). Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). O gosto só pode ser dito com indies: quem tem The Witcher 3, Zelda ou Dark Souls como referência não consegue dizê-lo, e quem não jogou indie no período deu as notas mais altas à proposta (77,3% entre 4 e 5). Ingerir um conjunto de referência: os N jogos mais populares fora do recorte, pela mesma popularidade da IGDB, com gêneros, temas e etiquetas, gravados com um papel próprio, fora do catálogo e do índice de candidatos. O vetor é montado com o IDF do índice, como já se faz com o jogo da biblioteca que saiu do catálogo (B-33). Aparecem só nas buscas da partida a frio, do "experimentar" e do perfil, com o rótulo "fora do recorte indie", e aceitam nota; não têm ficha. Depende do B-105. **D7 (24/11/2026, decisão do autor):** o conjunto de referência é medido com 2 mil e 5 mil jogos antes de decidir N
+  - [ ] Medição antes: cobertura de etiquetas no conjunto, linhas no banco e memória, com 2 mil e 5 mil jogos (D7)
+  - [ ] N decidido pelo autor com o custo medido
+  - [ ] Nenhum jogo de referência aparece em lista, semelhantes ou catálogo (e2e)
+  - [ ] Perfil só com referências gera recomendações indie com motivo
+  - [ ] Critério indie e coleções intactos
+- [ ] **B-94** (M, E3) Página do estúdio (F-44). Acrescentado em 11/11/2026 (decisão do autor). Foco nos jogos: publicadoras também ganham página, com "Desenvolvidos" e "Publicados" separados quando houver os dois papéis; só jogos do catálogo, com os "Em breve" primeiro e em destaque e depois os lançados, do mais recente ao mais antigo; descrição da IGDB em inglês, com atribuição; links na ficha e bloco "Estúdios" (até 5) na busca do catálogo, e a busca global no cabeçalho fica para a designer — **Alterado em 24/11/2026 (decisão do autor):** P0 → P1, na Fase 5. Liga à página "Para estúdios" (B-125) e entra no sitemap (B-114)
   - [ ] **Medição antes de implementar:** entre os estúdios com jogos no catálogo, cobertura de slug, logotipo, descrição, site e ano de fundação na IGDB. Resultado em `docs/ingestao.md`
   - [ ] Ingestão com esses campos na mesma consulta de jogos, sem requisição nova
   - [ ] Colunas no `Company`: `slug` (único), logotipo, descrição, site, ano de fundação, + migration (seção 10)
@@ -317,7 +498,120 @@ Entrega: todos os P0 prontos; pesos calibrados; **congelamento**.
     - estúdio sem nenhum dado opcional;
     - país pela IGDB, pelos jogos que concordam, e "não informado" quando discordam;
     - busca por nome.
-- [ ] **B-92** (M, E5) Modo sorteio nas listas de recomendação (F-42). Acrescentado em 11/11/2026 (decisão do autor). Sorteio entre os N primeiros de cada lista, sem repetir; ao acabar, embaralha de novo e avisa. Uma requisição por sessão de sorteio e o embaralhamento no navegador, porque a visão geral já está no limite da instância gratuita (RNF-03). A sequência sai de uma semente na URL (`?semente=…&posicao=…`), sem estado no servidor nem no navegador. "Não tenho interesse" fica de fora: seria um sinal novo no perfil. A carta é provisória e será refeita com a designer
+- [ ] **B-125** (M, E13) Canal do estúdio v0: inclusão e correção (F-59). Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). O jogo sem sinal de interesse fica de fora por construção (o POPAPOM foi excluído assim, `docs/m0-relatorio-igdb.md`), e o estúdio não tem como pedir inclusão nem corrigir dado. Página "Para estúdios": o critério público; como corrigir os dados na IGDB, a fonte; formulário com o link da IGDB e um contato, que vai para uma fila e avisa o autor por e-mail. A inclusão aprovada vira exceção manual pública do critério, com motivo e fonte, e só inclui, nunca dá peso. "Reportar erro" na ficha, para jogador e estúdio. Depende do B-101; o B-94 ajuda
+  - [ ] Inclusão aprovada entra na ingestão seguinte e aparece no "Como funciona"
+  - [ ] Nenhuma exceção sem motivo e fonte
+  - [ ] Limite contra envio em massa
+- [ ] **B-126** (M, E14) Visão geral em cache por usuário e modo. Acrescentado em 24/11/2026, P1 (plano de evolução, decisão do autor). **Condicional:** só entra se o B-103 mantiver a instância gratuita (D2, pendente). Na instância de 0,1 de CPU, a visão geral passa de 1 s no p95 em parte das medições. Guardar a resposta por usuário e modo, invalidada ao mudar biblioteca, preferências, ajustes ou dispensas e a cada recarga do índice, como a Fase B já previa. Visitas repetidas sem espera; a primeira depois de cada ação continua com o custo atual. Depende do B-103, do B-107, do B-115 e do B-116
+  - [ ] Foto idêntica
+  - [ ] Invalidação testada para cada gatilho
+  - [ ] p95 medido em produção
+
+## Preparação da banca
+
+Entrega: dois ensaios realizados, texto entregue, slides revisados. Os itens abaixo estavam na S11 e na Margem (alterado em 24/11/2026, decisão do autor: a S11 e a Margem deram lugar às fases). As semanas depois do congelamento para a escrita (semana 23, 28/03/2027) ficam para a escrita dos resultados, os ensaios e os slides, sem item novo.
+
+- [ ] **B-41** (P, E6) Contingência local: dump do banco + restauração no PostgreSQL embutido
+- [ ] **B-42** (P, E7) Revisão final do Swagger (exemplos e erros em todos os endpoints P0)
+- [ ] **B-43** (P, E7) README (arquitetura, como rodar local, variáveis, ingestão, testes, implantação, contingência)
+- [ ] **B-46** (M, E8) Roteiro de demonstração + dois ensaios (um com contingência local)
+- [ ] **B-48** (M, E8) Slides da defesa
+
+## Contínuo
+
+- [ ] **B-47** (—, E8) Escrita do TCC (contínua, ~3h/semana)
+
+## Perguntas em aberto
+
+- [x] A ficha de um jogo fora do catálogo deveria abrir para quem já o tem na biblioteca? Decidir no B-29, com a página de perfil, onde o jogo aparece (levantada no B-27; adiada no B-28) — decidido em 16/11/2026 (B-29, decisão do autor): não; a ficha continua respondendo 404, e o perfil mostra o jogo sem link, marcado "Fora do catálogo", só com a opção de remover
+- [x] Estar na biblioteca de algum usuário da plataforma deveria contar como sinal de interesse no critério indie? (levantada no B-27) — fechada em 24/11/2026 (decisão do autor): não; a inclusão de jogo sem sinal passa pelo B-125, com motivo público, e contar bibliotecas daria a poucas contas o poder de incluir jogos
+
+---
+
+## P1 — fora das fases, se houver capacidade (não bloqueia a defesa)
+
+**Alterado em 24/11/2026 (decisão do autor):** os P1 do plano de evolução estão nas fases 4 e 5; ficam aqui o P1 que não entrou em nenhuma fase e os itens absorvidos, que não são apagados.
+
+- [ ] **B-53** (M) Edição de nome e troca de senha — **Alterado em 24/11/2026 (decisão do autor):** continua P1, fora das fases: o plano de evolução não o colocou em nenhuma fase
+  - [ ] A troca do e-mail da conta, fora do escopo do B-98, pode entrar aqui, com nova confirmação do endereço novo (decisão do autor, 21/11/2026). Até lá, quem digitou o e-mail errado no cadastro cria uma conta nova
+- [ ] **B-49** (P) Registro de cliques de saída — **Alterado em 24/11/2026 (decisão do autor):** absorvido pelo B-100, que registra os cliques de saída junto com os outros eventos de produto
+  - [ ] Os botões de loja do "Onde jogar" (B-84) também são cliques de saída, com a loja registrada no evento
+  - [ ] O link do convite para a lista de desejos da Steam (B-89) é um clique de saída, com o tipo "lista de desejos": é o indicador mais próximo do benefício para os estúdios que a plataforma consegue medir, sem provar que o jogo foi adicionado
+  - [ ] O botão "Jogar a demo na Steam" (B-90) é um clique de saída, com o tipo "demo"
+- [ ] **B-51** (P) Sitemap e robots — **Alterado em 24/11/2026 (decisão do autor):** absorvido pelo B-114, que soma ao sitemap o título, a descrição e os dados estruturados das fichas
+  - [ ] Incluir as páginas de estúdio (B-94)
+- [ ] **B-65** (P) ID dos jogos na Steam gravado pela ingestão — absorvido pelo B-78 (P0) em 05/11/2026
+- [ ] **B-75** (M) Filtro de estilo no catálogo: parâmetro `style` em `GET /api/games` (repetível, como gênero e tema), opções numa rota de estilos com contagem e o filtro na página de catálogo; a página "Como funciona" (B-25) passa a listar os estilos e as palavras-chave de cada um — P1 por decisão do autor em 03/11/2026: é filtro de navegação, fora do núcleo da tese — substituído pelo filtro de etiquetas do B-78 em 05/11/2026
+
+## P2 — Fase B, cada item com condição de entrada
+
+**Alterado em 24/11/2026 (decisão do autor):** dependem de etapas anteriores, de público ou de uma medição que ainda não existe. A condição de entrada de cada um está no próprio item e na seção 15 de `docs/proposta-tecnica.md`.
+
+Ver seção 15 de `docs/proposta-tecnica.md` para a ordem e as condições de entrada de cada item (F-22, F-23, F-25, F-27 a F-29, F-33 e F-37: sugestão de jogo, área do estúdio, recursos de comunidade, recomendação híbrida com embeddings, filtragem colaborativa, avisos de lançamento, foto de perfil enviada pelo usuário, preços em outras lojas com o menor preço histórico e as prateleiras "Em promoção no seu gosto" e "Com demo no seu gosto"). **Alterado em 24/11/2026 (decisão do autor):** o F-22 foi absorvido pelo F-59 (B-125); o F-23, o F-25, o F-28 (B-133), o F-33 e o F-37 foram para P3; o F-27 continua P2 como o B-130; o F-29 fica só com "Seguir estúdio" (B-132), e o aviso de lançamento por e-mail foi para o F-55 (B-123).
+
+- [ ] **B-127** (M, E13) Relatório público do estúdio (F-60). Acrescentado em 24/11/2026, P2 (plano de evolução, decisão do autor). O estúdio não sabe se a plataforma o ajuda. Por jogo, mensal: exibições em listas, "quero jogar", cliques de saída por loja e as etiquetas mais comuns no perfil de quem salvou, numa página ligada à do estúdio, e não à ficha do jogador. Depende do B-100 e do B-94; entra com 200 contas ativas no mês
+  - [ ] Nenhum número abaixo de 10 aparece; nenhum dado individual
+  - [ ] Os números conferem com o relatório do B-100
+- [ ] **B-128** (M, E5) Prateleira "Um passo além". Acrescentado em 24/11/2026, P2 (plano de evolução, decisão do autor). O perfil só recomenda o vizinho do que já se gosta. Atributos que mais aparecem junto com os do perfil sem estarem nele ("Se você curte Roguelike, experimente Deckbuilding"), rotulados como exploração. Depende do B-118 e dos dados de uso do B-100
+  - [ ] Taxa de clique e de dispensa medidas contra as prateleiras comuns
+  - [ ] Rodada do protocolo
+- [ ] **B-129** (M, E9) Cultura nas recomendações e "Feito no Brasil". Acrescentado em 24/11/2026, P2 (plano de evolução, decisão do autor). As coleções ficam fora das recomendações, e não há uma entrada para os jogos de estúdio brasileiro (a coleção Brasil trata da cultura retratada, não do país do estúdio, `docs/colecoes.md`). Prateleira "Explore por cultura no seu gosto" quando a pessoa gostou de jogos de uma coleção; página "Feito no Brasil" (filtro de país com texto e SEO). Depende do B-114
+  - [ ] Prateleira só com 2 ou mais jogos da coleção curtidos
+  - [ ] Página no sitemap
+- [ ] **B-130** (G, E5) Experimento de embeddings (F-27). Acrescentado em 24/11/2026, P2 (plano de evolução, decisão do autor). Tom e clima escapam às etiquetas. Embeddings de resumo e etiquetas como segundo canal de semelhança, calculados offline. Depende do B-117; só entra se ganhar do TF-IDF no painel julgado
+  - [ ] Memória e tempo de carga medidos
+  - [ ] A explicação continua por atributos
+- [ ] **B-131** (P, E13) Kit de divulgação para estúdios. Acrescentado em 24/11/2026, P2 (plano de evolução, decisão do autor). O estúdio não tem motivo para linkar a plataforma. Link e selo "Na Penumbra: para quem curte X" que apontam para a ficha. Depende do B-94 e do B-125
+  - [ ] O selo não muda nada no ranking
+  - [ ] O texto do selo vem dos atributos do jogo
+- [ ] **B-132** (P, E12) Seguir estúdio no Radar (parte do F-29). Acrescentado em 24/11/2026, P2 (plano de evolução, decisão do autor). Quem gostou de um estúdio não fica sabendo do próximo jogo. "Seguir" na página do estúdio; anúncio e lançamento entram no Radar. Depende do B-94 e do B-123
+  - [ ] Aparece no Radar só com novidade
+  - [ ] Rota na matriz de posse (B-30)
+- [ ] **B-86** (M, E3) Preço da Steam na ficha (F-36). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-84. Só a Steam, pela mesma `IStoreBrowseService/GetItems` das etiquetas, sem fonte nem chave nova; nenhuma requisição de usuário consulta a Steam; só loja oficial, nunca keyshops, sem afiliado e sem "média de preço"; o menor preço fica para a Fase B (F-37). Decisões e análise da GG.deals em `docs/precos.md` — **Alterado em 24/11/2026 (decisão do autor):** P0 → P2, na Fase B. Preço é terreno da loja, e a rodada diária exige operação diária numa instância gratuita; entra quando o B-54 estiver em produção e o B-44 apontar falta de preço
+  - [ ] **Sonda só de leitura antes de implementar, com a regra escrita no plano antes de medir (como no B-77 e no B-78):**
+    - a `GetItems` com `country_code: 'BR'` e as opções de compra (`include_all_purchase_options`) devolve preço final, original e desconto em reais?
+    - conferir à mão 20 jogos contra a página da loja: pago, com desconto, gratuito e "Em breve".
+    - **Regra (valor inicial, decisão do autor):** preço divergente em mais de 1 dos 20 reprova a fonte.
+    - Resultado em `docs/precos.md`.
+  - [ ] Preço pedido no mesmo lote das etiquetas na ingestão
+  - [ ] Tabela `GamePrice` (jogo, loja, preço final, preço original, desconto, moeda, data da coleta) + migration (seção 10)
+  - [ ] Contrato de `GET /games/:slug` com `price`; Swagger com exemplo
+  - [ ] Preço ao lado do botão da Steam no "Onde jogar". O visual definitivo fica com a designer
+  - [ ] Testes: jogo pago, com desconto, gratuito, "Em breve", sem id da Steam e loja fora do ar (mantém o último preço gravado, com a data da coleta)
+- [ ] **B-87** (P, E6) Rodada diária de preços. Acrescentado em 11/11/2026 (decisão do autor). Depende do B-86 — **Alterado em 24/11/2026 (decisão do autor):** P0 → P2, com o B-86, pelo mesmo motivo
+  - [ ] Modo `precos` no workflow "Ingestão", só com a rodada de preços
+  - [ ] Agendada uma vez por dia depois das 15h de Brasília, no mesmo grupo de concorrência do banco de produção, para nunca rodar junto com a ingestão
+  - [ ] Grava só os preços que mudaram
+  - [ ] Falha da Steam não apaga preço gravado; o resumo da execução registra a falha
+  - [ ] Tempo da rodada, requisições e linhas gravadas por dia registrados em `docs/precos.md`
+  - [ ] Observação no B-54 (ingestão agendada, P1): ele pode reaproveitar o agendamento deste item
+  - [ ] A rodada também atualiza a demo (B-90), se a sonda aprovar a rota A
+- [ ] **B-88** (P, E3) Filtro "Em promoção" no catálogo (F-38). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-86. É navegação e entra no plano de corte com os outros filtros — **Alterado em 24/11/2026 (decisão do autor):** P0 → P2, com o B-86, pelo mesmo motivo
+  - [ ] Parâmetro `onSale` em `GET /api/games`, combinável com os outros filtros
+  - [ ] Filtro na página do catálogo, com o estado na URL
+  - [ ] Testes de contrato e e2e da combinação com os outros filtros
+- [ ] **B-91** (P, E3) Filtro "Com demo" no catálogo (F-41). Acrescentado em 11/11/2026 (decisão do autor). Depende do B-90. É navegação e entra no plano de corte com os outros filtros — **Alterado em 24/11/2026 (decisão do autor):** P0 → P2; entra depois do B-90
+  - [ ] Parâmetro `hasDemo` em `GET /api/games`, combinável com os outros filtros
+  - [ ] Filtro na página do catálogo, com o estado na URL
+  - [ ] Testes de contrato e e2e da combinação com os outros filtros
+- [ ] **B-95** (P, E3) Filtro por período (F-46). Acrescentado em 11/11/2026, P0 com aprovação explícita do autor (regra de prioridade). Faixa de anos (De / Até) e atalhos de lançamentos recentes ("últimos 30 dias", "últimos 6 meses", "últimos 12 meses"). Data específica e mês/ano foram descartados: na IGDB, a data de muitos jogos "Em breve" só tem precisão de ano ou trimestre, e a ingestão grava um dia exato sem guardar a precisão; o ano é confiável mesmo nessas datas. Atalhos só para jogos lançados com data exata; jogos sem data ficam de fora com o filtro ativo. Pelo código: a ingestão só pede o `first_release_date` (um timestamp) e grava o dia em `Game.firstReleaseDate` (`@db.Date`), sem pedir os `release_dates` com o `date_format`, onde a IGDB diz a precisão; o código não mostra que dia a IGDB põe no timestamp de uma data imprecisa — **Alterado em 24/11/2026 (decisão do autor):** P0 → P2; entra depois do B-110 e usa a precisão de data gravada por ele
+  - [ ] Conferir como as datas imprecisas da IGDB (só ano ou trimestre) são gravadas e garantir que os atalhos só considerem datas exatas. Se a precisão não estiver disponível no dado gravado, registrar a decisão tomada para os atalhos
+  - [ ] Parâmetros `yearFrom`, `yearTo` e `released` (`30d`, `6m`, `12m`) em `GET /api/games`; contratos Zod e Swagger
+  - [ ] Opções de ano a partir do primeiro e do último ano do catálogo
+  - [ ] Filtro na página do catálogo, com o estado na URL
+  - [ ] Testes: faixa de anos, cada atalho, jogo sem data, jogo "Em breve" com data imprecisa, combinação com os outros filtros
+- [ ] **B-66** (M) Vínculo da conta Steam à conta do usuário, com o avatar público da Steam no lugar das iniciais — **Alterado em 24/11/2026 (decisão do autor):** P1 → P2; entra depois do B-120, porque a lista de desejos da Steam traz jogos fora do recorte
+- [ ] **B-67** (M) Importação da wishlist da Steam para a lista "quero jogar", com resumo de importados e aviso de wishlist privada — **Alterado em 24/11/2026 (decisão do autor):** P1 → P2; entra depois do B-120, porque a lista de desejos da Steam traz jogos fora do recorte, e passa a importar também as referências dele
+  - [ ] A importação só acrescenta jogos ao "quero jogar" e nunca remove; tirar um jogo da lista da Steam não apaga nada na plataforma (decisão do autor, 11/11/2026)
+- [ ] **B-55** (M, E14) E2e no navegador (Playwright) do roteiro de demonstração — **Alterado em 24/11/2026 (decisão do autor):** P1 → P2; entra depois da interface da designer
+- [ ] **B-70** (P, E14) `popularityNorm` calculado na carga do índice, e não gravado pela ingestão (decidido no B-33) — **Alterado em 24/11/2026 (decisão do autor):** P1 → P2; junto com o cálculo de `q_j` do B-108, se sair barato ali
+
+## P3 — futuro
+
+**Acrescentado em 24/11/2026 (decisão do autor):** ideias válidas que não entram no ciclo atual, com a condição que as traria de volta.
+
+- [ ] **B-133** (—, E5) Filtragem colaborativa item a item como sinal secundário (F-28). Acrescentado em 24/11/2026, P3 (plano de evolução, decisão do autor); esforço não estimado. Sem base de usuários, não há o que aprender. Volta com 300 usuários com 5 ou mais jogos de peso positivo; só entra se ganhar no protocolo e no painel julgado (B-117), e sempre com motivo ("quem salvou X também salvou Y")
+- [ ] **B-92** (M, E5) Modo sorteio nas listas de recomendação (F-42). Acrescentado em 11/11/2026 (decisão do autor). Sorteio entre os N primeiros de cada lista, sem repetir; ao acabar, embaralha de novo e avisa. Uma requisição por sessão de sorteio e o embaralhamento no navegador, porque a visão geral já está no limite da instância gratuita (RNF-03). A sequência sai de uma semente na URL (`?semente=…&posicao=…`), sem estado no servidor nem no navegador. "Não tenho interesse" fica de fora: seria um sinal novo no perfil. A carta é provisória e será refeita com a designer — **Alterado em 24/11/2026 (decisão do autor):** P0 → P3. Excesso de escolha se resolve melhor com menos itens, mais bem explicados (B-106, B-112); volta se o B-44 mostrar que as pessoas travam diante de listas longas mesmo com motivo
   - [ ] Rota que devolve os N primeiros de uma lista pela lógica do "ver mais" (só a lista pedida), com as mesmas chaves (`main`, `upcoming`, `game:<slug>`, `genre:<slug>`, `theme:<slug>`, `tag:<slug>`) e o mesmo 404 para chave que deixou de existir. Contrato Zod e Swagger. N em `config/recommendation.json`, com justificativa (valor inicial 50)
   - [ ] Botão "Sortear" nas prateleiras da visão geral e na página do "ver mais"
   - [ ] Página `/recomendacoes/<lista>/sorteio`, com a semente e a posição na URL, embaralhamento no navegador e as ações da carta
@@ -329,7 +623,30 @@ Entrega: todos os P0 prontos; pesos calibrados; **congelamento**.
     - e2e do modo sorteio com "Quero jogar" e a volta da ficha.
   - [ ] Tempo da rota medido em produção pela metodologia do B-33, registrado em `docs/recomendacao.md`
   - [ ] Com o B-96, o sorteio recebe os filtros ativos e sorteia entre os primeiros da lista filtrada
-- [ ] **B-96** (M, E5) Filtros nas listas de recomendação (F-45). Acrescentado em 11/11/2026, P0 com aprovação explícita do autor (regra de prioridade). Depende do B-85, B-88, B-91, B-92 e B-95. Só na página do "ver mais", recortando os jogos que já estão na lista, até o teto dela (100 na principal, 200 nas prateleiras), mantendo a ordem; na visão geral, não, porque ela tem até 10 listas e já passa de 1 s em parte das medições em produção (RNF-03). Filtros: gênero, tema, etiqueta, situação, plataforma, em promoção, com demo, português, país do estúdio e período, com os componentes do catálogo. Filtrar antes do teto fica para a Fase B (custo estimado G)
+- [ ] **B-93** (P, E3) Sortear no catálogo com os filtros atuais (F-43). Acrescentado em 11/11/2026 (decisão do autor) — **Alterado em 24/11/2026 (decisão do autor):** P1 → P3, pelo mesmo motivo do B-92
+  - [ ] Rota que sorteia um jogo entre os que passam nos filtros de `GET /api/games`, sem login. Contrato e Swagger
+  - [ ] Botão "Sortear" na página do catálogo, que abre a ficha do sorteado
+  - [ ] Teste e2e: o jogo sorteado sempre passa nos filtros; com filtros sem resultado, a resposta é 404 e a página mostra uma mensagem
+- [ ] **B-68** (M) Login com Google, com a foto da conta Google como avatar — **Alterado em 24/11/2026 (decisão do autor):** P1 → P3. Não muda a descoberta; volta se os dados do funil (B-100) mostrarem abandono no cadastro
+
+**Movidos para a Fase B em 11/11/2026 (regra fixada pelo autor antes de medir):** com as etiquetas da comunidade Steam no vetor (B-78), o vetor idêntico ao de 10 ou mais jogos caiu de 21% para 0,9% do catálogo, e cada bloco reduz essa porcentagem e a de até 2 atributos em menos de 2 pontos percentuais (`docs/recomendacao.md`, seção "Modo de jogo, perspectiva e palavras do resumo"; scripts e dados em `~/indie-discovery-b62/`, fora do repositório). Só entram depois de testados como variantes do protocolo do B-37, se melhorarem o acerto@10.
+
+- [ ] **B-62** (M, E5) Modo de jogo e perspectiva como quarto bloco do vetor (fatia em config, fora da explicação ao jogador); a fatia só fica acima de zero se melhorar o acerto@10 no B-37; medir depois do B-69 — movido da S7 para a S10 no B-32, para ficar ao lado do B-37 que decide a fatia — medido em 11/11/2026: o vetor idêntico ao de 10 ou mais cai de 0,9% para 0,3% e o de até 2 atributos de 1,9% para 0,9% — **Alterado em 24/11/2026 (decisão do autor):** P2 → P3; volta como variante do B-130, julgada no painel (B-117)
+- [ ] **B-63** (M, E5) Palavras do resumo como bloco do vetor, em TF-IDF com pesos em memória na API (fora da explicação por enquanto); a fatia só fica acima de zero se melhorar o acerto@10 no B-37; primeiro corte depois dos P1 — movido da S7 para a S10 em 11/11/2026 (decisão do autor), antes do B-37, que depende dele — medido em 11/11/2026: as duas porcentagens caem de 0,9% e 1,9% para 0% — **Alterado em 24/11/2026 (decisão do autor):** P2 → P3; volta como variante do B-130, julgada no painel (B-117)
+
+**Ideias sem item, com a condição de volta (24/11/2026, decisão do autor):**
+
+- Controle deslizante de popularidade, como o da Steam: volta se o B-44 mostrar que três modos não bastam
+- Duração do jogo ("jogos curtos no seu gosto"): sem fonte medida, e o HowLongToBeat não tem API oficial; volta se uma fonte de tempo para terminar (a IGDB, se tiver) for medida e cobrir mais de 50% dos jogos lançados
+- Comunidade e listas públicas (F-25): volta com base ativa que justifique moderação
+- Área do estúdio com verificação (F-23): o B-125 cobre o essencial sem verificação de identidade; volta se estúdios pedirem para editar a própria página
+- Foto de perfil (F-33) e preços em outras lojas (F-37): não contribuem para a descoberta; como já registrado na seção 15 da proposta técnica
+- Dividir "Sobrenatural" (subitem do B-74): volta se o B-44 apontar confusão
+- Redefinição de senha para contas do Google (subitem do B-80): acompanha o B-68
+
+### Descartado
+
+- [ ] **B-96** (M, E5) Filtros nas listas de recomendação (F-45). Acrescentado em 11/11/2026, P0 com aprovação explícita do autor (regra de prioridade). Depende do B-85, B-88, B-91, B-92 e B-95. Só na página do "ver mais", recortando os jogos que já estão na lista, até o teto dela (100 na principal, 200 nas prateleiras), mantendo a ordem; na visão geral, não, porque ela tem até 10 listas e já passa de 1 s em parte das medições em produção (RNF-03). Filtros: gênero, tema, etiqueta, situação, plataforma, em promoção, com demo, português, país do estúdio e período, com os componentes do catálogo. Filtrar antes do teto fica para a Fase B (custo estimado G) — **Alterado em 24/11/2026 (decisão do autor):** descartado. Substituído pelo B-115 (filtros no índice, antes do teto) e pelo B-121 ("Combina comigo" com os filtros do catálogo), com menos código e sem o limite do teto
   - [ ] A rota do "ver mais" aceita os filtros, aplicados sobre a lista até o teto, mantendo a ordem, e devolve as facetas com as contagens combinadas. Contrato e Swagger
   - [ ] Dados fora do índice por uma consulta ao banco por requisição, só para os ids da lista
   - [ ] Filtros na página do "ver mais", com o estado na URL e "X de N jogos desta lista"
@@ -341,87 +658,6 @@ Entrega: todos os P0 prontos; pesos calibrados; **congelamento**.
     - lista vazia depois de filtrar, com mensagem;
     - grupo com menos de 2 opções escondido.
   - [ ] Tempo do "ver mais" com filtros medido em produção pela metodologia do B-33, registrado em `docs/recomendacao.md`
-- [ ] **B-25** (P, E3) Página "Como funciona" (lista grandes empresas, estúdios controlados e exceções manuais com motivo e fonte)
-  - [ ] Se o B-75 (P1) entrar: listar também os estilos e as palavras-chave de cada um
-  - [ ] Explicar como os jogos semelhantes da ficha são escolhidos (cosseno, sem popularidade, motivo em comum)
-  - [ ] Explicar de onde vêm as plataformas e os links de loja (IGDB e id da Steam) e a ordem alfabética das lojas
-  - [ ] Explicar que o preço e a demo vêm da Steam, atualizados uma vez por dia
-  - [ ] Explicar que o sorteio escolhe entre os N primeiros de cada lista, sem repetir
-  - [ ] Explicar de onde vêm os dados do estúdio e como o país dele é definido
-
-## S11 — Avaliação com usuários e acabamento (semanas 21–22)
-
-Entrega: **M3**: critérios de prontidão atendidos.
-
-- [ ] **B-44** (G, E8) Teste de usabilidade com 8–12 jogadores
-  - [ ] Observar se os jogadores percebem diferença entre os modos Populares e Equilibrado: com o λ calibrado no B-37 (−0,3), a diferença de ARP entre eles vai de 0,24 a 0,30, e de 40% a 47% dos jogos do top-20 são comuns aos dois (`docs/avaliacao-offline.md`, rodada 3)
-  - [ ] Observar se os jogadores reconhecem os jogos só pela capa nas fileiras da visão geral no celular, onde não há o `title` ao passar o mouse (ajuste de design do B-72, 05/11/2026)
-  - [ ] Observar se sentem falta dos selos "Em breve" e "Pouco conhecido" e do motivo nas fileiras de capas; a página do "ver mais" continua com os cartões completos, os selos e o motivo
-  - [ ] Observar se o jogador percorre a visão geral até o fim, com até 10 seções (B-79)
-  - [ ] Observar se o jogador usa os jogos semelhantes para navegar entre fichas e se entende o "Em comum" (B-50)
-  - [ ] Observar se o jogador entende o convite para a lista de desejos da Steam e se clica nele (B-89)
-  - [ ] Observar se o selo "Demo" chama a atenção nas listas e se o jogador clica no botão da demo (B-90)
-  - [ ] Observar se o jogador usa o sorteio, quantos jogos sorteia por sessão e se usa o "Quero jogar" na carta (B-92)
-  - [ ] Observar se o jogador encontra e usa a página do estúdio a partir da ficha (B-94)
-  - [ ] Observar se o jogador usa os filtros no "ver mais" e se entende que eles recortam a lista ("X de N jogos") (B-96)
-- [ ] **B-45** (M, E7) Correções priorizadas a partir do teste de usabilidade
-- [ ] **B-41** (P, E6) Contingência local: dump do banco + restauração no PostgreSQL embutido
-- [ ] **B-42** (P, E7) Revisão final do Swagger (exemplos e erros em todos os endpoints P0)
-- [ ] **B-43** (P, E7) README (arquitetura, como rodar local, variáveis, ingestão, testes, implantação, contingência)
-
-## Margem — Preparação da banca e absorção de atrasos (semanas 23–24)
-
-Entrega: dois ensaios realizados, texto entregue, slides revisados.
-
-- [ ] **B-46** (M, E8) Roteiro de demonstração + dois ensaios (um com contingência local)
-- [ ] **B-48** (M, E8) Slides da defesa
-
-## Contínuo
-
-- [ ] **B-47** (—, E8) Escrita do TCC (contínua, ~3h/semana)
-
-## Perguntas em aberto
-
-- [x] A ficha de um jogo fora do catálogo deveria abrir para quem já o tem na biblioteca? Decidir no B-29, com a página de perfil, onde o jogo aparece (levantada no B-27; adiada no B-28) — decidido em 16/11/2026 (B-29, decisão do autor): não; a ficha continua respondendo 404, e o perfil mostra o jogo sem link, marcado "Fora do catálogo", só com a opção de remover
-- [ ] Estar na biblioteca de algum usuário da plataforma deveria contar como sinal de interesse no critério indie? (levantada no B-27)
-
----
-
-## P1 — depois do M2, se houver capacidade (não bloqueia a defesa)
-
-- [ ] **B-49** (P) Registro de cliques de saída
-  - [ ] Os botões de loja do "Onde jogar" (B-84) também são cliques de saída, com a loja registrada no evento
-  - [ ] O link do convite para a lista de desejos da Steam (B-89) é um clique de saída, com o tipo "lista de desejos": é o indicador mais próximo do benefício para os estúdios que a plataforma consegue medir, sem provar que o jogo foi adicionado
-  - [ ] O botão "Jogar a demo na Steam" (B-90) é um clique de saída, com o tipo "demo"
-- [ ] **B-51** (P) Sitemap e robots
-  - [ ] Incluir as páginas de estúdio (B-94)
-- [ ] **B-52** (P) Exclusão da própria conta
-  - [ ] Apagar as contas de teste criadas em produção: `medicao-m2-preferencias@example.com` e `medicao-m2-avaliacoes@example.com` (medição do M2, B-33), `b35-producao-2026-11-03@example.com` (conferência do B-35), `b71-producao-2026-11-03@example.com` (conferência do B-71), `b74-producao-2026-11-05@example.com` (conferência do B-74), `b76-producao-2026-11-05@example.com` e `b76-producao-2-2026-11-05@example.com` (medições do B-76), `b34-prod-390-202611112332@example.com`, `b34-prod-1280-202611112332@example.com` (conferência do B-34) `b37-producao-2026-11-16@example.com` (conferência do B-37), `b29-prod-390-202611161806@example.com` e `b29-prod-1280-202611161806@example.com` (conferência do B-29), `b83-prod-390-202611171455@example.com`, `b83-prod-1280-202611171455@example.com`, `b83-prod-390-202611171512@example.com` e `b83-prod-1280-202611171512@example.com` (conferências do B-83), `b82-prod-390-202611171547@example.com` e `b82-prod-1280-202611171547@example.com` (conferência do B-82), `b83-prod-390-202611171612@example.com` e `b83-prod-1280-202611171612@example.com` (conferência do B-97), `b98-prod-202611231405@example.com` e a conta `+b98` do Gmail do autor (conferência do B-98)
-- [ ] **B-53** (M) Edição de nome e troca de senha
-  - [ ] A troca do e-mail da conta, fora do escopo do B-98, pode entrar aqui, com nova confirmação do endereço novo (decisão do autor, 21/11/2026). Até lá, quem digitou o e-mail errado no cadastro cria uma conta nova
-- [ ] **B-54** (P) Ingestão agendada (GitHub Actions)
-  - [ ] Pode reaproveitar o agendamento da rodada diária de preços (B-87)
-- [ ] **B-55** (M) E2e no navegador (Playwright) do roteiro de demonstração
-- [ ] **B-65** (P) ID dos jogos na Steam gravado pela ingestão — absorvido pelo B-78 (P0) em 05/11/2026
-- [ ] **B-66** (M) Vínculo da conta Steam à conta do usuário, com o avatar público da Steam no lugar das iniciais
-- [ ] **B-67** (M) Importação da wishlist da Steam para a lista "quero jogar", com resumo de importados e aviso de wishlist privada
-  - [ ] A importação só acrescenta jogos ao "quero jogar" e nunca remove; tirar um jogo da lista da Steam não apaga nada na plataforma (decisão do autor, 11/11/2026)
-- [ ] **B-68** (M) Login com Google, com a foto da conta Google como avatar
-- [ ] **B-70** (P) `popularityNorm` calculado na carga do índice, e não gravado pela ingestão (decidido no B-33)
-- [ ] **B-93** (P, E3) Sortear no catálogo com os filtros atuais (F-43). Acrescentado em 11/11/2026 (decisão do autor)
-  - [ ] Rota que sorteia um jogo entre os que passam nos filtros de `GET /api/games`, sem login. Contrato e Swagger
-  - [ ] Botão "Sortear" na página do catálogo, que abre a ficha do sorteado
-  - [ ] Teste e2e: o jogo sorteado sempre passa nos filtros; com filtros sem resultado, a resposta é 404 e a página mostra uma mensagem
-- [ ] **B-75** (M) Filtro de estilo no catálogo: parâmetro `style` em `GET /api/games` (repetível, como gênero e tema), opções numa rota de estilos com contagem e o filtro na página de catálogo; a página "Como funciona" (B-25) passa a listar os estilos e as palavras-chave de cada um — P1 por decisão do autor em 03/11/2026: é filtro de navegação, fora do núcleo da tese — substituído pelo filtro de etiquetas do B-78 em 05/11/2026
-
-## P2 — pós-defesa
-
-Ver seção 15 de `docs/proposta-tecnica.md` para a ordem e as condições de entrada de cada item (F-22, F-23, F-25, F-27 a F-29, F-33 e F-37: sugestão de jogo, área do estúdio, recursos de comunidade, recomendação híbrida com embeddings, filtragem colaborativa, avisos de lançamento, foto de perfil enviada pelo usuário, preços em outras lojas com o menor preço histórico e as prateleiras "Em promoção no seu gosto" e "Com demo no seu gosto").
-
-**Movidos para a Fase B em 11/11/2026 (regra fixada pelo autor antes de medir):** com as etiquetas da comunidade Steam no vetor (B-78), o vetor idêntico ao de 10 ou mais jogos caiu de 21% para 0,9% do catálogo, e cada bloco reduz essa porcentagem e a de até 2 atributos em menos de 2 pontos percentuais (`docs/recomendacao.md`, seção "Modo de jogo, perspectiva e palavras do resumo"; scripts e dados em `~/indie-discovery-b62/`, fora do repositório). Só entram depois de testados como variantes do protocolo do B-37, se melhorarem o acerto@10.
-
-- [ ] **B-62** (M, E5) Modo de jogo e perspectiva como quarto bloco do vetor (fatia em config, fora da explicação ao jogador); a fatia só fica acima de zero se melhorar o acerto@10 no B-37; medir depois do B-69 — movido da S7 para a S10 no B-32, para ficar ao lado do B-37 que decide a fatia — medido em 11/11/2026: o vetor idêntico ao de 10 ou mais cai de 0,9% para 0,3% e o de até 2 atributos de 1,9% para 0,9%
-- [ ] **B-63** (M, E5) Palavras do resumo como bloco do vetor, em TF-IDF com pesos em memória na API (fora da explicação por enquanto); a fatia só fica acima de zero se melhorar o acerto@10 no B-37; primeiro corte depois dos P1 — movido da S7 para a S10 em 11/11/2026 (decisão do autor), antes do B-37, que depende dele — medido em 11/11/2026: as duas porcentagens caem de 0,9% e 1,9% para 0%
 
 ---
 
@@ -432,10 +668,10 @@ Ver seção 15 de `docs/proposta-tecnica.md` para a ordem e as condições de en
   - [x] Reaberto no B-60: confirmar a falta de desenvolvedora creditada como limitação, sem regra de reserva (relatório do M0, seção 8.10) — aceita, sem regra de reserva; defesa pelo alerta `NO_DEVELOPER_VISIBLE` da ingestão
 - [x] **M1** (semana 12): catálogo real navegável + contas implantadas — atingido em 30/10/2026, na semana 2; tag `v0.1-M1`
 - [x] **M2** (semana 16): recomendação ponta a ponta pela API, testada e implantada — atingido em 03/11/2026, na semana 3; tag `v0.2-M2`
-- [ ] **Congelamento** (semana 20): todos os P0 implementados, nenhuma funcionalidade nova depois disso
-- [ ] **M3** (semana 22): critérios de prontidão da seção 16 atendidos, teste de usabilidade feito
-- [ ] **Banca** (semana 24)
+- [ ] **M3** (semana 22): critérios de prontidão da seção 16 atendidos, teste de usabilidade feito — **Alterado em 24/11/2026 (decisão do autor):** passa para a semana 18 (21/02/2027), no fim do Portão: com o B-44 na primeira quinzena de fevereiro, o M3 vem antes das fases 4 e 5
+- [ ] **Congelamento para a escrita** (semana 23, 28/03/2027): rodada 4 da avaliação offline e B-44 feitos; nenhuma funcionalidade nova depois disso, só correções, testes, documentação e a escrita dos resultados — alterado em 24/11/2026 (decisão do autor): era o congelamento de todos os P0 na semana 20; com o congelamento do modelo revogado, passa a ser o congelamento para a escrita dos resultados do TCC
+- [ ] **Banca** (data a confirmar com o orientador, até 24/04/2027) — alterado em 24/11/2026 (decisão do autor): era a semana 24
 
-## Se o atraso passar de uma sprint
+## Ordem de corte, se atrasar (24/11/2026)
 
-Aplicar o plano de corte da seção 16 do documento, nesta ordem: 1) cortar todo P1, os jogos semelhantes na ficha (B-50), a redefinição de senha por e-mail (B-80 e B-81), o "Onde jogar" na ficha (B-84), o preço da Steam na ficha (B-86 e B-87), o convite para a lista de desejos da Steam (B-89), a demo da Steam (B-90), o modo sorteio nas listas de recomendação (B-92), a página do estúdio (B-94), os filtros nas listas de recomendação (B-96) e testes opcionais de frontend; 2) Swagger sem exemplos; 3) B-21, B-85, B-88, B-91 e B-95 viram P1; 4) partida a frio sem a etapa de avaliação; 5) perfil só leitura; 6) reduzir catálogo por data de lançamento. **Nunca cortar:** contas/sessão, ingestão com critério indie e vetores, catálogo e ficha, avaliações, partida a frio mínima, recomendações com motivo e modos, avaliação offline, testes críticos, implantação e contingência local.
+**Alterado em 24/11/2026 (decisão do autor):** substitui a regra "Se o atraso passar de uma sprint" de 11/11/2026. Cortar, de cima para baixo, só até recuperar o atraso: B-126 → B-119 → B-118 (com o B-117) → B-120 → B-121 → B-125. Depois deles, os passos 3, 5, 6 e 7 do plano de corte da seção 16 do documento: Swagger sem exemplos; partida a frio sem a etapa de avaliação; perfil só leitura; catálogo reduzido por data de lançamento. **Nunca cortar:** as fases 0 a 3, o B-44, contas e sessão, ingestão com critério indie e vetores, catálogo e ficha, avaliações, partida a frio mínima, recomendações com motivo e modos, avaliação offline, testes críticos, implantação e contingência local.
