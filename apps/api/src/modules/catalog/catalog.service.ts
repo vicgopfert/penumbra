@@ -10,6 +10,7 @@ import type {
   GamePage,
   GameSearchQuery,
   GameSummary,
+  PlatformOption,
 } from '@indie/contracts';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
@@ -121,6 +122,13 @@ export class CatalogService {
       .filter(({ gameCount }) => gameCount >= this.filterOptionMinGames)
       .map(({ alpha2, namePt, gameCount }) => ({ code: alpha2, name: namePt, gameCount }))
       .sort(byName);
+  }
+
+  async listPlatforms(): Promise<PlatformOption[]> {
+    const platforms = await this.catalog.countGamesByPlatform();
+    return this.whereToPlay.platformOptionsOf(
+      platforms.filter(({ gameCount }) => gameCount >= this.filterOptionMinGames),
+    );
   }
 
   async listCollections(): Promise<CollectionSummary[]> {

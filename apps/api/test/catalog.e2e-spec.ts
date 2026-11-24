@@ -6,6 +6,7 @@ import {
   CollectionSummarySchema,
   GameDetailSchema,
   GamePageSchema,
+  PlatformOptionSchema,
 } from '@indie/contracts';
 import request from 'supertest';
 import type { App } from 'supertest/types';
@@ -575,6 +576,18 @@ describe('Catálogo', () => {
       const response = await request(app.getHttpServer()).get('/api/countries').expect(200);
 
       expect(response.body).toEqual([{ code: 'US', name: 'Estados Unidos', gameCount: 2 }]);
+    });
+  });
+
+  describe('GET /api/platforms', () => {
+    it('é público e só lista plataformas com o mínimo de jogos do catálogo, com o nome curto, em ordem alfabética', async () => {
+      const response = await request(app.getHttpServer()).get('/api/platforms').expect(200);
+
+      expect(PlatformOptionSchema.array().parse(response.body)).toEqual([
+        { slug: 'win', name: 'PC', gameCount: 3 },
+        { slug: 'ps5', name: 'PS5', gameCount: 2 },
+        { slug: 'switch', name: 'Switch', gameCount: 2 },
+      ]);
     });
   });
 

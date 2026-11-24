@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { FeatureType, Prisma, ReleaseStatus } from '../../generated/prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { LabeledFeatureType } from './feature-labels';
+import type { PlatformCountRow } from './where-to-play';
 
 export type FilterFeatureType = LabeledFeatureType | typeof FeatureType.TAG;
 
@@ -181,6 +182,20 @@ export class CatalogRepository {
       namePt,
       gameCount: _count.games,
     }));
+  }
+
+  async countGamesByPlatform(): Promise<PlatformCountRow[]> {
+    const platforms = await this.prisma.platform.findMany({
+      where: { games: { some: { game: { inCatalog: true } } } },
+      select: {
+        igdbId: true,
+        slug: true,
+        name: true,
+        abbreviation: true,
+        _count: { select: { games: { where: { game: { inCatalog: true } } } } },
+      },
+    });
+    return platforms.map(({ _count, ...platform }) => ({ ...platform, gameCount: _count.games }));
   }
 
   // Coleção sem nenhum jogo no catálogo fica de fora, como as opções de filtro.

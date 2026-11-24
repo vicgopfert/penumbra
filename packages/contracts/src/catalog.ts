@@ -125,6 +125,15 @@ export const CountryOptionSchema = z.object({
 
 export type CountryOption = z.infer<typeof CountryOptionSchema>;
 
+// O nome é o curto de exibição, o mesmo da ficha; o slug é o valor do filtro (B-85).
+export const PlatformOptionSchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  gameCount: z.number().int(),
+});
+
+export type PlatformOption = z.infer<typeof PlatformOptionSchema>;
+
 export const GameLanguageSchema = z.object({
   locale: z.string(),
   name: z.string(),

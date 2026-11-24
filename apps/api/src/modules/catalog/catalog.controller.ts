@@ -230,4 +230,21 @@ export class CatalogController {
   listCountries() {
     return this.catalog.listCountries();
   }
+
+  @Public()
+  @Get('platforms')
+  @ApiOkResponse({
+    description:
+      'Plataformas com pelo menos 20 jogos no catálogo, com o nome curto de exibição (o mesmo da ficha), em ordem alfabética; o slug é o valor do filtro platform de GET /api/games',
+    schema: {
+      example: [
+        { slug: 'win', name: 'PC', gameCount: 22734 },
+        { slug: 'ps5', name: 'PS5', gameCount: 2581 },
+        { slug: 'switch', name: 'Switch', gameCount: 4749 },
+      ],
+    },
+  })
+  listPlatforms() {
+    return this.catalog.listPlatforms();
+  }
 }
