@@ -129,6 +129,12 @@ export class CatalogController {
     description: `Sigla do país do estúdio ou ${COUNTRY_UNKNOWN}; repetido, basta ter um (até ${GAMES_FILTER_MAX_VALUES})`,
   })
   @ApiQuery({
+    name: 'platform',
+    required: false,
+    isArray: true,
+    description: `Slug da plataforma na IGDB (win, ps5, switch…); repetido, basta rodar numa (até ${GAMES_FILTER_MAX_VALUES})`,
+  })
+  @ApiQuery({
     name: 'sort',
     required: false,
     enum: GAMES_SORTS,

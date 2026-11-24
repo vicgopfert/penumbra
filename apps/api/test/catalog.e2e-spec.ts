@@ -26,6 +26,7 @@ import { contentIndexLoaded } from './support/content-index';
 const PC = { igdbId: 6, slug: 'win', name: 'PC (Microsoft Windows)', abbreviation: 'PC' };
 const MAC = { igdbId: 14, slug: 'mac', name: 'Mac', abbreviation: 'Mac' };
 const SWITCH = { igdbId: 130, slug: 'switch', name: 'Nintendo Switch', abbreviation: 'Switch' };
+const PS5 = { igdbId: 167, slug: 'ps5', name: 'PlayStation 5', abbreviation: 'PS5' };
 
 describe('Catálogo', () => {
   let app: INestApplication<App>;
@@ -103,6 +104,7 @@ describe('Catálogo', () => {
         tagSource: TagSource.IGDB,
         popularity: 0.5,
         releasedOn: '2019-05-28',
+        platforms: [PC, PS5],
         studioCountry: { alpha2: 'US', source: IGDB },
         languages: [english, { locale: 'pt-PT', interface: true }],
       },
@@ -110,6 +112,7 @@ describe('Catálogo', () => {
         name: 'Baba Is You',
         genres: ['Puzzle', 'Indie'],
         popularity: 0.5,
+        platforms: [SWITCH],
         releasedOn: '2019-03-13',
         studioCountry: { alpha2: 'FI', source: StudioCountrySource.WIKIDATA },
         languages: [english],
@@ -124,6 +127,7 @@ describe('Catálogo', () => {
         name: '1000xResist',
         genres: ['Adventure', 'Indie'],
         popularity: 0.2,
+        platforms: [PS5],
         releasedOn: '2024-05-09',
         studioCountry: { alpha2: 'US', source: IGDB },
         languages: [english, { locale: 'pt-BR', audio: true }],
@@ -135,6 +139,7 @@ describe('Catálogo', () => {
         tags: ['Souls-like'],
         popularity: 1,
         inCatalog: false,
+        platforms: [PS5, SWITCH],
         studioCountry: { alpha2: 'CA', source: IGDB },
         languages: [{ locale: 'pt-BR', interface: true }],
       },
@@ -260,6 +265,35 @@ describe('Catálogo', () => {
 
     it('combina gênero, português e país', async () => {
       expect(await names({ genre: 'adventure', portuguese: 'yes', country: 'US' })).toEqual([
+        'Outer Wilds',
+        '1000xResist',
+      ]);
+    });
+
+    it('com duas plataformas, basta o jogo rodar numa delas', async () => {
+      expect(await names({ platform: ['ps5', 'switch'] })).toEqual([
+        'Celeste',
+        'Baba Is You',
+        'Outer Wilds',
+        '1000xResist',
+      ]);
+    });
+
+    it('combina plataforma com busca, gênero, situação e país', async () => {
+      expect(await names({ platform: 'win', genre: 'platform' })).toEqual([
+        'Celeste',
+        'Hollow Knight',
+      ]);
+      expect(await names({ platform: 'win', genre: 'adventure', country: 'US' })).toEqual([
+        'Outer Wilds',
+      ]);
+      expect(await names({ platform: 'switch', q: 'baba' })).toEqual(['Baba Is You']);
+      expect(await names({ platform: 'switch', status: 'upcoming' })).toEqual([]);
+    });
+
+    it('plataforma desconhecida não acha nada; junto de uma conhecida, vale a conhecida', async () => {
+      expect(await games({ platform: 'nao-existe' })).toMatchObject({ items: [], total: 0 });
+      expect(await names({ platform: ['nao-existe', 'ps5'] })).toEqual([
         'Outer Wilds',
         '1000xResist',
       ]);

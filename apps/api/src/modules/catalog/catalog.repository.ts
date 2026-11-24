@@ -127,10 +127,13 @@ export class CatalogRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async searchGames(query: GameSearchQuery): Promise<{ total: number; games: GameSummaryRow[] }> {
-    const featureIds = await this.findFeatureIds(query);
-    if (!featureIds) return { total: 0, games: [] };
+    const [featureIds, platformIds] = await Promise.all([
+      this.findFeatureIds(query),
+      this.findPlatformIds(query),
+    ]);
+    if (!featureIds || !platformIds) return { total: 0, games: [] };
 
-    const where = searchWhere(query, featureIds);
+    const where = searchWhere(query, featureIds, platformIds);
     const [total, games] = await this.prisma.$transaction([
       this.prisma.game.count({ where }),
       this.prisma.game.findMany({
@@ -230,11 +233,24 @@ export class CatalogRepository {
     });
     return found.length === wanted.length ? found.map(({ id }) => id) : null;
   }
+
+  // Basta o jogo rodar numa das plataformas pedidas: o slug desconhecido não acha nada, e os outros
+  // continuam valendo. Null se nenhum existe.
+  private async findPlatformIds({ platform }: GameSearchQuery): Promise<string[] | null> {
+    if (platform.length === 0) return [];
+
+    const found = await this.prisma.platform.findMany({
+      where: { slug: { in: platform } },
+      select: { id: true },
+    });
+    return found.length > 0 ? found.map(({ id }) => id) : null;
+  }
 }
 
 function searchWhere(
   { q, status, portuguese, country }: GameSearchQuery,
   featureIds: string[],
+  platformIds: string[],
 ): Prisma.GameWhereInput {
   return {
     inCatalog: true,
@@ -244,6 +260,9 @@ function searchWhere(
       ...featureIds.map((featureId) => ({ features: { some: { featureId } } })),
       ...(portuguese ? [PORTUGUESE[portuguese]] : []),
       ...(country.length > 0 ? [countryWhere(country)] : []),
+      ...(platformIds.length > 0
+        ? [{ platforms: { some: { platformId: { in: platformIds } } } }]
+        : []),
     ],
   };
 }

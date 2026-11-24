@@ -66,6 +66,7 @@ export const GameSearchQuerySchema = z.object({
     .enum(PORTUGUESE_FILTERS, { error: 'Português deve ser yes, no ou unknown.' })
     .optional(),
   country: countryList,
+  platform: slugList,
   sort: z
     .enum(GAMES_SORTS, { error: 'Ordenação deve ser popular, newest ou name.' })
     .default('popular'),

@@ -16,6 +16,7 @@ describe('parseCatalogParams', () => {
         theme: [],
         tag: [],
         country: [],
+        platform: [],
         sort: 'popular',
         page: 1,
         pageSize: 24,
