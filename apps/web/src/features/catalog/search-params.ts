@@ -19,6 +19,7 @@ const FILTER_LABELS: Record<string, string> = {
   status: 'Situação',
   portuguese: 'Português',
   country: 'País',
+  platform: 'Plataforma',
   sort: 'Ordenação',
   page: 'Página',
   pageSize: 'Tamanho da página',
@@ -49,6 +50,7 @@ export function parseCatalogParams(params: CatalogSearchParams): ParsedCatalogPa
 export function toSearchParams(query: GameSearchQuery, page = query.page) {
   const params = new URLSearchParams();
   if (query.q) params.set('q', query.q);
+  for (const platform of query.platform) params.append('platform', platform);
   for (const genre of query.genre) params.append('genre', genre);
   for (const theme of query.theme) params.append('theme', theme);
   for (const tag of query.tag) params.append('tag', tag);

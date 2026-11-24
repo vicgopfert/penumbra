@@ -12,6 +12,7 @@ describe('GameSearchQuerySchema', () => {
       theme: [],
       tag: [],
       country: [],
+      platform: [],
       sort: 'popular',
       page: 1,
       pageSize: 24,
@@ -32,6 +33,14 @@ describe('GameSearchQuerySchema', () => {
     expect(GameSearchQuerySchema.parse({ country: ['br', ' PT ', 'Unknown', 'BR'] })).toMatchObject(
       { country: ['BR', 'PT', 'unknown'] },
     );
+  });
+
+  it('aceita a plataforma com um valor ou repetida, sem duplicar', () => {
+    expect(GameSearchQuerySchema.parse({ platform: 'ps5' }).platform).toEqual(['ps5']);
+    expect(GameSearchQuerySchema.parse({ platform: ['ps5', ' switch', 'ps5'] }).platform).toEqual([
+      'ps5',
+      'switch',
+    ]);
   });
 
   it('aceita os três valores do filtro de português', () => {
@@ -66,6 +75,8 @@ describe('GameSearchQuerySchema', () => {
     [{ country: 'BRA' }, 'País deve ser a sigla de duas letras ou unknown.'],
     [{ country: ['AR', 'BR', 'CL', 'PT', 'UY', 'PY'] }, 'Até 5 valores por filtro.'],
     [{ portuguese: 'sim' }, 'Português deve ser yes, no ou unknown.'],
+    [{ platform: ['win', 'mac', 'linux', 'ps5', 'switch', 'ios'] }, 'Até 5 valores por filtro.'],
+    [{ platform: ' ' }, 'Filtro vazio.'],
   ])('recusa %j', (input, message) => {
     expect(messages(input)).toEqual([message]);
   });

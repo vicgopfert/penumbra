@@ -264,11 +264,12 @@ model GameFeature {
   @@index([featureId])
 }
 
-// O nome curto de exibição vem de config/platforms.json, na leitura (B-84).
+// O nome curto de exibição vem de config/platforms.json, na leitura (B-84). O slug é o valor do
+// filtro do catálogo (B-85).
 model Platform {
   id           String         @id @default(uuid()) @db.Uuid
   igdbId       Int            @unique
-  slug         String
+  slug         String         @unique
   name         String
   abbreviation String?
   games        GamePlatform[]

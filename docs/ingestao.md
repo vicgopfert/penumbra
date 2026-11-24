@@ -542,4 +542,15 @@ plataformas e botões na ordem e com os links da API, abrindo em nova aba; nenhu
 seção logo depois da "Página oficial" e antes do resumo; "Não informado" para jogo sem
 plataforma; jogo com a Steam no `storeUrl` sem "Página oficial"; sem rolagem horizontal.
 
-A cobertura em produção é registrada depois da ingestão de produção.
+### Cobertura em produção (23/11/2026)
+
+Na ingestão de produção depois do merge (workflow "Ingestão", execução 45247001196, seção
+"Plataformas e lojas" do log), com 23.673 jogos no catálogo:
+- plataforma em todos os 17.691 lançados e em 5.674 dos 5.982 "Em breve" (94,9%), 98,7% do
+  catálogo;
+- jogos do catálogo com link de cada loja: Steam 22.715 (96,0%), Nintendo 4.392 (18,6%),
+  PlayStation 4.265 (18,0%), Microsoft 3.391 (14,3%), itch.io 3.184 (13,4%), GOG 2.930 (12,4%),
+  Epic 2.294 (9,7%), App Store 1.701 (7,2%) e Google Play 1.443 (6,1%).
+
+No navegador em produção (https://penumbraindie.com.br, 390 e 1280 px, em 24/11/2026), 18 de 18
+conferências passaram, as mesmas da conferência local.

@@ -6,6 +6,7 @@ import {
   CollectionSummarySchema,
   GameDetailSchema,
   GamePageSchema,
+  PlatformOptionSchema,
 } from '@indie/contracts';
 import request from 'supertest';
 import type { App } from 'supertest/types';
@@ -18,7 +19,7 @@ import {
   StudioCountrySource,
   TagSource,
 } from '../src/generated/prisma/client';
-import { COUNTRY_OPTION_MIN_GAMES } from '../src/modules/catalog/catalog.service';
+import { FILTER_OPTION_MIN_GAMES } from '../src/modules/catalog/catalog.service';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { CatalogBuilder } from './support/catalog-builder';
 import { contentIndexLoaded } from './support/content-index';
@@ -26,6 +27,7 @@ import { contentIndexLoaded } from './support/content-index';
 const PC = { igdbId: 6, slug: 'win', name: 'PC (Microsoft Windows)', abbreviation: 'PC' };
 const MAC = { igdbId: 14, slug: 'mac', name: 'Mac', abbreviation: 'Mac' };
 const SWITCH = { igdbId: 130, slug: 'switch', name: 'Nintendo Switch', abbreviation: 'Switch' };
+const PS5 = { igdbId: 167, slug: 'ps5', name: 'PlayStation 5', abbreviation: 'PS5' };
 
 describe('Catálogo', () => {
   let app: INestApplication<App>;
@@ -33,7 +35,7 @@ describe('Catálogo', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(COUNTRY_OPTION_MIN_GAMES)
+      .overrideProvider(FILTER_OPTION_MIN_GAMES)
       .useValue(2)
       .compile();
     app = moduleRef.createNestApplication();
@@ -103,6 +105,7 @@ describe('Catálogo', () => {
         tagSource: TagSource.IGDB,
         popularity: 0.5,
         releasedOn: '2019-05-28',
+        platforms: [PC, PS5],
         studioCountry: { alpha2: 'US', source: IGDB },
         languages: [english, { locale: 'pt-PT', interface: true }],
       },
@@ -110,6 +113,7 @@ describe('Catálogo', () => {
         name: 'Baba Is You',
         genres: ['Puzzle', 'Indie'],
         popularity: 0.5,
+        platforms: [SWITCH],
         releasedOn: '2019-03-13',
         studioCountry: { alpha2: 'FI', source: StudioCountrySource.WIKIDATA },
         languages: [english],
@@ -124,6 +128,7 @@ describe('Catálogo', () => {
         name: '1000xResist',
         genres: ['Adventure', 'Indie'],
         popularity: 0.2,
+        platforms: [PS5],
         releasedOn: '2024-05-09',
         studioCountry: { alpha2: 'US', source: IGDB },
         languages: [english, { locale: 'pt-BR', audio: true }],
@@ -135,6 +140,7 @@ describe('Catálogo', () => {
         tags: ['Souls-like'],
         popularity: 1,
         inCatalog: false,
+        platforms: [PS5, SWITCH],
         studioCountry: { alpha2: 'CA', source: IGDB },
         languages: [{ locale: 'pt-BR', interface: true }],
       },
@@ -260,6 +266,35 @@ describe('Catálogo', () => {
 
     it('combina gênero, português e país', async () => {
       expect(await names({ genre: 'adventure', portuguese: 'yes', country: 'US' })).toEqual([
+        'Outer Wilds',
+        '1000xResist',
+      ]);
+    });
+
+    it('com duas plataformas, basta o jogo rodar numa delas', async () => {
+      expect(await names({ platform: ['ps5', 'switch'] })).toEqual([
+        'Celeste',
+        'Baba Is You',
+        'Outer Wilds',
+        '1000xResist',
+      ]);
+    });
+
+    it('combina plataforma com busca, gênero, situação e país', async () => {
+      expect(await names({ platform: 'win', genre: 'platform' })).toEqual([
+        'Celeste',
+        'Hollow Knight',
+      ]);
+      expect(await names({ platform: 'win', genre: 'adventure', country: 'US' })).toEqual([
+        'Outer Wilds',
+      ]);
+      expect(await names({ platform: 'switch', q: 'baba' })).toEqual(['Baba Is You']);
+      expect(await names({ platform: 'switch', status: 'upcoming' })).toEqual([]);
+    });
+
+    it('plataforma desconhecida não acha nada; junto de uma conhecida, vale a conhecida', async () => {
+      expect(await games({ platform: 'nao-existe' })).toMatchObject({ items: [], total: 0 });
+      expect(await names({ platform: ['nao-existe', 'ps5'] })).toEqual([
         'Outer Wilds',
         '1000xResist',
       ]);
@@ -541,6 +576,18 @@ describe('Catálogo', () => {
       const response = await request(app.getHttpServer()).get('/api/countries').expect(200);
 
       expect(response.body).toEqual([{ code: 'US', name: 'Estados Unidos', gameCount: 2 }]);
+    });
+  });
+
+  describe('GET /api/platforms', () => {
+    it('é público e só lista plataformas com o mínimo de jogos do catálogo, com o nome curto, em ordem alfabética', async () => {
+      const response = await request(app.getHttpServer()).get('/api/platforms').expect(200);
+
+      expect(PlatformOptionSchema.array().parse(response.body)).toEqual([
+        { slug: 'win', name: 'PC', gameCount: 3 },
+        { slug: 'ps5', name: 'PS5', gameCount: 2 },
+        { slug: 'switch', name: 'Switch', gameCount: 2 },
+      ]);
     });
   });
 

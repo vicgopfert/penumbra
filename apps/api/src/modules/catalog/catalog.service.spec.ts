@@ -11,7 +11,7 @@ import type {
 } from './catalog.repository';
 import { CatalogService } from './catalog.service';
 import { FeatureLabels, featureLabelsConfigSchema } from './feature-labels';
-import { WhereToPlay } from './where-to-play';
+import { type PlatformCountRow, WhereToPlay } from './where-to-play';
 
 const labels = new FeatureLabels(
   featureLabelsConfigSchema.parse({
@@ -136,6 +136,7 @@ class FakeCatalog implements Pick<
   | 'countGamesByFeature'
   | 'findGameBySlug'
   | 'countGamesByCountry'
+  | 'countGamesByPlatform'
   | 'listCollections'
   | 'findCollectionGames'
 > {
@@ -146,7 +147,12 @@ class FakeCatalog implements Pick<
     private readonly countries: CountryCountRow[] = [],
     private readonly collections: CollectionSummaryRow[] = [],
     private readonly collectionGames: CollectionGamesRow | null = null,
+    private readonly platforms: PlatformCountRow[] = [],
   ) {}
+
+  countGamesByPlatform() {
+    return Promise.resolve(this.platforms);
+  }
 
   listCollections() {
     return Promise.resolve(this.collections);
@@ -457,6 +463,30 @@ describe('CatalogService', () => {
         { code: 'US', name: 'Estados Unidos', gameCount: 2042 },
         { code: 'PH', name: 'Filipinas', gameCount: 20 },
         { code: 'MY', name: 'Malásia', gameCount: 21 },
+      ]);
+    });
+  });
+
+  describe('listPlatforms', () => {
+    it('só lista plataformas com pelo menos 20 jogos, com o nome curto da ficha, em ordem alfabética', async () => {
+      const platform =
+        (igdbId: number, slug: string, name: string, abbreviation: string | null) =>
+        (gameCount: number) => ({ igdbId, slug, name, abbreviation, gameCount });
+      const catalog = new FakeCatalog({ total: 0, games: [] }, [], null, [], [], null, [
+        platform(130, 'switch', 'Nintendo Switch', 'Switch')(20),
+        platform(167, 'ps5', 'PlayStation 5', 'PS5')(2581),
+        platform(6, 'win', 'PC (Microsoft Windows)', 'PC')(22734),
+        platform(72, 'ouya', 'Ouya', null)(38),
+        platform(37, '3ds', 'Nintendo 3DS', '3DS')(84),
+        platform(5, 'wii', 'Wii', 'Wii')(19),
+      ]);
+
+      expect(await service(catalog).listPlatforms()).toEqual([
+        { slug: '3ds', name: '3DS', gameCount: 84 },
+        { slug: 'ouya', name: 'Ouya', gameCount: 38 },
+        { slug: 'win', name: 'PC', gameCount: 22734 },
+        { slug: 'ps5', name: 'PS5', gameCount: 2581 },
+        { slug: 'switch', name: 'Switch', gameCount: 20 },
       ]);
     });
   });

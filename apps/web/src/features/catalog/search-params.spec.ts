@@ -16,6 +16,7 @@ describe('parseCatalogParams', () => {
         theme: [],
         tag: [],
         country: [],
+        platform: [],
         sort: 'popular',
         page: 1,
         pageSize: 24,
@@ -38,6 +39,11 @@ describe('parseCatalogParams', () => {
     });
   });
 
+  it('lê a plataforma com um valor ou repetida', () => {
+    expect(query({ platform: 'ps5' }).platform).toEqual(['ps5']);
+    expect(query({ platform: ['ps5', 'switch'] }).platform).toEqual(['ps5', 'switch']);
+  });
+
   it('URL inválida devolve as mensagens com o nome do filtro em português', () => {
     expect(parseCatalogParams({ genre: ['a', 'b', 'c', 'd', 'e', 'f'], page: 'abc' })).toEqual({
       ok: false,
@@ -46,6 +52,10 @@ describe('parseCatalogParams', () => {
     expect(parseCatalogParams({ tag: ['a', 'b', 'c', 'd', 'e', 'f'] })).toEqual({
       ok: false,
       errors: ['Etiqueta: Até 5 valores por filtro.'],
+    });
+    expect(parseCatalogParams({ platform: ['a', 'b', 'c', 'd', 'e', 'f'] })).toEqual({
+      ok: false,
+      errors: ['Plataforma: Até 5 valores por filtro.'],
     });
   });
 });
@@ -58,6 +68,7 @@ describe('catalogHref', () => {
   it('leva todos os filtros e deixa de fora os valores padrão', () => {
     const filtered = query({
       q: 'knight',
+      platform: ['ps5', 'switch'],
       genre: ['platform', 'adventure'],
       theme: 'fantasy',
       tag: ['metroidvania', 'difficult'],
@@ -68,7 +79,7 @@ describe('catalogHref', () => {
     });
 
     expect(catalogHref(filtered)).toBe(
-      '/catalogo?q=knight&genre=platform&genre=adventure&theme=fantasy&tag=metroidvania&tag=difficult&status=released&portuguese=yes&country=US&country=unknown&sort=newest',
+      '/catalogo?q=knight&platform=ps5&platform=switch&genre=platform&genre=adventure&theme=fantasy&tag=metroidvania&tag=difficult&status=released&portuguese=yes&country=US&country=unknown&sort=newest',
     );
   });
 

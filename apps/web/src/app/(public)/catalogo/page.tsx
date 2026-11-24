@@ -1,7 +1,12 @@
 import type { GameSearchQuery } from '@indie/contracts';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { listCountries, listFeatures, searchGames } from '@/features/catalog/api';
+import {
+  listCountries,
+  listFeatures,
+  listPlatformsOrEmpty,
+  searchGames,
+} from '@/features/catalog/api';
 import { CatalogFilters } from '@/features/catalog/catalog-filters';
 import { CatalogPagination } from '@/features/catalog/catalog-pagination';
 import { listCollectionsOrNull } from '@/features/collections/api';
@@ -21,7 +26,7 @@ import {
 export const metadata: Metadata = {
   title: 'Catálogo',
   description:
-    'Jogos independentes com filtros de gênero, tema, etiqueta, situação, português e país.',
+    'Jogos independentes com filtros de plataforma, gênero, tema, etiqueta, situação, português e país.',
 };
 
 export default async function CatalogPage({
@@ -56,16 +61,17 @@ async function loadCatalog(query: GameSearchQuery) {
     listFeatures('theme'),
     listFeatures('tag'),
     listCountries(),
+    listPlatformsOrEmpty(),
   ]).catch(() => null);
   if (!data) return <CatalogUnavailable retryHref={catalogHref(query)} />;
 
-  const [page, genres, themes, tags, countries] = data;
+  const [page, genres, themes, tags, countries, platforms] = data;
   const beyondLastPage = page.items.length === 0 && page.total > 0;
 
   return (
     <div className="grid gap-8 md:grid-cols-[16rem_1fr]">
       <aside aria-label="Filtros">
-        <CatalogFilters query={query} options={{ genres, themes, tags, countries }} />
+        <CatalogFilters query={query} options={{ platforms, genres, themes, tags, countries }} />
       </aside>
       <section aria-label="Resultados" className="space-y-6">
         <p className="text-sm text-muted-foreground">

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { type GameStore, STORES } from '@indie/contracts';
+import { type GameStore, type PlatformOption, STORES } from '@indie/contracts';
 import { z } from 'zod';
 import type { Store } from '../../generated/prisma/client';
 
@@ -34,6 +34,10 @@ export interface PlatformRow {
   abbreviation: string | null;
 }
 
+export interface PlatformCountRow extends PlatformRow {
+  gameCount: number;
+}
+
 export interface StoreLinkRow {
   store: Store;
   url: string;
@@ -62,13 +66,14 @@ export class WhereToPlay {
     );
   }
 
-  // Fora do arquivo, vale a abreviação da IGDB e, sem ela, o nome.
   platformsOf(rows: readonly PlatformRow[]): { slug: string; name: string }[] {
+    return rows.map((row) => ({ slug: row.slug, name: this.platformName(row) })).sort(alphabetical);
+  }
+
+  // As opções do filtro do catálogo (F-35), com o mesmo nome e a mesma ordem da ficha.
+  platformOptionsOf(rows: readonly PlatformCountRow[]): PlatformOption[] {
     return rows
-      .map(({ igdbId, slug, name, abbreviation }) => ({
-        slug,
-        name: this.platformNames.get(igdbId) ?? abbreviation ?? name,
-      }))
+      .map((row) => ({ slug: row.slug, name: this.platformName(row), gameCount: row.gameCount }))
       .sort(alphabetical);
   }
 
@@ -77,5 +82,10 @@ export class WhereToPlay {
       .filter(({ store }) => this.stores.stores[store].button)
       .map(({ store, url }) => ({ store, name: this.stores.stores[store].name, url }))
       .sort(alphabetical);
+  }
+
+  // Fora do arquivo, vale a abreviação da IGDB e, sem ela, o nome.
+  private platformName({ igdbId, abbreviation, name }: PlatformRow) {
+    return this.platformNames.get(igdbId) ?? abbreviation ?? name;
   }
 }

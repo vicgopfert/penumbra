@@ -7,6 +7,10 @@ import { parseCatalogParams, type CatalogSearchParams } from './search-params';
 vi.mock('next/form', () => import('@/test/next-form'));
 
 const options: CatalogFilterOptions = {
+  platforms: [
+    { slug: 'win', name: 'PC', gameCount: 22734 },
+    { slug: 'ps5', name: 'PS5', gameCount: 2581 },
+  ],
   genres: [
     { slug: 'adventure', name: 'Aventura', gameCount: 10922 },
     { slug: 'puzzle', name: 'Quebra-cabeça', gameCount: 3607 },
@@ -20,10 +24,10 @@ const options: CatalogFilterOptions = {
   countries: [{ code: 'BR', name: 'Brasil', gameCount: 251 }],
 };
 
-function renderFilters(params: CatalogSearchParams = {}) {
+function renderFilters(params: CatalogSearchParams = {}, filterOptions = options) {
   const parsed = parseCatalogParams(params);
   if (!parsed.ok) throw new Error(parsed.errors.join(' '));
-  return render(<CatalogFilters query={parsed.query} options={options} />);
+  return render(<CatalogFilters query={parsed.query} options={filterOptions} />);
 }
 
 const group = (name: string) => screen.getByRole('group', { name: new RegExp(`^${name}`) });
@@ -48,9 +52,29 @@ describe('CatalogFilters', () => {
     ).toHaveAttribute('value', 'unknown');
   });
 
+  it('a plataforma vem logo depois da busca, com a contagem de jogos', () => {
+    const { container } = renderFilters();
+
+    const legends = [...container.querySelectorAll('summary')].map(
+      (summary) => summary.textContent,
+    );
+    expect(legends[0]).toBe('Plataforma');
+    expect(
+      within(group('Plataforma')).getByRole('checkbox', { name: 'PS5 (2.581)' }),
+    ).toHaveAttribute('name', 'platform');
+  });
+
+  it('sem as opções de plataforma, o filtro não aparece', () => {
+    renderFilters({}, { ...options, platforms: [] });
+
+    expect(screen.queryByRole('group', { name: /^Plataforma/ })).not.toBeInTheDocument();
+    expect(group('Gênero')).toBeInTheDocument();
+  });
+
   it('vem preenchido com os filtros da URL', () => {
     renderFilters({
       q: 'knight',
+      platform: ['ps5'],
       genre: ['puzzle'],
       tag: ['metroidvania'],
       country: 'br',
@@ -60,6 +84,8 @@ describe('CatalogFilters', () => {
     });
 
     expect(screen.getByRole('searchbox', { name: 'Buscar pelo nome' })).toHaveValue('knight');
+    expect(screen.getByRole('checkbox', { name: 'PS5 (2.581)' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'PC (22.734)' })).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'Quebra-cabeça (3.607)' })).toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'Aventura (10.922)' })).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'Brasil (251)' })).toBeChecked();

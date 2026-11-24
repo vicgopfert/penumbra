@@ -4,6 +4,7 @@ import {
   type FeatureOption,
   GAMES_SEARCH_MAX_LENGTH,
   type GameSearchQuery,
+  type PlatformOption,
 } from '@indie/contracts';
 import Form from 'next/form';
 import Link from 'next/link';
@@ -14,6 +15,7 @@ import { type Choice, ChoiceList } from './choice-list';
 import { CATALOG_PATH, catalogHref } from './search-params';
 
 export interface CatalogFilterOptions {
+  platforms: PlatformOption[];
   genres: FeatureOption[];
   themes: FeatureOption[];
   tags: FeatureOption[];
@@ -63,6 +65,17 @@ export function CatalogFilters({
           maxLength={GAMES_SEARCH_MAX_LENGTH}
         />
       </div>
+      {options.platforms.length > 0 && (
+        <ChoiceList
+          legend="Plataforma"
+          name="platform"
+          selected={query.platform}
+          choices={options.platforms.map((platform) => ({
+            value: platform.slug,
+            label: withCount(platform),
+          }))}
+        />
+      )}
       <ChoiceList
         legend="Gênero"
         name="genre"
