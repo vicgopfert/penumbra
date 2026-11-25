@@ -11,8 +11,9 @@ pnpm --filter @indie/api ingest:dev   # direto do código, com tsx
 Variáveis: `DATABASE_URL`, `IGDB_CLIENT_ID` e `IGDB_CLIENT_SECRET`. A saída é 0 quando a
 execução termina como `SUCCEEDED` e 1 quando termina como `FAILED`.
 
-**Em produção**, a ingestão roda pelo workflow manual "Ingestão" do GitHub Actions
-(`.github/workflows/ingest.yml`), só a partir da `main`, com os secrets
+**Em produção**, a ingestão roda pelo workflow "Ingestão" do GitHub Actions
+(`.github/workflows/ingest.yml`), toda noite e também à mão (seção "Execução agendada"), só a
+partir da `main`, com os secrets
 `PRODUCTION_DATABASE_URL` (conexão direta do Neon), `IGDB_CLIENT_ID` e
 `IGDB_CLIENT_SECRET`. Ele divide o grupo de concorrência com o job de migrations, para que
 os dois nunca rodem juntos, e escreve no resumo da execução o registro do `IngestionRun`, a
@@ -43,7 +44,7 @@ Steam responde ao Actions, numa amostra de 200 jogos do catálogo, sem gravar na
 8. Grava tudo numa única transação, com as coleções publicadas de `config/collections.json`,
    e fecha a execução com contagens, escala da popularidade e resumo de erros.
 9. No workflow "Ingestão", chama `POST /api/internal/reload-index` para a API recarregar o
-   índice de conteúdo sem reiniciar.
+   índice de conteúdo sem reiniciar, e escreve o resumo, com a situação de lançamento.
 
 Jogo rejeitado na primeira avaliação não é gravado. Jogo gravado que passa a ser
 rejeitado fica com `inCatalog = false`, com o veredito e a versão do critério, porque
@@ -73,12 +74,53 @@ data da avaliação fica em `IngestionRun.evaluatedAt`.
 ## Restrições de execução
 
 - **Nunca rodar a ingestão dentro do processo da API.** O pico de memória medido fica entre
-  540 e 615 MB, acima dos 512 MB do Render. A ingestão roda pela linha de comando ou, no
-  B-54, no GitHub Actions.
+  540 e 615 MB, acima dos 512 MB do Render. A ingestão roda pela linha de comando ou no
+  GitHub Actions.
 - **A transação cobre só a gravação.** A busca e o cálculo terminam antes de ela abrir. A
   gravação do catálogo inteiro levou de 8 a 16 s no banco local, e o limite é de 5 min.
 - **No Neon (B-14), usar a conexão direta, não a do pooler.** A transação longa de
   gravação não combina com o pooler em modo de transação.
+
+## Execução agendada (B-54)
+
+Decisões do autor em 24/11/2026:
+
+- **Horário:** todo dia às 03:23 de Brasília (`23 6 * * *` em UTC; o Brasil não tem horário
+  de verão), de madrugada e fora da virada da hora, quando o GitHub mais atrasa as execuções
+  agendadas. A execução agendada pode começar com atraso e roda sempre a versão da `main`. O
+  disparo manual continua, nos modos `ingestao` e `sonda-steam`.
+- **Mesmo grupo de concorrência** do job de migrations (`production-database`), sem cancelar
+  a que está rodando. A última execução manual levou 13 min, dentro do limite de 30 min.
+- **No fim**, a recarga do índice de conteúdo da API, como na execução manual; depois do B-102,
+  também a revalidação das páginas públicas. A chamada acorda a instância gratuita do Render.
+- **Falha vira alerta.** Falha da ingestão, agendada ou manual, abre uma issue com o rótulo
+  `ingestao` e o link da execução; se já houver uma aberta, a execução nova entra como
+  comentário; a próxima execução bem-sucedida fecha as abertas. O cancelamento abre a issue só
+  na execução agendada, que é cancelada pelo tempo limite ou pela fila do grupo de concorrência,
+  e nos dois casos o catálogo não é atualizado; cancelar à mão não abre (desvio do plano
+  aprovado pelo autor com esse ajuste). O e-mail do próprio GitHub
+  sobre a execução agendada que falhou vai para quem mudou o `cron` por último, e o autor tem
+  esse aviso ligado. O modo `teste-alerta` falha de propósito, de qualquer branch e sem tocar
+  no banco, e abre uma issue "[teste]" pelo mesmo caminho.
+- **Execução com ressalvas** (`SUCCEEDED` com `errorSummary`: Steam ou Wikidata fora do ar,
+  desativação pulada) só gera um aviso `::warning::` no resumo, sem issue: o catálogo foi
+  gravado e mantém o que já estava, pelas regras da tabela de falhas.
+- **Situação de lançamento.** O resumo, também no log, lista os jogos que estavam no catálogo,
+  continuam nele e mudaram de situação (`RELEASE_STATUS_CHANGED`), separados em "Em breve →
+  lançado" e "lançado → Em breve". Esses alertas ficam fora da seção "Alertas da execução",
+  mas entram no `flagsRaised`. A comparação é com o que estava gravado, então é exata mesmo
+  quando a IGDB corrige uma data.
+- **Limpeza de sessões e tokens vencidos**, que roda no fim da ingestão, passa a ser diária. A
+  política de privacidade fala em "limpeza periódica" e continua valendo.
+
+**Ingestão local de 24/11/2026**, contra a IGDB real e com o banco local gravado em 23/11: 17 min
+31 s e 23.641 jogos no catálogo. Saíram 73 alertas, dos quais 53 `RELEASE_STATUS_CHANGED`, todos
+de "Em breve" a lançado e nenhum no sentido contrário. Uma consulta por janela de datas (jogo
+lançado com data depois da execução anterior) acharia 44: deixaria de fora, por exemplo, um jogo
+cuja data a IGDB antecipou para 13/11.
+
+Limitação registrada: o GitHub desliga o agendamento de um repositório público depois de 60
+dias sem atividade nele, e reativar é manual, na aba Actions.
 
 ## Etiquetas da comunidade Steam (B-78)
 
@@ -173,6 +215,7 @@ do filtro exige (B-21). O M0 estimava cerca de 50% de cobertura, a partir de uma
 | `LEFT_CANDIDATE_SET` | Jogo do catálogo não voltou na busca; o detalhe separa `LOST_INDIE_GENRE`, `OUT_OF_SCOPE` e `NOT_FOUND` |
 | `COLLECTION_GAME_OUT_OF_CATALOG` | Jogo aprovado numa coleção publicada não está no catálogo da execução; o detalhe traz a coleção, quantos jogos dela estão no catálogo e o mínimo (seção "Coleções") |
 | `NO_DEVELOPER_VISIBLE` | Jogo do catálogo sem desenvolvedora creditada, com pelo menos `noDeveloperReview.minRatings` avaliações (20) ou publisher da lista de grandes, fora dos jogos já revisados (decisão do M0, seção 8.10) |
+| `RELEASE_STATUS_CHANGED` | Jogo que estava no catálogo e continua nele mudou de situação: de "Em breve" a lançado, quando a data chega, ou de lançado a "Em breve", quando a IGDB corrige a data; o detalhe traz `from`, `to` e a data (B-54). Não pede revisão: alimenta o resumo da execução |
 
 Os alertas de empresa não dependem de histórico: disparam enquanto a empresa não estiver
 em `reviewedCompanies` (`config/ingestion-review.json`). Revisar o caso é registrar a

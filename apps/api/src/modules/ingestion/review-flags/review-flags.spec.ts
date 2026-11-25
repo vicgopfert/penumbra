@@ -53,6 +53,7 @@ const stored = (changes: Partial<StoredGame> = {}): StoredGame => ({
   name: 'Jogo',
   inCatalog: true,
   firstReleaseDate: new Date('2025-01-01T00:00:00Z'),
+  releaseStatus: 'RELEASED',
   criteriaVersion: 'v1',
   evaluatedAt: new Date('2026-10-01T00:00:00Z'),
   popularityCount: 0,
@@ -271,6 +272,65 @@ describe('detectReviewFlags', () => {
         expect(flags[0]?.detail).toMatchObject({ wantToPlayDropped: dropped });
       },
     );
+
+    it('alerta o jogo do catálogo que passou de "Em breve" a lançado', () => {
+      const flags = detect({
+        evaluated: [{ game: game(), verdict: ACCEPTED }],
+        stored: new Map([[1, stored({ releaseStatus: 'UPCOMING' })]]),
+      });
+
+      expect(flags).toEqual([
+        expect.objectContaining({
+          kind: ReviewFlagKind.RELEASE_STATUS_CHANGED,
+          detail: { from: 'UPCOMING', to: 'RELEASED', releaseDate: '2025-01-01' },
+        }),
+      ]);
+    });
+
+    it('alerta o jogo do catálogo que voltou a "Em breve" pela correção da data', () => {
+      const flags = detect({
+        evaluated: [
+          {
+            game: game({ firstReleaseDate: null, releaseStatus: 'UPCOMING' }),
+            verdict: ACCEPTED,
+          },
+        ],
+        stored: new Map([[1, stored()]]),
+      });
+
+      expect(flags).toEqual([
+        expect.objectContaining({
+          kind: ReviewFlagKind.RELEASE_STATUS_CHANGED,
+          detail: { from: 'RELEASED', to: 'UPCOMING', releaseDate: null },
+        }),
+      ]);
+    });
+
+    it('o jogo sem data que ganhou data já passada recebe os dois alertas', () => {
+      const flags = detect({
+        evaluated: [{ game: game(), verdict: ACCEPTED }],
+        stored: new Map([[1, stored({ firstReleaseDate: null, releaseStatus: 'UPCOMING' })]]),
+      });
+
+      expect(kinds(flags)).toEqual([
+        ReviewFlagKind.RELEASE_DATE_ASSIGNED,
+        ReviewFlagKind.RELEASE_STATUS_CHANGED,
+      ]);
+    });
+
+    it('não alerta a mudança de situação de quem entra ou sai do catálogo', () => {
+      const entering = detect({
+        evaluated: [{ game: game(), verdict: ACCEPTED }],
+        stored: new Map([[1, stored({ inCatalog: false, releaseStatus: 'UPCOMING' })]]),
+      });
+      const leaving = detect({
+        evaluated: [{ game: game(), verdict: { accepted: false, reason: 'INCOMPLETE_ENTRY' } }],
+        stored: new Map([[1, stored({ releaseStatus: 'UPCOMING' })]]),
+      });
+
+      expect(kinds(entering)).toEqual([ReviewFlagKind.VERDICT_CHANGED]);
+      expect(kinds(leaving)).toEqual([ReviewFlagKind.VERDICT_CHANGED]);
+    });
 
     it('saída por outro motivo não conta como queda do "Want to Play"', () => {
       const flags = detect({

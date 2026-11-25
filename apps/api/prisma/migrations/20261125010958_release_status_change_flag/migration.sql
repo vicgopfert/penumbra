@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "ReviewFlagKind" ADD VALUE 'RELEASE_STATUS_CHANGED';
