@@ -12,6 +12,7 @@
 | `ingestao.md` | Ingestão do catálogo (B-13): como rodar, o fluxo de uma execução, a política de falhas, as etiquetas da Steam (B-78), a carência pós-lançamento, o país do estúdio (B-56), os alertas de revisão, as coleções (B-57), a popularidade reconstruída, o "Want to Play" como sinal de interesse (B-69) e as medições das cargas locais e em produção |
 | `colecoes.md` | Coleções culturais (B-57 e B-58): o fluxo da curadoria, a regra de curadoria e de ambientação, as coleções iniciais, as fontes da sugestão e as limitações, a API e a interface, com as conferências local e em produção |
 | `precos.md` | Preços e demos da Steam (B-86 a B-88, B-90 e B-91): as decisões, a arquitetura da coleta em lote, a análise de viabilidade da GG.deals, as alternativas, os riscos e os dois caminhos para as demos |
+| `privacidade.md` | Privacidade e termos de uso (B-101): as fontes consultadas, o inventário campo a campo dos dados pessoais, as bases legais, o teste de balanceamento do legítimo interesse, a transferência internacional por provedor, os riscos que ficaram e a regra de revisão |
 | `m0-relatorio-igdb.md` | Relatório do marco M0 (B-07): termos da IGDB, cobertura dos campos, recortes do catálogo e decisões de dados |
 
 As transcrições e análises das pesquisas de campo (entrevistas na BGS 2026 e

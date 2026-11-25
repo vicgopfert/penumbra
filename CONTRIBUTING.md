@@ -81,6 +81,12 @@ foi atingido, há teste automatizado para a regra principal (quando houver
 regra), o CI está verde, o endpoint novo — se houver — está documentado no
 Swagger, e a mudança está implantada no ambiente de demonstração.
 
+Item que grave dado pessoal novo, ou use um dado de outro jeito, atualiza no
+mesmo PR a política de privacidade (`/privacidade`), a data de vigência e o
+inventário de [`docs/privacidade.md`](./docs/privacidade.md), antes de coletar.
+O teste `personal-data-inventory.spec.ts` da API falha quando o schema ganha um
+campo pessoal fora do inventário.
+
 Não há meta de cobertura de testes nem de desempenho: o critério é cobrir o que
 pode quebrar a demonstração ou a tese central do trabalho.
 
