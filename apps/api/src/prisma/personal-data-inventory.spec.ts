@@ -13,6 +13,7 @@ const INVENTORY: Record<string, string> = {
   'User.discoveryMode': 'conta',
   'User.onboardingCompletedAt': 'conta',
   'User.emailConfirmedAt': 'conta',
+  'User.usageMetricsConsentAt': 'conta',
   'User.createdAt': 'conta',
   'Session.id': 'sessao',
   'Session.userId': 'sessao',
@@ -36,6 +37,25 @@ const INVENTORY: Record<string, string> = {
   'UserPreference.userId': 'biblioteca',
   'UserPreference.featureId': 'biblioteca',
   'UserPreference.createdAt': 'biblioteca',
+  ...Object.fromEntries(
+    [
+      'id',
+      'kind',
+      'occurredAt',
+      'userId',
+      'page',
+      'visitStart',
+      'origin',
+      'gameId',
+      'gameIds',
+      'list',
+      'mode',
+      'position',
+      'listPage',
+      'exit',
+      'store',
+    ].map((field) => [`ProductEvent.${field}`, 'metricas-de-uso']),
+  ),
 };
 
 type SchemaField = { name: string; type: string };

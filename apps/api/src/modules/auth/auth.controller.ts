@@ -52,6 +52,7 @@ const PUBLIC_USER_EXAMPLE = {
   discoveryMode: 'BALANCED',
   onboardingCompletedAt: null,
   emailConfirmedAt: null,
+  usageMetricsConsentAt: null,
   createdAt: '2026-10-27T12:00:00.000Z',
 };
 
@@ -71,7 +72,12 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @ApiBody({
     schema: {
-      example: { email: 'jogadora@example.com', displayName: 'Jogadora', password: 'senha-forte' },
+      example: {
+        email: 'jogadora@example.com',
+        displayName: 'Jogadora',
+        password: 'senha-forte',
+        usageMetricsConsent: false,
+      },
     },
   })
   @ApiCreatedResponse({

@@ -25,11 +25,15 @@ export class AuthService {
 
   // O e-mail chega normalizado pelo schema de entrada. O cadastro já abre a sessão, e a conta
   // funciona antes de o e-mail ser confirmado.
-  async register({ email, displayName, password }: RegisterInput, now = new Date()) {
+  async register(
+    { email, displayName, password, usageMetricsConsent }: RegisterInput,
+    now = new Date(),
+  ) {
     const user = await this.users.createIfEmailFree({
       email,
       displayName,
       passwordHash: await this.passwords.hash(password),
+      usageMetricsConsentAt: usageMetricsConsent ? now : null,
     });
     if (!user) throw new ConflictException('E-mail já cadastrado');
     this.emailConfirmation.request(user, now);

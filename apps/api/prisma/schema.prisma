@@ -79,6 +79,48 @@ enum ReviewFlagKind {
   RELEASE_STATUS_CHANGED
 }
 
+enum ProductEventKind {
+  PAGE_VIEW
+  LIST_IMPRESSION
+  RECOMMENDATION_CLICK
+  WANT_TO_PLAY
+  EXIT_CLICK
+}
+
+enum ProductPage {
+  HOME
+  CATALOG
+  GAME
+  COLLECTIONS
+  COLLECTION
+  RECOMMENDATIONS
+  RECOMMENDATION_LIST
+  PROFILE
+  ONBOARDING
+  ACCOUNT
+  LEGAL
+  OTHER
+}
+
+enum RecommendationListKind {
+  MAIN
+  LIKED_GAME
+  INTEREST
+  UPCOMING
+  SIMILAR
+}
+
+enum VisitOrigin {
+  DIRECT
+  SEARCH
+  OTHER_SITE
+}
+
+enum ExitKind {
+  STORE
+  OFFICIAL_SITE
+}
+
 enum ListType {
   FAVORITE
   COMPLETED
@@ -95,12 +137,15 @@ model User {
   discoveryMode         DiscoveryMode    @default(BALANCED)
   onboardingCompletedAt DateTime?
   emailConfirmedAt      DateTime?
+  // Só com ela os eventos de uso levam a conta (B-100); retirá-la apaga os que levaram.
+  usageMetricsConsentAt DateTime?
   createdAt             DateTime         @default(now())
   sessions              Session[]
   accountTokens         AccountToken[]
   ratings               Rating[]
   listEntries           ListEntry[]
   preferences           UserPreference[]
+  productEvents         ProductEvent[]
 }
 
 // Guarda só o hash SHA-256 do token; o token em si existe apenas no cookie do navegador.
@@ -237,6 +282,7 @@ model Game {
   collections         CollectionGame[]
   ratings             Rating[]
   listEntries         ListEntry[]
+  productEvents       ProductEvent[]
 
   @@index([inCatalog, releaseStatus])
   @@index([studioCountryCode])
@@ -360,4 +406,32 @@ model IngestionReviewFlag {
 
   @@index([runId])
   @@index([kind])
+}
+
+// Métricas de uso (B-100). Nenhuma coluna de IP, e-mail, navegador ou identificador de visita; a
+// conta só vem com o consentimento dela. Os campos de cada tipo seguem o contrato (events.ts).
+model ProductEvent {
+  id         BigInt                  @id @default(autoincrement())
+  kind       ProductEventKind
+  occurredAt DateTime                @default(now())
+  userId     String?                 @db.Uuid
+  user       User?                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  page       ProductPage?
+  visitStart Boolean?
+  origin     VisitOrigin?
+  gameId     String?                 @db.Uuid
+  game       Game?                   @relation(fields: [gameId], references: [id], onDelete: SetNull)
+  // Os jogos de uma exibição, na ordem da lista.
+  gameIds    String[]                @db.Uuid
+  list       RecommendationListKind?
+  mode       DiscoveryMode?
+  position   Int?
+  // Página do "ver mais" em que o clique aconteceu; a posição conta dentro dela.
+  listPage   Int?
+  exit       ExitKind?
+  store      Store?
+
+  @@index([occurredAt])
+  @@index([userId])
+  @@index([gameId])
 }
