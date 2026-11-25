@@ -91,8 +91,11 @@ Decisões do autor em 24/11/2026:
   disparo manual continua, nos modos `ingestao` e `sonda-steam`.
 - **Mesmo grupo de concorrência** do job de migrations (`production-database`), sem cancelar
   a que está rodando. A última execução manual levou 13 min, dentro do limite de 30 min.
-- **No fim**, a recarga do índice de conteúdo da API, como na execução manual; depois do B-102,
-  também a revalidação das páginas públicas. A chamada acorda a instância gratuita do Render.
+- **No fim**, a recarga do índice de conteúdo da API, como na execução manual, e a revalidação
+  do cache das páginas públicas na Vercel (B-102, `POST /internal/revalidate`, com o segredo
+  `REVALIDATE_SECRET`), registrada no resumo em "Revalidação das páginas públicas". Sem o segredo,
+  a execução falha; uma falha da chamada só gera aviso, porque o cache volta sozinho em até um dia
+  (`docs/cache.md`). A recarga acorda a instância gratuita do Render.
 - **Falha vira alerta.** Falha da ingestão, agendada ou manual, abre uma issue com o rótulo
   `ingestao` e o link da execução; se já houver uma aberta, a execução nova entra como
   comentário; a próxima execução bem-sucedida fecha as abertas. O cancelamento abre a issue só
