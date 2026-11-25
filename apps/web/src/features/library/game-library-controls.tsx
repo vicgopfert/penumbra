@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { clearAccount, useSession } from '@/features/auth/hooks';
 import { errorMessage, isUnauthorized } from '@/lib/api-client';
+import { recommendationOf, track } from '@/features/metrics/tracker';
 import { withRedirect } from '@/lib/safe-redirect';
 import type { LibraryAction } from './api';
 import { useGameLibrary, useLibraryAction } from './hooks';
@@ -68,7 +69,15 @@ function LibraryState({ slug }: { slug: string }) {
       saving={action.isPending}
       saved={action.isSuccess}
       error={action.isError ? errorMessage(action.error) : null}
-      onAction={(next) => action.mutate(next)}
+      onAction={(next) =>
+        action.mutate(next, {
+          onSuccess: () => {
+            if (next.kind === 'add' && next.list === 'WANT_TO_PLAY') {
+              track({ kind: 'WANT_TO_PLAY', game: slug, ...recommendationOf(slug) });
+            }
+          },
+        })
+      }
     />
   );
 }

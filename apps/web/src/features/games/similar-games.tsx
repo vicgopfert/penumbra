@@ -1,4 +1,5 @@
 import type { SimilarGame } from '@indie/contracts';
+import { TrackedList } from '@/features/metrics/tracked-list';
 import { getSimilarGames } from './api';
 import { CoverRow } from './cover-row';
 import { UpcomingBadge } from './upcoming-badge';
@@ -17,7 +18,9 @@ export async function SimilarGames({ slug }: { slug: string }) {
       <h2 id="similar-games" className="font-medium">
         Jogos semelhantes
       </h2>
-      <CoverRow items={items} columns={6} caption={SimilarGameCaption} />
+      <TrackedList list="SIMILAR" mode={null} games={items.map(({ game }) => game.slug)}>
+        <CoverRow items={items} columns={6} caption={SimilarGameCaption} />
+      </TrackedList>
     </section>
   );
 }

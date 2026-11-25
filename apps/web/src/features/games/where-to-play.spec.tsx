@@ -8,6 +8,7 @@ describe('WhereToPlay', () => {
   it('lista as plataformas e um botão por loja, que abre a página do jogo em nova aba', () => {
     render(
       <WhereToPlay
+        slug="hades"
         platforms={[
           { slug: 'win', name: 'PC' },
           { slug: 'switch', name: 'Switch' },
@@ -29,14 +30,16 @@ describe('WhereToPlay', () => {
   });
 
   it('plataforma sem loja aparece sem botão', () => {
-    render(<WhereToPlay platforms={[{ slug: 'switch', name: 'Switch' }]} stores={[]} />);
+    render(
+      <WhereToPlay slug="hades" platforms={[{ slug: 'switch', name: 'Switch' }]} stores={[]} />,
+    );
 
     expect(section()).toHaveTextContent('Plataformas: Switch');
     expect(within(section()).queryByRole('list', { name: 'Lojas' })).not.toBeInTheDocument();
   });
 
   it('jogo sem plataforma informada diz "Não informado"', () => {
-    render(<WhereToPlay platforms={[]} stores={[]} />);
+    render(<WhereToPlay slug="hades" platforms={[]} stores={[]} />);
 
     expect(section()).toHaveTextContent('Plataformas: Não informado');
   });

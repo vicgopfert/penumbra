@@ -1,12 +1,13 @@
 'use client';
 
-import type { DiscoveryMode, RecommendationOverview } from '@indie/contracts';
+import type { DiscoveryMode, Recommendation, RecommendationOverview } from '@indie/contracts';
 import Link from 'next/link';
 import { type ReactNode, useId } from 'react';
 import { SessionGate, useClearAccountWhenUnauthorized } from '@/features/auth/session-gate';
 import { CoverRow } from '@/features/games/cover-row';
+import { TrackedList } from '@/features/metrics/tracked-list';
 import { useRecommendationOverview } from './hooks';
-import { listHref, listTitle, RECOMMENDATIONS_PATH } from './lists';
+import { listHref, listKind, listTitle, RECOMMENDATIONS_PATH } from './lists';
 import {
   BasisNote,
   ChangeTastesLink,
@@ -66,7 +67,9 @@ function RecommendedGames({
       <BasisNote basis={basis} mode={mode} withBadges={false} />
       <ListSection listKey="main" title={listTitle('main')} hasMore={main.hasMore}>
         {main.items.length > 0 ? (
-          <CoverRow items={main.items} />
+          <TrackedList list="MAIN" mode={mode} games={slugsOf(main.items)}>
+            <CoverRow items={main.items} />
+          </TrackedList>
         ) : (
           <p>Não há jogos novos para recomendar com o seu perfil.</p>
         )}
@@ -78,7 +81,9 @@ function RecommendedGames({
           title={listTitle(shelf.key, shelf)}
           hasMore={shelf.hasMore}
         >
-          <CoverRow items={shelf.items} />
+          <TrackedList list={listKind(shelf.key)} mode={mode} games={slugsOf(shelf.items)}>
+            <CoverRow items={shelf.items} />
+          </TrackedList>
         </ListSection>
       ))}
     </div>
@@ -113,3 +118,5 @@ function ListSection({
     </section>
   );
 }
+
+const slugsOf = (items: readonly Recommendation[]) => items.map(({ game }) => game.slug);

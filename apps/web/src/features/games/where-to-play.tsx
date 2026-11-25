@@ -1,11 +1,15 @@
 import type { GameDetail } from '@indie/contracts';
 import { Button } from '@/components/ui/button';
-import { externalLink } from './external-link';
+import { ExitLink } from './exit-link';
 import { NOT_INFORMED } from './game-facts';
 
 // Plataforma é onde o jogo roda; loja é onde ele é vendido. As duas listas já vêm em ordem
 // alfabética da API, e cada botão leva direto à página do jogo na loja (F-34).
-export function WhereToPlay({ platforms, stores }: Pick<GameDetail, 'platforms' | 'stores'>) {
+export function WhereToPlay({
+  slug,
+  platforms,
+  stores,
+}: Pick<GameDetail, 'slug' | 'platforms' | 'stores'>) {
   return (
     <section aria-labelledby="where-to-play" className="space-y-2">
       <h2 id="where-to-play" className="font-medium">
@@ -20,9 +24,9 @@ export function WhereToPlay({ platforms, stores }: Pick<GameDetail, 'platforms' 
           {stores.map(({ store, name, url }) => (
             <li key={store}>
               <Button asChild variant="outline" size="sm">
-                <a href={url} {...externalLink}>
+                <ExitLink href={url} event={{ game: slug, exit: 'STORE', store }}>
                   {name}
-                </a>
+                </ExitLink>
               </Button>
             </li>
           ))}
