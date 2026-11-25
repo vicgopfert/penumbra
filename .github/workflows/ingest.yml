@@ -1,6 +1,7 @@
 name: Ingestão
 
-# Ingestão no banco de produção (B-14), toda noite e também à mão (B-54).
+# Ingestão no banco de produção (B-14), toda noite e também à mão (B-54). No fim, recarrega o
+# índice da API e revalida o cache das páginas públicas na Vercel (B-102).
 # O modo sonda-steam (B-78) só confere, de qualquer branch, se a rota de etiquetas da Steam
 # responde ao Actions, numa amostra do catálogo, sem gravar nada. O modo teste-alerta (B-54)
 # falha de propósito, de qualquer branch e sem tocar no banco, para ensaiar o alerta.
@@ -80,6 +81,30 @@ jobs:
             "$API_URL/api/internal/reload-index")"
           echo "$response"
           { echo '## Índice de conteúdo'; echo '```'; echo "$response"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      # O cache de dados das páginas públicas na Vercel (B-102): marca como velhos os jogos, as
+      # coleções e o catálogo, e o próximo visitante recebe o dado anterior enquanto o novo é buscado.
+      # Sem o segredo, a execução falha, como na recarga; uma falha da chamada só gera aviso, porque
+      # o cache volta sozinho em até um dia.
+      - name: Revalidação das páginas públicas
+        env:
+          WEB_URL: https://penumbraindie.com.br
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+        run: |
+          if [ -z "$REVALIDATE_SECRET" ]; then
+            echo "::error::Configure o segredo REVALIDATE_SECRET do repositório."
+            exit 1
+          fi
+          if response="$(curl --fail-with-body --silent --show-error --max-time 60 \
+            --retry 3 --retry-delay 10 --retry-all-errors \
+            -X POST -H "Authorization: Bearer $REVALIDATE_SECRET" \
+            "$WEB_URL/internal/revalidate" 2>&1)"; then
+            echo "$response"
+            { echo '## Revalidação das páginas públicas'; echo '```'; echo "$response"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning title=Revalidação das páginas::$response"
+            { echo '## Revalidação das páginas públicas'; echo "Falhou: $response"; } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Resumo da execução
         if: always()
