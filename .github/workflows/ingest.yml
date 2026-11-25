@@ -1,9 +1,13 @@
 name: Ingestão
 
-# Execução manual da ingestão no banco de produção (B-14). O agendamento é o B-54.
+# Ingestão no banco de produção (B-14), toda noite e também à mão (B-54).
 # O modo sonda-steam (B-78) só confere, de qualquer branch, se a rota de etiquetas da Steam
 # responde ao Actions, numa amostra do catálogo, sem gravar nada.
 on:
+  schedule:
+    # 03:23 em Brasília (UTC−3, sem horário de verão), fora da virada da hora, quando o GitHub
+    # mais atrasa as execuções agendadas.
+    - cron: '23 6 * * *'
   workflow_dispatch:
     inputs:
       modo:
@@ -26,7 +30,7 @@ concurrency:
 jobs:
   ingest:
     name: Ingestão do catálogo no banco de produção
-    if: github.ref == 'refs/heads/main' && inputs.modo != 'sonda-steam'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.modo == 'ingestao')
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -136,6 +140,7 @@ jobs:
               SELECT f.kind, f.\"gameName\", f.detail
               FROM \"IngestionReviewFlag\" f
               WHERE f.\"runId\" = (SELECT id FROM \"IngestionRun\" ORDER BY \"startedAt\" DESC LIMIT 1)
+                AND f.kind <> 'RELEASE_STATUS_CHANGED'
               ORDER BY f.kind, f.\"gameName\" LIMIT 100"
             echo '```'
             echo '## Tamanho do banco'
@@ -166,7 +171,28 @@ jobs:
               FROM \"GameStoreLink\" sl JOIN \"Game\" g ON g.id = sl.\"gameId\"
               WHERE g.\"inCatalog\" GROUP BY sl.store ORDER BY sl.store"
             echo '```'
+            # Só os jogos que estavam no catálogo e continuam nele (B-54).
+            echo '## Situação de lançamento'
+            echo '```'
+            psql "$PSQL_URL" -X -q -c "
+              SELECT CASE f.detail->>'to' WHEN 'RELEASED' THEN 'Em breve → lançado'
+                ELSE 'lançado → Em breve' END AS passagem,
+                f.\"gameName\" AS jogo, f.detail->>'releaseDate' AS data
+              FROM \"IngestionReviewFlag\" f
+              WHERE f.\"runId\" = (SELECT id FROM \"IngestionRun\" ORDER BY \"startedAt\" DESC LIMIT 1)
+                AND f.kind = 'RELEASE_STATUS_CHANGED'
+              ORDER BY 1, 3, 2 LIMIT 200"
+            echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
+          # Execução gravada com alguma fonte fora do ar ou com a desativação pulada: o catálogo foi
+          # gravado com o que já estava, então só avisa, sem abrir alerta (B-54).
+          degraded="$(psql "$PSQL_URL" -X -q -t -A -c "
+            SELECT left(\"errorSummary\", 300) FROM \"IngestionRun\"
+            WHERE id = (SELECT id FROM \"IngestionRun\" ORDER BY \"startedAt\" DESC LIMIT 1)
+              AND status = 'SUCCEEDED' AND \"errorSummary\" IS NOT NULL" | tr '\n' ' ')"
+          if [ -n "$degraded" ]; then
+            echo "::warning title=Ingestão com ressalvas::$degraded"
+          fi
 
   steam-probe:
     name: Sonda da Steam (só leitura)
