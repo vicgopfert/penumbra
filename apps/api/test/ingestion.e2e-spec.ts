@@ -606,6 +606,34 @@ describe('Ingestão', () => {
     });
   });
 
+  it('alerta o jogo do catálogo que passou de "Em breve" a lançado entre duas execuções', async () => {
+    const releaseDate = new Date(NOW.getTime() + 10 * 86_400_000);
+    const [releasing] = accepted.filter((g) => g.first_release_date !== undefined);
+    catalog.games.find((g) => g.id === releasing!.id)!.first_release_date =
+      releaseDate.getTime() / 1000;
+
+    await ingest.execute(NOW);
+    expect(await gameRow(releasing!.id)).toMatchObject({
+      inCatalog: true,
+      releaseStatus: 'UPCOMING',
+    });
+    const result = await ingest.execute(new Date(NOW.getTime() + 30 * 86_400_000));
+
+    expect(await gameRow(releasing!.id)).toMatchObject({
+      inCatalog: true,
+      releaseStatus: 'RELEASED',
+    });
+    const flags = (await flagsOf(result.runId)).filter(
+      (f) => f.kind === ReviewFlagKind.RELEASE_STATUS_CHANGED,
+    );
+    expect(flags.map((f) => [f.igdbId, f.detail])).toEqual([
+      [
+        releasing!.id,
+        { from: 'UPCOMING', to: 'RELEASED', releaseDate: releaseDate.toISOString().slice(0, 10) },
+      ],
+    ]);
+  });
+
   it('a carência pós-lançamento protege só o jogo que já estava no catálogo', async () => {
     const days = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
     const [kept, newcomer] = accepted.filter((g) => g.first_release_date !== undefined);

@@ -142,6 +142,7 @@ export class IngestionRepository {
         name: true,
         inCatalog: true,
         firstReleaseDate: true,
+        releaseStatus: true,
         criteriaVersion: true,
         syncedAt: true,
         popularityCount: true,

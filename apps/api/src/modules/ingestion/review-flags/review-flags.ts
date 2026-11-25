@@ -68,6 +68,14 @@ function transitionFlags({ game, verdict }: EvaluatedGame, input: ReviewFlagInpu
       inCatalog: verdict.accepted,
     });
   }
+  // Só o que o site mostrava e continua mostrando: entrar ou sair do catálogo já é VERDICT_CHANGED.
+  if (before.inCatalog && verdict.accepted && before.releaseStatus !== game.releaseStatus) {
+    flag(ReviewFlagKind.RELEASE_STATUS_CHANGED, {
+      from: before.releaseStatus,
+      to: game.releaseStatus,
+      releaseDate: game.firstReleaseDate?.toISOString().slice(0, 10) ?? null,
+    });
+  }
   // A saída por falta de sinal com a contagem gravada no mínimo ou acima mede quanto o
   // "Want to Play" oscila entre execuções (B-69).
   if (before.inCatalog !== verdict.accepted) {
