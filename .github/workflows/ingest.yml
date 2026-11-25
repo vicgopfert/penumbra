@@ -2,7 +2,8 @@ name: Ingestão
 
 # Ingestão no banco de produção (B-14), toda noite e também à mão (B-54).
 # O modo sonda-steam (B-78) só confere, de qualquer branch, se a rota de etiquetas da Steam
-# responde ao Actions, numa amostra do catálogo, sem gravar nada.
+# responde ao Actions, numa amostra do catálogo, sem gravar nada. O modo teste-alerta (B-54)
+# falha de propósito, de qualquer branch e sem tocar no banco, para ensaiar o alerta.
 on:
   schedule:
     # 03:23 em Brasília (UTC−3, sem horário de verão), fora da virada da hora, quando o GitHub
@@ -11,11 +12,12 @@ on:
   workflow_dispatch:
     inputs:
       modo:
-        description: ingestao grava o catálogo; sonda-steam só lê, sem gravar nada
+        description: ingestao grava o catálogo; sonda-steam só lê; teste-alerta só ensaia o alerta
         type: choice
         options:
           - ingestao
           - sonda-steam
+          - teste-alerta
         default: ingestao
 
 permissions:
@@ -193,6 +195,66 @@ jobs:
           if [ -n "$degraded" ]; then
             echo "::warning title=Ingestão com ressalvas::$degraded"
           fi
+
+  # Falha da ingestão, ou cancelamento da agendada (tempo limite, fila do grupo de concorrência),
+  # abre uma issue, ou comenta na que já está aberta; cancelar à mão não abre. A próxima execução
+  # bem-sucedida fecha as abertas. O e-mail do próprio GitHub sobre a falha vem junto.
+  alert:
+    name: Alerta da ingestão
+    needs: [ingest, alert-drill]
+    if: always() && (needs.ingest.result != 'skipped' || needs.alert-drill.result != 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      INGEST_RESULT: ${{ needs.ingest.result }}
+      DRILL_RESULT: ${{ needs.alert-drill.result }}
+      EVENT: ${{ github.event_name }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Issue de alerta
+        run: |
+          open_issues() {
+            gh issue list --label ingestao --state open --json number,title --jq "$1"
+          }
+          if [ "$INGEST_RESULT" = success ]; then
+            for number in $(open_issues '.[].number'); do
+              gh issue close "$number" --comment "Resolvida pela execução bem-sucedida $RUN_URL."
+            done
+            exit 0
+          fi
+          case "$INGEST_RESULT/$DRILL_RESULT/$EVENT" in
+            failure/*/* | cancelled/*/schedule)
+              title='A ingestão do catálogo falhou'; result="$INGEST_RESULT" ;;
+            */failure/*) title='[teste] A ingestão do catálogo falhou'; result='falha de propósito' ;;
+            *) exit 0 ;;
+          esac
+          [ "$EVENT" = schedule ] && origin='agendada' || origin='manual'
+          gh label create ingestao --color B60205 --force \
+            --description 'Falha da ingestão no banco de produção'
+          number="$(open_issues "map(select(.title == \"$title\")) | .[0].number // empty")"
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body "Nova execução $origin com resultado \`$result\`: $RUN_URL"
+          else
+            gh issue create --title "$title" --label ingestao --body "$(printf '%s\n\n%s\n\n%s' \
+              "A execução $origin $RUN_URL terminou com resultado \`$result\`." \
+              'O resumo da execução traz o registro do `IngestionRun`, com o resumo do erro. Enquanto a falha durar, o catálogo fica como estava na última execução bem-sucedida.' \
+              'Esta issue fecha sozinha na próxima execução bem-sucedida; uma nova falha antes disso entra como comentário.')"
+          fi
+
+  alert-drill:
+    name: Ensaio do alerta (falha de propósito)
+    if: inputs.modo == 'teste-alerta'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Falha
+        run: |
+          echo "::error::Falha de propósito, para ensaiar o alerta da ingestão (B-54)."
+          exit 1
 
   steam-probe:
     name: Sonda da Steam (só leitura)
