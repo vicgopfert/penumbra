@@ -72,4 +72,18 @@ Acréscimo fixado em 25/11/2026, às 22:46 UTC, antes de qualquer rodada "depois
 
 ### Antes (produção sem o B-102)
 
-Em andamento: até 12 tentativas depois da retomada ou 3 rodadas válidas, o que vier primeiro. O merge do B-102 espera o fim desta medição (decisão do autor).
+Medido em 25/11/2026, entre 20:30 e 23:17 UTC, contra a produção sem o B-102: 3 rodadas válidas em 9 tentativas. O merge do B-102 esperou o fim desta medição (decisão do autor).
+
+| Ficha | Início da rodada (UTC) | Primeiro byte | Total | Índice carregado em (UTC) |
+| --- | --- | --- | --- | --- |
+| `celeste` | 21:31:47 | 42,5 s | 43,2 s | 21:32:28 |
+| `hollow-knight` | 22:55:31 | 41,9 s | 42,8 s | 22:56:11 |
+| `stardew-valley` | 23:16:14 | 43,6 s | 43,7 s | 23:16:55 |
+
+Todas com status 200 e o `<h1>` do jogo no HTML. Nas três, o índice foi carregado cerca de 40 s depois do início da rodada: a API acordou com o pedido medido. Com a API fria, o primeiro visitante de uma ficha esperava entre 42 e 44 s.
+
+Fora da conta:
+- **4 descartadas, com a API acordada:** `celeste` às 20:30 e às 21:11, `hollow-knight` às 21:52 e às 22:12, com o primeiro byte entre 1,4 e 1,7 s e o índice carregado antes do início da rodada. Entre 21:32 e 22:12, a API não dormiu: outras visitas a mantiveram acordada, sem como saber quais sem o log do Render.
+- **2 inconclusivas, com o índice ainda carregando:** `celeste` às 20:50 (56,1 s) e `hollow-knight` às 22:34 (36,8 s). A API tinha acabado de acordar, mas não há prova de que foi pelo pedido medido.
+
+Os dados brutos estão em `~/indie-discovery-b102/medicao/antes.jsonl`, fora do repositório.
