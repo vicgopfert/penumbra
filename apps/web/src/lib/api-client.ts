@@ -36,10 +36,15 @@ export function errorMessage(error: unknown) {
   return error instanceof Error && error.message ? error.message : UNEXPECTED_ERROR_MESSAGE;
 }
 
+// Dado público lido no servidor e guardado no cache de dados do Next (B-102): só respostas 200
+// entram, e uma revalidação que falha mantém o dado anterior.
+export type PublicCache = { revalidate: number; tags: string[] };
+
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
   signal?: AbortSignal;
+  cache?: PublicCache;
 };
 
 export function apiFetch(path: string, options?: RequestOptions): Promise<void>;
@@ -51,18 +56,36 @@ export async function apiFetch<T>(
   path: string,
   { schema, ...options }: RequestOptions & { schema?: z.ZodType<T> } = {},
 ): Promise<T | void> {
+  const parse = async (response: Response) => {
+    if (!response.ok) throw await toError(response);
+    return schema?.safeParse(await readJson(response));
+  };
   const response = await send(path, options);
-  if (!response.ok) throw await toError(response);
-  if (!schema) return;
-
-  const parsed = schema.safeParse(await readJson(response));
-  if (!parsed.success) throw new ApiRequestError(response.status, [UNEXPECTED_ERROR_MESSAGE]);
-  return parsed.data;
+  const parsed = await parse(response);
+  if (!parsed || parsed.success) return parsed?.data;
+  // O dado guardado pode ser de antes de um deploy que mudou o contrato: busca de novo, sem cache.
+  if (options.cache) {
+    const fresh = await parse(await send(path, { ...options, cache: 'no-store' }));
+    if (fresh?.success) return fresh.data;
+  }
+  throw new ApiRequestError(response.status, [UNEXPECTED_ERROR_MESSAGE]);
 }
 
-async function send(path: string, { method = 'GET', body, signal }: RequestOptions) {
+async function send(
+  path: string,
+  {
+    method = 'GET',
+    body,
+    signal,
+    cache,
+  }: Omit<RequestOptions, 'cache'> & {
+    cache?: PublicCache | 'no-store';
+  },
+) {
   const init: RequestInit = { method, credentials: 'same-origin' };
   if (signal) init.signal = signal;
+  if (cache === 'no-store') init.cache = 'no-store';
+  else if (cache) init.next = { revalidate: cache.revalidate, tags: cache.tags };
   if (body !== undefined) {
     init.headers = { 'Content-Type': 'application/json' };
     init.body = JSON.stringify(body);
