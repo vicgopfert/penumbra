@@ -83,7 +83,12 @@ describe('AuthService', () => {
   let hasher: FakeHasher;
   let emailConfirmation: FakeEmailConfirmation;
   let auth: AuthService;
-  const input = { email: 'jogadora@example.com', displayName: 'Jogadora', password: 'senha-forte' };
+  const input = {
+    email: 'jogadora@example.com',
+    displayName: 'Jogadora',
+    password: 'senha-forte',
+    usageMetricsConsent: false,
+  };
 
   beforeEach(() => {
     users = new FakeUsers();
@@ -106,6 +111,13 @@ describe('AuthService', () => {
       expect(users.saved[0]?.passwordHash).toBe('hash(senha-forte)');
     });
 
+    it('grava a data do consentimento das métricas de uso só quando a caixa vem marcada', async () => {
+      await auth.register(input, NOW);
+      await auth.register({ ...input, email: 'outra@example.com', usageMetricsConsent: true }, NOW);
+
+      expect(users.saved.map((u) => u.usageMetricsConsentAt)).toEqual([null, NOW]);
+    });
+
     it('devolve o usuário sem o hash da senha e já abre a sessão', async () => {
       const { user, token } = await auth.register(input, NOW);
 
@@ -117,6 +129,7 @@ describe('AuthService', () => {
         discoveryMode: 'BALANCED',
         onboardingCompletedAt: null,
         emailConfirmedAt: null,
+        usageMetricsConsentAt: null,
         createdAt: '2026-10-27T12:00:00.000Z',
       });
       expect(JSON.stringify(user)).not.toContain('senha-forte');

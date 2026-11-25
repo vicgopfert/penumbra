@@ -11,6 +11,12 @@ export interface NewUser {
   email: string;
   passwordHash: string;
   displayName: string;
+  usageMetricsConsentAt: Date | null;
+}
+
+export interface UserChanges {
+  discoveryMode?: DiscoveryMode | undefined;
+  usageMetricsConsent?: boolean | undefined;
 }
 
 const UNIQUE_VIOLATION = 'P2002';
@@ -69,7 +75,25 @@ export class UsersRepository {
     });
   }
 
-  updateDiscoveryMode(id: string, discoveryMode: DiscoveryMode): Promise<User> {
-    return this.prisma.user.update({ where: { id }, data: { discoveryMode } });
+  // Numa transação: o consentimento dado de novo mantém a data do primeiro, e o retirado apaga os
+  // eventos de uso ligados à conta (B-100).
+  update(id: string, { discoveryMode, usageMetricsConsent }: UserChanges, now: Date) {
+    return this.prisma.$transaction(async (tx) => {
+      if (usageMetricsConsent === false)
+        await tx.productEvent.deleteMany({ where: { userId: id } });
+      if (usageMetricsConsent) {
+        await tx.user.updateMany({
+          where: { id, usageMetricsConsentAt: null },
+          data: { usageMetricsConsentAt: now },
+        });
+      }
+      return tx.user.update({
+        where: { id },
+        data: {
+          ...(discoveryMode && { discoveryMode }),
+          ...(usageMetricsConsent === false && { usageMetricsConsentAt: null }),
+        },
+      });
+    });
   }
 }

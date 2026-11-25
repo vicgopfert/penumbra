@@ -45,18 +45,22 @@ Todo campo do `User` e dos modelos ligados a ele no `schema.prisma`, com a seç�
 | `User.discoveryMode` | Sua conta | Ordenar as recomendações pelo modo | Contrato | Até a exclusão da conta |
 | `User.onboardingCompletedAt` | Sua conta | Saber se as boas-vindas terminaram | Contrato | Até a exclusão da conta |
 | `User.emailConfirmedAt` | Sua conta | Só mandar o link de redefinição a endereço confirmado | Contrato | Até a exclusão da conta |
+| `User.usageMetricsConsentAt` | Sua conta | Saber se os eventos de uso podem levar a conta e registrar quando o consentimento foi dado (B-100) | Contrato | Até a exclusão da conta; volta a vazio quando o consentimento é retirado |
 | `Session` (id, userId, tokenHash, expiresAt, createdAt) | Sessão (`#sessao`) | Manter a pessoa na conta; só o SHA-256 do token | Contrato | 7 dias ou até sair; a vencida sai na limpeza que roda com a ingestão |
 | `AccountToken` (id, userId, purpose, tokenHash, expiresAt, createdAt) | Links enviados por e-mail (`#links-por-email`) | Conferir os links de confirmação e de redefinição; só o SHA-256 | Contrato | 60 minutos (redefinição) ou 7 dias (confirmação); apagado ao ser usado; o vencido sai na limpeza |
 | `Rating` (userId, gameId, score, updatedAt) | Sua biblioteca e seus gostos (`#biblioteca`) | Biblioteca e recomendações | Contrato | Até a exclusão da conta ou do item |
 | `ListEntry` (userId, gameId, listType, createdAt) | Sua biblioteca e seus gostos | Biblioteca e recomendações | Contrato | Até a exclusão da conta ou do item |
 | `UserPreference` (userId, featureId, createdAt) | Sua biblioteca e seus gostos | Recomendações | Contrato | Até a exclusão da conta ou da escolha |
+| `ProductEvent` (id, kind, occurredAt, userId, page, visitStart, origin, gameId, gameIds, list, mode, position, listPage, exit, store) | Métricas de uso (`#metricas-de-uso`) | Medir o uso do site e das recomendações (B-100, `docs/metricas-de-uso.md`) | Sem conta: anônimos (art. 12). Com conta: consentimento (art. 7º, I) | 12 meses, pela limpeza diária; os ligados à conta saem na hora quando o consentimento é retirado e com a exclusão da conta |
 
 Dados pessoais fora do banco:
 
 | Dado | Onde | Seção da política | Base legal | Retenção |
 | --- | --- | --- | --- | --- |
 | IP e e-mail digitado nos limites de tentativas (cadastro, entrada, pedido de redefinição, reenvio da confirmação) | Memória do processo da API, no Render | Limites de tentativas (`#limites-de-tentativas`) | Contrato e procedimentos preliminares a pedido do titular (art. 7º, V): proteger a conta faz parte do serviço | Até 1 hora; some quando a API reinicia |
+| IP no limite de envio das métricas de uso (`POST /api/events`, B-100) | Memória do processo da API, no Render | Limite de envio das métricas (`#limite-das-metricas`) | Legítimo interesse (art. 7º, IX): proteger o site contra envios em massa, também de quem não tem conta | Até 1 minuto; some quando a API reinicia |
 | Cookie `sid` | Navegador | Cookies | Contrato | 7 dias |
+| Marca `penumbra:visita` no `sessionStorage` (B-100) | Navegador | Cookies | Não é dado pessoal: só indica que a visita já começou na aba | Até a aba ser fechada |
 | Registros técnicos dos provedores (horário, caminho e, em geral, IP e navegador) | Vercel e Render | Registros técnicos | Legítimo interesse (art. 7º, IX) | 1 hora na Vercel, 7 dias no Render (planos gratuitos) |
 | Endereço e texto dos e-mails da conta | Resend | E-mails | Contrato | 30 dias |
 | Mensagens ao e-mail de contato (e-mail de quem escreve e conteúdo) | Gmail | Pedidos ao e-mail de contato (`#pedidos-ao-contato`) | Obrigação legal de atender aos direitos do titular (art. 7º, II) | Até 1 ano depois do atendimento |
@@ -67,15 +71,17 @@ O log de pedidos da própria API registra método, caminho, status, duração, `
 ## Bases legais
 
 - **Execução de contrato (art. 7º, V):** conta, biblioteca, gostos, recomendações, sessão, links por e-mail, e-mails da conta e limites de tentativas. O cadastro é procedimento preliminar ao contrato, a pedido do titular.
-- **Legítimo interesse (art. 7º, IX):** os registros técnicos dos provedores e os números agregados e anônimos do TCC. O teste de balanceamento está abaixo.
+- **Legítimo interesse (art. 7º, IX):** os registros técnicos dos provedores, o limite de envio das métricas de uso (B-100) e os números agregados e anônimos do TCC. O teste de balanceamento está abaixo.
 - **Obrigação legal (art. 7º, II):** responder aos pedidos feitos ao e-mail de contato.
-- **Consentimento:** nenhum uso hoje. O Radar por e-mail (B-123) vai pedir consentimento quando existir.
+- **Consentimento (art. 7º, I):** as métricas de uso ligadas à conta (B-100), pedidas por uma caixa desmarcada no cadastro e pela seção "Métricas de uso" do perfil, com a transferência aos EUA destacada no texto (art. 33, VIII). O Radar por e-mail (B-123) vai pedir o seu quando existir.
+- **Anônimos (art. 12):** os eventos de uso de quem está sem conta. Eles não levam IP, e-mail, navegador nem identificador de visita, e não há meio razoável de ligá-los a uma pessoa.
 
 ## Teste de balanceamento do legítimo interesse
 
 | Uso | Finalidade | Por que é necessário | Por que não pesa contra quem usa o site |
 | --- | --- | --- | --- |
 | Registros técnicos dos provedores (Vercel e Render) | Manter o site no ar e investigar falhas e abusos | Entregar uma página pela internet exige que o servidor receba o IP de quem pede, e os provedores guardam esses registros por padrão, sem opção de desligar no plano gratuito | Prazo curto (1 hora e 7 dias), sem ligação com a conta, sem uso para perfil, publicidade ou venda; o próprio log da API não guarda o IP; quem usa um site espera que ele registre acessos para funcionar |
+| Limite de envio das métricas de uso (B-100) | Impedir que um envio em massa encha o banco de eventos falsos | A rota é pública, porque os visitantes sem conta também mandam eventos, e o limite por IP é o único que não depende de conta | Só na memória, por até 1 minuto, nunca no banco nem no log; o mesmo mecanismo dos limites da autenticação; sem uso para perfil |
 | Números agregados e anônimos no TCC | Descrever o uso da plataforma no trabalho acadêmico | O TCC precisa mostrar se e como o produto foi usado | Calculados sobre dados que já estão guardados para o serviço, sem coletar nada a mais; o resultado é anonimizado (art. 12), não identifica ninguém e não volta para a conta da pessoa |
 
 ## Transferência internacional
@@ -84,8 +90,8 @@ Todos os provedores guardam dados nos EUA. A Resolução CD/ANPD nº 19/2024 ace
 
 | Provedor | Papel | Região | DPA | Cobre o Brasil? | Mecanismo usado |
 | --- | --- | --- | --- | --- | --- |
-| Neon | Banco de dados | `aws-us-east-1` (N. Virginia) | Precisa ser assinado; não foi | Não: mecanismos europeus | Art. 33, IX com o art. 7º, V: os dados do banco são de conta, biblioteca e recomendações. A região fica como está (decisão do autor) |
-| Render | API, logs e memória dos limites | `virginia` (EUA) | Incorporado aos termos, para todo plano | Não: Data Privacy Framework e cláusulas da União Europeia e do Reino Unido | Art. 33, IX com o art. 7º, V, para o serviço e os limites de tentativas. Registros técnicos do próprio Render: sem mecanismo claro (Riscos) |
+| Neon | Banco de dados | `aws-us-east-1` (N. Virginia) | Precisa ser assinado; não foi | Não: mecanismos europeus | Art. 33, IX com o art. 7º, V: os dados do banco são de conta, biblioteca e recomendações. Art. 33, VIII (consentimento) para as métricas de uso ligadas à conta (B-100). A região fica como está (decisão do autor) |
+| Render | API, logs e memória dos limites | `virginia` (EUA) | Incorporado aos termos, para todo plano | Não: Data Privacy Framework e cláusulas da União Europeia e do Reino Unido | Art. 33, IX com o art. 7º, V, para o serviço e os limites de tentativas. Art. 33, VIII (consentimento) para as métricas de uso ligadas à conta. Registros técnicos do próprio Render e IP no limite de envio das métricas: sem mecanismo claro (Riscos) |
 | Vercel | Páginas e proxy de `/api` | `iad1` (Washington, EUA), o padrão | Não há no plano Hobby | Não | Art. 33, IX com o art. 7º, V, para o serviço. Registros técnicos da Vercel: sem mecanismo claro (Riscos) |
 | Resend | E-mails da conta | Envio por `sa-east-1`, mas dados guardados nos EUA | Para toda conta | Não, e recusa expressamente as cláusulas da ANPD | Art. 33, IX com o art. 7º, V: os e-mails da conta fazem parte do serviço |
 | Google (Gmail) | Caixa de contato | EUA | Conta pessoal, sem DPA | Não | Art. 33, IX com o art. 7º, II: a obrigação legal de atender aos pedidos do titular |
@@ -98,6 +104,7 @@ Nenhum provedor adota as cláusulas-padrão da ANPD, e a ANPD não reconheceu as
 Registrados também como R-26 na seção 16 da proposta técnica, com a sugestão de levá-los ao orientador.
 
 - **Registros técnicos da Vercel e do Render.** O IP de quem visita fica nos EUA por legítimo interesse, hipótese que o art. 33, IX não cobre, e sem cláusula da ANPD. Isso existe em qualquer site hospedado nesses provedores e não se desliga no plano gratuito. A política declara os prazos. O plano Pro da Vercel teria DPA, mas ainda sem as cláusulas da ANPD, então não resolve.
+- **IP no limite de envio das métricas de uso (B-100).** A rota `POST /api/events` vale também para quem não tem conta, então o limite não se apoia na execução de contrato, como os da autenticação, e sim no legítimo interesse. O IP passa só pela memória do processo, no Render (EUA), por até 1 minuto, também sem mecanismo claro de transferência (decisão do autor, 25/11/2026).
 - **Vercel Hobby sem DPA.** A LGPD não exige contrato escrito com o operador, como o GDPR exige (art. 28), mas não há instrumento nenhum com a Vercel.
 - **Capas de `images.igdb.com`.** O navegador de quem visita pede cada capa aos servidores da IGDB (Twitch, Amazon, EUA), que recebem o IP. Mitigação possível, fora deste item: servir as capas pelo próprio domínio (decisão do autor, 24/11/2026).
 - **ECA Digital (Lei nº 15.211/2025).** A lei vale para serviços de "acesso provável" por crianças e adolescentes, critério que não depende do que o site declara, e um site de jogos pode ser enquadrado assim. Os termos exigem 18 anos para criar conta, só por declaração e sem campo novo (decisão do autor). O catálogo já exclui o tema "Erotic" da IGDB (`indie-criteria.json`). As normas da ANPD sobre verificação de idade estavam pendentes quando a lei entrou em vigor. Ponto para o orientador.
@@ -107,7 +114,7 @@ Registrados também como R-26 na seção 16 da proposta técnica, com a sugestã
 1. Controlador: o nome completo do autor, pessoa física, com a nota de projeto acadêmico sem vínculo de serviço com a UERJ. Sem encarregado, pela Resolução CD/ANPD nº 2/2022.
 2. Contato: uma caixa dedicada e gratuita, criada pelo autor.
 3. Idade mínima de 18 anos, declarada nos termos, sem campo novo.
-4. A política descreve só o que existe hoje. O B-100 (eventos) e o B-123 (Radar) a atualizam no próprio PR, com nova data de vigência, antes de coletar.
+4. A política descreve só o que existe hoje. O B-100 (eventos) e o B-123 (Radar) a atualizam no próprio PR, com nova data de vigência, antes de coletar. **Cumprido pelo B-100 em 25/11/2026:** nova versão da política, com as métricas de uso e o limite de envio delas.
 5. IP no log da API: a decisão era manter e declarar. **Alterada no mesmo dia**, depois da pesquisa de transferência: o IP sai do log de pedidos, porque para o legítimo interesse não há mecanismo de transferência claro para os EUA. Os limites de tentativas passaram para a base de execução de contrato, coberta pelo art. 33, IX.
 6. Aceite no cadastro por um texto abaixo do botão, sem caixa de seleção e sem gravar o aceite, porque a base é a execução de contrato. Os links abrem em outra aba, para quem preencheu o formulário não perder o que digitou.
 7. Se o site sair do ar, os dados das contas são apagados em até 30 dias.
@@ -130,4 +137,5 @@ O teste falha sozinho quando um campo novo aparece no schema. Um dado fora do ba
 
 | Data | Mudança |
 | --- | --- |
+| 25/11/2026 | Métricas de uso (B-100): eventos anônimos sem conta, ligados à conta só com consentimento, marca de visita no `sessionStorage` e limite de envio por IP, por legítimo interesse; inventário, bases legais, balanceamento, transferência e riscos atualizados |
 | 24/11/2026 | Primeira versão da política e dos termos (B-101) |

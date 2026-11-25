@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Pagination } from '@/components/pagination';
 import { SessionGate, useClearAccountWhenUnauthorized } from '@/features/auth/session-gate';
+import { TrackedList } from '@/features/metrics/tracked-list';
 import { isNotFound } from '@/lib/api-client';
 import { useRecommendationPage } from './hooks';
-import { listHref, listTitle, RECOMMENDATIONS_PATH } from './lists';
+import { listHref, listKind, listTitle, RECOMMENDATIONS_PATH } from './lists';
 import { RecommendationGrid } from './recommendation-grid';
 import {
   BasisNote,
@@ -100,7 +101,14 @@ function ListGames({ list, updating }: { list: RecommendationPage; updating: boo
     <section aria-label="Jogos recomendados" aria-busy={updating} className="space-y-6">
       <BasisNote basis={basis} mode={mode} withBadges />
       {items.length > 0 ? (
-        <RecommendationGrid items={items} />
+        <TrackedList
+          list={listKind(key)}
+          mode={mode}
+          games={items.map(({ game }) => game.slug)}
+          listPage={page}
+        >
+          <RecommendationGrid items={items} />
+        </TrackedList>
       ) : page > 1 ? (
         <p>
           Esta lista não tem mais jogos.{' '}

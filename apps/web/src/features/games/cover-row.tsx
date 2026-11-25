@@ -1,6 +1,7 @@
 import type { GameSummary } from '@indie/contracts';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { GAME_SLUG_ATTRIBUTE } from '@/features/metrics/game-slug-attribute';
 import { cn } from '@/lib/utils';
 import { GameCover } from './game-cover';
 
@@ -26,7 +27,11 @@ export function CoverRow<Item extends { game: GameSummary }>({
       )}
     >
       {items.map((item) => (
-        <li key={item.game.slug} className="w-24 shrink-0 snap-start space-y-1 sm:w-auto">
+        <li
+          key={item.game.slug}
+          {...{ [GAME_SLUG_ATTRIBUTE]: item.game.slug }}
+          className="w-24 shrink-0 snap-start space-y-1 sm:w-auto"
+        >
           <Link
             href={`/jogos/${item.game.slug}`}
             aria-label={item.game.name}

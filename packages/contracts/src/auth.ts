@@ -27,6 +27,8 @@ export const RegisterSchema = z.object({
     .min(1, { error: 'Informe o nome de exibição.' })
     .max(50, { error: 'O nome de exibição tem no máximo 50 caracteres.' }),
   password: NewPasswordSchema,
+  // Desmarcado por padrão: o consentimento das métricas de uso nunca é presumido (B-100).
+  usageMetricsConsent: z.boolean().default(false),
 });
 
 export type RegisterInput = z.infer<typeof RegisterSchema>;
@@ -41,16 +43,23 @@ export const UserSchema = z.object({
   discoveryMode: z.enum(DISCOVERY_MODES),
   onboardingCompletedAt: z.iso.datetime().nullable(),
   emailConfirmedAt: z.iso.datetime().nullable(),
+  usageMetricsConsentAt: z.iso.datetime().nullable(),
   createdAt: z.iso.datetime(),
 });
 
 export type User = z.infer<typeof UserSchema>;
 
-export const UpdateMeSchema = z.object({
-  discoveryMode: z.enum(DISCOVERY_MODES, {
-    error: 'Modo deve ser POPULAR, BALANCED ou DISCOVERY.',
-  }),
-});
+export const UpdateMeSchema = z
+  .object({
+    discoveryMode: z
+      .enum(DISCOVERY_MODES, { error: 'Modo deve ser POPULAR, BALANCED ou DISCOVERY.' })
+      .optional(),
+    // Desligar apaga os eventos já ligados à conta.
+    usageMetricsConsent: z.boolean({ error: 'Informe true ou false.' }).optional(),
+  })
+  .refine((input) => input.discoveryMode !== undefined || input.usageMetricsConsent !== undefined, {
+    error: 'Informe o modo de descoberta ou o consentimento das métricas de uso.',
+  });
 
 export type UpdateMeInput = z.infer<typeof UpdateMeSchema>;
 

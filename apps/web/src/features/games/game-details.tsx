@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { CATALOG_PATH } from '@/features/catalog/search-params';
 import { collectionHref } from '@/features/collections/paths';
 import { GameLibraryControls } from '@/features/library/game-library-controls';
+import { ExitLink } from './exit-link';
 import { externalLink } from './external-link';
 import { GameCover } from './game-cover';
 import {
@@ -35,15 +36,15 @@ export function GameDetails({ game }: { game: GameDetail }) {
 
         {game.officialUrl ? (
           <Button asChild>
-            <a href={game.officialUrl} {...externalLink}>
+            <ExitLink href={game.officialUrl} event={{ game: game.slug, exit: 'OFFICIAL_SITE' }}>
               Página oficial
-            </a>
+            </ExitLink>
           </Button>
         ) : (
           <p className="text-sm text-muted-foreground">Link oficial não informado</p>
         )}
 
-        <WhereToPlay platforms={game.platforms} stores={game.stores} />
+        <WhereToPlay slug={game.slug} platforms={game.platforms} stores={game.stores} />
 
         <GameLibraryControls slug={game.slug} />
 

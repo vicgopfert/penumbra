@@ -1,5 +1,6 @@
 import {
   type RecommendationFeature,
+  type RecommendationListKind,
   type RecommendationLikedGame,
   RecommendationPageQuerySchema,
 } from '@indie/contracts';
@@ -42,6 +43,13 @@ export function listKeyOf(segment: string): string | null {
   const [prefix, slug] = splitAt(segment, '-');
   const type = TYPES_BY_PREFIX.get(prefix);
   return type && slug ? `${type}:${slug}` : null;
+}
+
+// Nas métricas vai só o tipo da lista: a chave da prateleira por jogo traz um jogo da biblioteca.
+export function listKind(key: string): RecommendationListKind {
+  if (key === MAIN_KEY) return 'MAIN';
+  if (key === UPCOMING_KEY) return 'UPCOMING';
+  return key.startsWith('game:') ? 'LIKED_GAME' : 'INTEREST';
 }
 
 export function listHref(key: string, page = 1) {
