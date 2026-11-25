@@ -8,6 +8,7 @@ import { AppModule } from '../src/app.module';
 import { BackgroundTasks } from '../src/common/background-tasks';
 import { configureApp } from '../src/configure-app';
 import { ProductEventsRepository } from '../src/modules/product-events/product-events.repository';
+import { usageReport } from '../src/modules/product-events/usage-report';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { CatalogBuilder } from './support/catalog-builder';
 import { createApp, sessionHelpers } from './support/e2e-app';
@@ -190,6 +191,102 @@ describe('Eventos de uso (POST /api/events)', () => {
 
     expect(removed).toBe(1);
     expect((await rows()).map((row) => row.occurredAt)).toEqual([now]);
+  });
+
+  it('o relatório conta o funil, a volta em 7 dias e a taxa por mil jogos exibidos', async () => {
+    const at = (iso: string) => new Date(iso);
+    const user = (email: string, createdAt: string, consent: boolean, onboarded: boolean) =>
+      prisma.user.create({
+        data: {
+          email,
+          passwordHash: 'hash',
+          displayName: 'Jogadora',
+          createdAt: at(createdAt),
+          usageMetricsConsentAt: consent ? at(createdAt) : null,
+          onboardingCompletedAt: onboarded ? at(createdAt) : null,
+        },
+      });
+    const voltou = await user('voltou@example.com', '2026-11-02T13:00:00Z', true, true);
+    const sumiu = await user('sumiu@example.com', '2026-11-03T13:00:00Z', true, true);
+    await user('sem-consentimento@example.com', '2026-11-04T13:00:00Z', false, false);
+    const [celeste, hades] = [await gameId('celeste'), await gameId('hades')];
+    await prisma.productEvent.createMany({
+      data: [
+        ...['SEARCH', 'SEARCH', 'DIRECT', 'OTHER_SITE'].map((origin) => ({
+          kind: 'PAGE_VIEW' as const,
+          page: 'HOME' as const,
+          visitStart: true,
+          origin: origin as 'SEARCH',
+          occurredAt: at('2026-11-02T12:00:00Z'),
+        })),
+        {
+          kind: 'LIST_IMPRESSION',
+          list: 'MAIN',
+          mode: 'BALANCED',
+          gameIds: [celeste, hades],
+          occurredAt: at('2026-11-02T14:00:00Z'),
+          userId: voltou.id,
+        },
+        {
+          kind: 'RECOMMENDATION_CLICK',
+          list: 'MAIN',
+          mode: 'BALANCED',
+          gameId: hades,
+          position: 2,
+          occurredAt: at('2026-11-02T14:01:00Z'),
+          userId: voltou.id,
+        },
+        // Na 2ª página do "ver mais", a posição 3 é a 23ª da lista.
+        {
+          kind: 'RECOMMENDATION_CLICK',
+          list: 'INTEREST',
+          mode: 'BALANCED',
+          gameId: celeste,
+          position: 3,
+          listPage: 2,
+          occurredAt: at('2026-11-02T14:02:00Z'),
+          userId: voltou.id,
+        },
+        // No mesmo dia do cadastro não conta como volta; três dias depois, conta.
+        {
+          kind: 'PAGE_VIEW',
+          page: 'HOME',
+          occurredAt: at('2026-11-03T20:00:00Z'),
+          userId: sumiu.id,
+        },
+        {
+          kind: 'PAGE_VIEW',
+          page: 'HOME',
+          occurredAt: at('2026-11-05T12:00:00Z'),
+          userId: voltou.id,
+        },
+        {
+          kind: 'EXIT_CLICK',
+          exit: 'STORE',
+          store: 'STEAM',
+          gameId: hades,
+          occurredAt: at('2026-11-05T12:05:00Z'),
+        },
+      ],
+    });
+
+    const report = await usageReport(
+      prisma,
+      { label: '2026-11-01', at: at('2026-11-01T03:00:00Z') },
+      { label: '2026-11-08', at: at('2026-11-08T03:00:00Z') },
+      at('2026-11-20T00:00:00Z'),
+      20,
+    );
+
+    expect(report).toContain('| **Total** | **4** |');
+    expect(report).toContain('| Cadastros | 3 | 75.0% |');
+    expect(report).toContain('| Partida a frio concluída | 2 | 66.7% |');
+    expect(report).toContain('| Volta em 7 dias | 1 de 2 | 50.0% |');
+    expect(report).toContain('| MAIN | BALANCED | 2 | 1 | 500.0 | 0 | 0.0 |');
+    expect(report).toContain('| STORE | STEAM | 1 |');
+    expect(report).toContain('| MAIN | 1 a 5 | 1 |');
+    expect(report).toContain('| INTEREST | 21 a 50 | 1 |');
+    expect(report).toContain('Contas com consentimento: 2 de 3.');
   });
 });
 
