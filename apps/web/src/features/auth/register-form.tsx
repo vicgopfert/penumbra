@@ -4,7 +4,7 @@ import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, RegisterSchema } from '@indie
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import type { ReactNode } from 'react';
+import { type ReactNode, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormAlert } from '@/components/form/form-alert';
 import { PasswordField } from '@/components/form/password-field';
@@ -12,6 +12,11 @@ import { TextField } from '@/components/form/text-field';
 import { Button } from '@/components/ui/button';
 import { FieldGroup } from '@/components/ui/field';
 import { PRIVACY_PATH, TERMS_PATH } from '@/features/legal/paths';
+import {
+  USAGE_METRICS_ANCHOR,
+  USAGE_METRICS_LABEL,
+  UsageMetricsDescription,
+} from '@/features/metrics/consent';
 import { onboardingHref } from '@/features/onboarding/paths';
 import { showApiError } from '@/lib/form-errors';
 import { useRegister } from './hooks';
@@ -19,9 +24,10 @@ import { useRegister } from './hooks';
 export function RegisterForm({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
   const register = useRegister();
+  const consentId = useId();
   const form = useForm({
     resolver: zodResolver(RegisterSchema),
-    defaultValues: { displayName: '', email: '', password: '' },
+    defaultValues: { displayName: '', email: '', password: '', usageMetricsConsent: false },
   });
   const { errors, isSubmitting } = form.formState;
 
@@ -62,6 +68,29 @@ export function RegisterForm({ redirectTo }: { redirectTo: string }) {
           maxLength={PASSWORD_MAX_LENGTH}
           description={`Mínimo de ${PASSWORD_MIN_LENGTH} caracteres.`}
         />
+        <div className="flex items-start gap-3">
+          <input
+            id={consentId}
+            type="checkbox"
+            aria-describedby={`${consentId}-descricao`}
+            className="mt-1 size-4"
+            {...form.register('usageMetricsConsent')}
+          />
+          <div className="space-y-1">
+            <label htmlFor={consentId} className="text-sm font-medium">
+              {USAGE_METRICS_LABEL}
+            </label>
+            <p id={`${consentId}-descricao`} className="space-y-1 text-sm text-muted-foreground">
+              <UsageMetricsDescription
+                policyLink={
+                  <NewTabLink href={`${PRIVACY_PATH}#${USAGE_METRICS_ANCHOR}`}>
+                    Política de privacidade
+                  </NewTabLink>
+                }
+              />
+            </p>
+          </div>
+        </div>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Criando conta…' : 'Criar conta'}
         </Button>

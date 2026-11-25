@@ -130,7 +130,10 @@ describe('ProfileView', () => {
       'href',
       '/boas-vindas?next=%2Fperfil',
     );
-    expect(screen.queryByRole('region')).not.toBeInTheDocument();
+    // Só a seção das métricas de uso, que não depende da biblioteca.
+    expect(screen.getAllByRole('region')).toEqual([
+      screen.getByRole('region', { name: 'Métricas de uso' }),
+    ]);
   });
 
   it('cada seção vazia orienta o próximo passo', async () => {

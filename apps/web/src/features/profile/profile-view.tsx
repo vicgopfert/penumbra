@@ -10,6 +10,7 @@ import { usePreferences } from '@/features/onboarding/hooks';
 import { onboardingHref } from '@/features/onboarding/paths';
 import { PROFILE_PATH } from './paths';
 import { ListSection, RatingsSection, TastesSection } from './profile-sections';
+import { UsageMetricsSection } from './usage-metrics-section';
 import { UserAvatar } from './user-avatar';
 
 export function ProfileView() {
@@ -44,6 +45,7 @@ function Profile({ user }: { user: User }) {
           refreshing={library.isFetching}
         />
       )}
+      <UsageMetricsSection user={user} />
     </div>
   );
 }

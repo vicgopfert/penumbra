@@ -23,14 +23,44 @@ describe('RegisterForm', () => {
     renderWithQuery(<RegisterForm redirectTo="/" />);
 
     expect(screen.getByText(/declara ter 18 anos ou mais/)).toBeInTheDocument();
-    for (const [name, href] of [
-      [/^Termos de uso ?\(abre em nova aba\)$/, '/termos'],
-      [/^Política de privacidade ?\(abre em nova aba\)$/, '/privacidade'],
-    ] as const) {
-      const link = screen.getByRole('link', { name });
-      expect(link).toHaveAttribute('href', href);
-      expect(link).toHaveAttribute('target', '_blank');
-    }
+    const terms = screen.getByRole('link', { name: /^Termos de uso ?\(abre em nova aba\)$/ });
+    const policies = screen.getAllByRole('link', {
+      name: /^Política de privacidade ?\(abre em nova aba\)$/,
+    });
+    expect(terms).toHaveAttribute('href', '/termos');
+    expect(policies.map((link) => link.getAttribute('href'))).toEqual([
+      '/privacidade#metricas-de-uso',
+      '/privacidade',
+    ]);
+    for (const link of [terms, ...policies]) expect(link).toHaveAttribute('target', '_blank');
+  });
+
+  it('pede o consentimento das métricas de uso desmarcado, com a transferência para os EUA', () => {
+    renderWithQuery(<RegisterForm redirectTo="/" />);
+
+    const consent = screen.getByRole('checkbox', {
+      name: 'Usar a minha conta nas métricas de uso (opcional)',
+    });
+    expect(consent).not.toBeChecked();
+    expect(consent).toHaveAccessibleDescription(/ficam em servidores nos Estados Unidos/);
+  });
+
+  it.each([
+    [false, 'sem marcar a caixa'],
+    [true, 'com a caixa marcada'],
+  ])('manda usageMetricsConsent %s %s', async (consent) => {
+    const fetchMock = stubFetch(() => Response.json(sampleUser, { status: 201 }));
+    renderWithQuery(<RegisterForm redirectTo="/" />);
+    if (consent) await userEvent.setup().click(screen.getByRole('checkbox'));
+
+    await submit();
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
+    const body = JSON.parse(fetchMock.mock.calls[0]?.[1]?.body as string) as Record<
+      string,
+      unknown
+    >;
+    expect(body.usageMetricsConsent).toBe(consent);
   });
 
   it('mostra o tamanho mínimo da senha e recusa uma curta sem chamar a API', async () => {
