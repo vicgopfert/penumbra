@@ -296,10 +296,12 @@ Entrega: medição de uso, catálogo atualizado sozinho, páginas públicas sem 
 
 - [ ] **B-54** (P, E14) Ingestão agendada (GitHub Actions) — **Alterado em 24/11/2026 (decisão do autor):** P1 → P0, na Fase 1. Sem ela, a situação dos jogos, as análises e o Radar envelhecem
   - [ ] Pode reaproveitar o agendamento da rodada diária de preços (B-87) — sem efeito desde 24/11/2026: o B-87 foi para P2
-  - [ ] Execução diária à noite no GitHub Actions, no grupo de concorrência do banco de produção (acrescentado em 24/11/2026)
-  - [ ] Recarga do índice no fim; depois do B-102, também a revalidação das páginas públicas
-  - [ ] Falha vira alerta no CI
-  - [ ] Resumo com os jogos que passaram de "Em breve" a lançados
+  - [x] Execução diária à noite no GitHub Actions, no grupo de concorrência do banco de produção (acrescentado em 24/11/2026) — às 03:23 de Brasília, decisão do autor; o disparo manual continua
+  - [x] Recarga do índice no fim; depois do B-102, também a revalidação das páginas públicas — a recarga já existia no workflow; a revalidação entra com o B-102
+  - [x] Falha vira alerta no CI — issue com o rótulo `ingestao`, comentada se já houver uma aberta e fechada pela próxima execução bem-sucedida, além do e-mail do GitHub; modo `teste-alerta` para ensaiar; execução com ressalvas só gera aviso no resumo (decisões do autor)
+  - [x] Resumo com os jogos que passaram de "Em breve" a lançados — alerta `RELEASE_STATUS_CHANGED`, nas duas direções, só para jogos que estavam no catálogo e continuam nele (decisões do autor)
+  - [ ] Primeira execução agendada bem-sucedida em produção (critério de conclusão, decisão do autor)
+  - [ ] Conferência de uma semana: duração das 7 execuções, CU-h do mês e tamanho do banco no painel do Neon, linhas mortas no resumo (não bloqueia o B-100)
 - [ ] **B-100** (M, E14) Instrumentação de produto sem dado pessoal (F-57; absorve o B-49). Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). Não dá para saber se alguém volta, onde abandona, se clica nas recomendações ou no convite à lista de desejos; sem isso, o valor para o estúdio continua hipótese e o TCC não tem dado de uso. Tabela `ProductEvent` com tipo de uma lista fechada no contrato, data, jogo e lista opcionais, modo e origem. Visitante: só um identificador de visita, hash com sal que troca todo dia e é descartado. Conta: o id da conta, para medir retorno por coorte. Nenhuma coluna de IP, e-mail ou *user agent*. Eventos: página vista, início do "experimentar", primeira recomendação vista, cadastro, exibição de lista (uma linha com os ids mostrados), clique em recomendação, "quero jogar", "não me interessa" e clique de saída (loja, site oficial, lista de desejos, demo), que era o B-49. Relatório semanal por script ou rota interna protegida por segredo. Depende do B-101, publicado antes de coletar
   - [ ] Tipo desconhecido responde 400; limite por IP
   - [ ] E2e confere que nenhuma coluna guarda IP, e-mail ou *user agent*
