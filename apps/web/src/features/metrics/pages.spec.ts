@@ -15,6 +15,7 @@ describe('pageOf', () => {
     ['/boas-vindas', { page: 'ONBOARDING' }],
     ['/redefinir-senha', { page: 'ACCOUNT' }],
     ['/cadastrar', { page: 'ACCOUNT' }],
+    ['/conta-excluida', { page: 'ACCOUNT' }],
     ['/privacidade', { page: 'LEGAL' }],
     ['/termos', { page: 'LEGAL' }],
     ['/nao-existe', { page: 'OTHER' }],

@@ -1,11 +1,13 @@
 import type { Library, LibraryGame, Preferences } from '@indie/contracts';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { sampleGame } from '@/test/catalog';
 import { apiError, sampleUser, stubFetch } from '@/test/fetch';
 import { renderWithQuery } from '@/test/render';
 import { ProfileView } from './profile-view';
+
+vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: vi.fn() }) }));
 
 const AT = '2026-11-16T12:00:00.000Z';
 
@@ -130,9 +132,10 @@ describe('ProfileView', () => {
       'href',
       '/boas-vindas?next=%2Fperfil',
     );
-    // Só a seção das métricas de uso, que não depende da biblioteca.
+    // Só as seções que não dependem da biblioteca: as métricas de uso e a exclusão da conta.
     expect(screen.getAllByRole('region')).toEqual([
       screen.getByRole('region', { name: 'Métricas de uso' }),
+      screen.getByRole('region', { name: 'Excluir conta' }),
     ]);
   });
 

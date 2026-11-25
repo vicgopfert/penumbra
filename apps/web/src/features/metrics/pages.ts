@@ -7,6 +7,7 @@ const ACCOUNT_PATHS = [
   'esqueci-senha',
   'redefinir-senha',
   'confirmar-email',
+  'conta-excluida',
 ];
 
 const FIRST_SEGMENT: Record<string, ProductPage> = {
