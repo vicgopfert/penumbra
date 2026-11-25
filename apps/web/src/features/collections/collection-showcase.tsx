@@ -13,13 +13,17 @@ export function CollectionShowcase({
   collections,
   titleAs: Title,
   retryHref,
+  noindexWhenUnavailable = false,
 }: {
   collections: Collections;
   titleAs: 'h2' | 'h3';
   retryHref: string;
+  noindexWhenUnavailable?: boolean;
 }) {
   const list = use(collections);
-  if (!list) return <CollectionsUnavailable retryHref={retryHref} />;
+  if (!list) {
+    return <CollectionsUnavailable retryHref={retryHref} noindex={noindexWhenUnavailable} />;
+  }
 
   return (
     <ul className="grid gap-6 sm:grid-cols-2">

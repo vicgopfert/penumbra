@@ -1,5 +1,6 @@
 'use client';
 
+import { LoadingMessage } from '@/components/loading-message';
 import { type GameSummary, ONBOARDING_RATINGS_MAX } from '@indie/contracts';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -33,7 +34,7 @@ export function RatingStep({ next }: { next: string }) {
   );
 
   if (games.isPending) {
-    return <p className="text-sm text-muted-foreground">Carregando jogos para avaliar…</p>;
+    return <LoadingMessage>Carregando jogos para avaliar…</LoadingMessage>;
   }
   if (games.isError) {
     return (

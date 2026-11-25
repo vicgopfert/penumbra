@@ -1,5 +1,6 @@
 'use client';
 
+import { LoadingMessage } from '@/components/loading-message';
 import type { User } from '@indie/contracts';
 import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -23,8 +24,15 @@ export function SessionGate({
 }) {
   const { data: user, isPending } = useSession();
 
-  // Reserva o espaço enquanto a sessão carrega, para não mostrar o convite a quem já entrou.
-  if (isPending) return <div aria-hidden="true" className="h-24" />;
+  // Reserva o espaço enquanto a sessão carrega, para não mostrar o convite a quem já entrou; se
+  // demorar, explica a espera.
+  if (isPending) {
+    return (
+      <div className="h-24">
+        <LoadingMessage />
+      </div>
+    );
+  }
 
   if (!user) {
     return (

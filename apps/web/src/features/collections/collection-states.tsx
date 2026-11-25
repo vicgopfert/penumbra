@@ -1,32 +1,26 @@
 import Link from 'next/link';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ServerWaking } from '@/components/server-waking';
 
 export const COLLECTIONS_LOADING = 'Carregando coleções…';
 
-export function CollectionsUnavailable({ retryHref }: { retryHref: string }) {
+export function CollectionsUnavailable({
+  retryHref,
+  noindex,
+}: {
+  retryHref: string;
+  noindex: boolean;
+}) {
   return (
-    <p className="text-sm text-muted-foreground">
-      Não foi possível carregar as coleções agora.{' '}
-      {/* Recarrega a página inteira, como no catálogo. */}
-      <a href={retryHref} className="underline">
-        Tentar de novo
-      </a>
-    </p>
+    <ServerWaking
+      title="Não foi possível carregar as coleções"
+      retryHref={retryHref}
+      noindex={noindex}
+    />
   );
 }
 
 export function CollectionUnavailable({ retryHref }: { retryHref: string }) {
-  return (
-    <Alert variant="destructive">
-      <AlertTitle>Não foi possível carregar a coleção</AlertTitle>
-      <AlertDescription>
-        <p>O servidor não respondeu; tente de novo em instantes.</p>
-        <a href={retryHref} className="underline">
-          Tentar de novo
-        </a>
-      </AlertDescription>
-    </Alert>
-  );
+  return <ServerWaking title="Não foi possível carregar a coleção" retryHref={retryHref} />;
 }
 
 export function PageBeyondCollection({ firstPageHref }: { firstPageHref: string }) {

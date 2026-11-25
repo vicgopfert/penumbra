@@ -7,6 +7,7 @@ import CollectionPage, { generateMetadata } from './page';
 
 const NOT_FOUND = 'NEXT_NOT_FOUND';
 vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: vi.fn() }),
   notFound: () => {
     throw new Error(NOT_FOUND);
   },
@@ -91,18 +92,19 @@ describe('CollectionPage', () => {
     await expect(CollectionPage(props(undefined, 'nao-existe'))).rejects.toThrow(NOT_FOUND);
   });
 
-  it('se a API falhar, avisa e oferece tentar de novo na mesma página', async () => {
+  it('se a API falhar, avisa que o servidor está acordando, fora do índice dos buscadores', async () => {
     stubFetch(() => {
       throw new TypeError('fetch failed');
     });
 
     await renderPage('2');
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível carregar a coleção');
-    expect(screen.getByRole('link', { name: 'Tentar de novo' })).toHaveAttribute(
-      'href',
-      '/colecoes/brasil?page=2',
-    );
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent('Não foi possível carregar a coleção');
+    expect(alert).toHaveTextContent('O servidor está acordando');
+    // Só depois das tentativas automáticas o link aparece (/colecoes/brasil?page=2).
+    expect(screen.queryByRole('link', { name: 'Tentar de novo' })).not.toBeInTheDocument();
+    expect(document.head.querySelector('meta[name="robots"][content="noindex"]')).not.toBeNull();
   });
 
   it('o título da aba é o nome da coleção, e a descrição vai nos metadados', async () => {

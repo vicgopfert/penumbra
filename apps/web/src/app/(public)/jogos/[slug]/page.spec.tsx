@@ -8,6 +8,7 @@ import GamePage, { generateMetadata } from './page';
 
 const NOT_FOUND = 'NEXT_NOT_FOUND';
 vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: vi.fn() }),
   notFound: () => {
     throw new Error(NOT_FOUND);
   },
@@ -229,18 +230,19 @@ describe('GamePage', () => {
     await expect(GamePage(props('nao-existe'))).rejects.toThrow(NOT_FOUND);
   });
 
-  it('se a API falhar, avisa e oferece tentar de novo', async () => {
+  it('se a API falhar, avisa que o servidor está acordando, fora do índice dos buscadores', async () => {
     stubFetch(() => {
       throw new TypeError('fetch failed');
     });
 
     await renderPage();
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível carregar o jogo');
-    expect(screen.getByRole('link', { name: 'Tentar de novo' })).toHaveAttribute(
-      'href',
-      '/jogos/celeste',
-    );
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent('Não foi possível carregar o jogo');
+    expect(alert).toHaveTextContent('O servidor está acordando');
+    // Só depois das tentativas automáticas o link aparece (/jogos/celeste).
+    expect(screen.queryByRole('link', { name: 'Tentar de novo' })).not.toBeInTheDocument();
+    expect(document.head.querySelector('meta[name="robots"][content="noindex"]')).not.toBeNull();
     expect(screen.queryByTestId('similar-games')).not.toBeInTheDocument();
   });
 });

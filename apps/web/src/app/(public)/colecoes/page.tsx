@@ -28,6 +28,7 @@ export default function CollectionsPage() {
           collections={listCollectionsOrNull()}
           titleAs="h2"
           retryHref={COLLECTIONS_PATH}
+          noindexWhenUnavailable
         />
       </Suspense>
     </main>

@@ -1,5 +1,6 @@
 'use client';
 
+import { LoadingMessage } from '@/components/loading-message';
 import type { GameLibraryState, ListType } from '@indie/contracts';
 import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -53,7 +54,7 @@ function LibraryState({ slug }: { slug: string }) {
   }, [state.error, queryClient]);
 
   if (state.isPending) {
-    return <p className="text-sm text-muted-foreground">Carregando a sua nota e as suas listas…</p>;
+    return <LoadingMessage>Carregando a sua nota e as suas listas…</LoadingMessage>;
   }
   if (state.isError) {
     return (
