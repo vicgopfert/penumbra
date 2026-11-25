@@ -44,7 +44,8 @@ export function sessionHelpers(app: INestApplication<App>) {
       server().put(path).set('Cookie', cookie).set('Origin', origin).send(body),
     patch: (path: string, body: object) =>
       server().patch(path).set('Cookie', cookie).set('Origin', origin).send(body),
-    delete: (path: string) => server().delete(path).set('Cookie', cookie).set('Origin', origin),
+    delete: (path: string, body?: object) =>
+      server().delete(path).set('Cookie', cookie).set('Origin', origin).send(body),
     post: (path: string, body?: object) =>
       server().post(path).set('Cookie', cookie).set('Origin', origin).send(body),
   });

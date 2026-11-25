@@ -6,6 +6,8 @@ import { BackgroundTasks } from '../../common/background-tasks';
 import type { ApiEnv } from '../../config/env';
 import { MailModule } from '../mail/mail.module';
 import { UsersModule } from '../users/users.module';
+import { AccountDeletionController } from './account-deletion.controller';
+import { AccountDeletionService } from './account-deletion.service';
 import { AUTH_SETTINGS, type AuthSettings } from './auth-settings';
 import {
   ACCOUNT_LOGIN_LIMIT,
@@ -40,13 +42,19 @@ import { SessionAuthGuard } from './session-auth.guard';
       ],
     }),
   ],
-  controllers: [AuthController, PasswordResetController, EmailConfirmationController],
+  controllers: [
+    AuthController,
+    PasswordResetController,
+    EmailConfirmationController,
+    AccountDeletionController,
+  ],
   providers: [
     AuthService,
     PasswordHasher,
     PasswordChanger,
     PasswordResetService,
     EmailConfirmationService,
+    AccountDeletionService,
     BackgroundTasks,
     { provide: APP_GUARD, useClass: SessionAuthGuard },
     {

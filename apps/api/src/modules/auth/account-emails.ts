@@ -62,6 +62,29 @@ export function passwordChangedEmail(to: string, changedAt: Date, webOrigin: str
   };
 }
 
+export function accountDeletedEmail(to: string, deletedAt: Date, webOrigin: string): Email {
+  return {
+    to,
+    subject: 'A sua conta na Penumbra foi excluída',
+    text: [
+      GREETING,
+      '',
+      `A sua conta na Penumbra foi excluída em ${BRASILIA_TIME.format(deletedAt)} ` +
+        '(horário de Brasília). Com ela, apagamos o seu e-mail e o seu nome na Penumbra, a sua ' +
+        'biblioteca, os seus gostos, as sessões abertas e as métricas de uso ligadas à conta. ' +
+        'Não dá para desfazer.',
+      '',
+      'Este é o último e-mail que a Penumbra manda para este endereço. O que ainda fica por um ' +
+        `tempo fora do banco, e por quanto tempo, está em ${webOrigin}/privacidade.`,
+      '',
+      'Se não foi você, alguém conhecia a sua senha da Penumbra ou acessou o seu e-mail. Troque ' +
+        'a senha do seu e-mail e a de outros sites em que você usava a mesma senha.',
+      '',
+      'Penumbra',
+    ].join('\n'),
+  };
+}
+
 const CONFIRMATION_INSTRUCTIONS = `Ele vale por ${EMAIL_CONFIRMATION_TTL_DAYS} dias. ${LATEST_LINK_NOTE}`;
 
 const UNCONFIRMED_CONSEQUENCE =
