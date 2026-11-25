@@ -10,7 +10,7 @@ describe('PrivacyPage', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: 'Política de privacidade' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Em vigor desde 24 de novembro de 2026.')).toBeInTheDocument();
+    expect(screen.getByText('Em vigor desde 25 de novembro de 2026.')).toBeInTheDocument();
   });
 
   it('identifica o controlador e dá o contato', () => {
@@ -25,11 +25,19 @@ describe('PrivacyPage', () => {
   it('descreve cada grupo de dados com o quê, para quê, base legal e prazo', () => {
     render(<PrivacyPage />);
 
-    for (const id of ['conta', 'biblioteca', 'sessao', 'links-por-email', 'pedidos-ao-contato']) {
+    for (const id of [
+      'conta',
+      'biblioteca',
+      'sessao',
+      'links-por-email',
+      'metricas-de-uso',
+      'limite-das-metricas',
+      'pedidos-ao-contato',
+    ]) {
       expect(document.getElementById(id)).not.toBeNull();
     }
-    expect(screen.getAllByText('Base legal')).toHaveLength(6);
-    expect(screen.getAllByText('Por quanto tempo')).toHaveLength(6);
+    expect(screen.getAllByText('Base legal')).toHaveLength(8);
+    expect(screen.getAllByText('Por quanto tempo')).toHaveLength(8);
   });
 
   it('cobre provedores, transferência internacional, direitos e as capas da IGDB', () => {

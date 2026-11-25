@@ -38,6 +38,10 @@ export default function PrivacyPage() {
             Não vendemos dados, não mostramos anúncios e não usamos cookies de análise nem de
             publicidade.
           </li>
+          <li>
+            Medimos o uso do site sem cookies: sem conta, de forma anônima; com conta, só se você
+            permitir.
+          </li>
           <li>Os dados ficam em servidores nos Estados Unidos, nos provedores listados abaixo.</li>
           <li>
             Você pode pedir uma cópia, a correção ou a exclusão dos seus dados pelo e-mail{' '}
@@ -93,8 +97,10 @@ export default function PrivacyPage() {
         <p>
           A {siteConfig.name} usa um único cookie, o &quot;sid&quot;, que mantém você na conta. Ele
           é essencial, só existe depois que você entra, não pode ser lido pelos scripts da página e
-          só vale para este site. Não usamos cookies de análise, de publicidade nem de terceiros, e
-          não guardamos nada no armazenamento local do navegador.
+          só vale para este site. Não usamos cookies de análise, de publicidade nem de terceiros. No
+          armazenamento do navegador, guardamos só uma marca, sem dado pessoal, que indica que a
+          visita já começou, para as métricas de uso contarem cada visita uma vez. Ela some quando a
+          aba é fechada.
         </p>
       </LegalSection>
 
@@ -127,10 +133,12 @@ export default function PrivacyPage() {
           Todos esses provedores guardam os dados nos Estados Unidos. A transferência dos dados da
           sua conta se apoia na execução do contrato com você (LGPD, art. 33, IX, com o art. 7º, V):
           sem ela, a conta e as recomendações não funcionariam. Os registros técnicos da Vercel e do
-          Render também ficam nos Estados Unidos, e nenhum desses provedores adota as
-          cláusulas-padrão aprovadas pela ANPD. A transferência dos pedidos ao e-mail de contato
-          para o Google (Gmail) se apoia no cumprimento de obrigação legal (LGPD, art. 33, IX, com o
-          art. 7º, II).
+          Render também ficam nos Estados Unidos, assim como o IP usado no limite de envio das
+          métricas, que passa só pela memória do servidor, e nenhum desses provedores adota as
+          cláusulas-padrão aprovadas pela ANPD. As métricas de uso ligadas à sua conta só existem
+          com o seu consentimento, que vale também para a transferência delas aos Estados Unidos
+          (LGPD, art. 33, VIII). A transferência dos pedidos ao e-mail de contato para o Google
+          (Gmail) se apoia no cumprimento de obrigação legal (LGPD, art. 33, IX, com o art. 7º, II).
         </p>
       </LegalSection>
 
@@ -151,6 +159,7 @@ export default function PrivacyPage() {
         <ul className="list-disc space-y-1 pl-6">
           <li>Conta, biblioteca e gostos: até a exclusão da conta.</li>
           <li>Sessões e links enviados por e-mail: pelos prazos descritos acima.</li>
+          <li>Métricas de uso: até 12 meses.</li>
           <li>
             Cópias de segurança: o banco permite voltar a um estado das últimas 6 horas, então um
             dado apagado some de vez depois desse prazo.
@@ -180,10 +189,11 @@ export default function PrivacyPage() {
         </ul>
         <p>
           Notas, listas e gostos você muda a qualquer momento no próprio site, e a sua biblioteca
-          aparece no seu perfil, que só você vê, com a sua conta aberta. Para o resto, como uma
-          cópia dos dados, a correção do nome ou a exclusão da conta, escreva para <ContactEmail />{' '}
-          a partir do e-mail da conta. Respondemos em até 15 dias. Se o pedido vier de outro
-          endereço, podemos pedir uma confirmação de que a conta é sua.
+          aparece no seu perfil, que só você vê, com a sua conta aberta. A permissão das métricas de
+          uso você liga e desliga no perfil, e desligar apaga o que estava ligado à sua conta. Para
+          o resto, como uma cópia dos dados, a correção do nome ou a exclusão da conta, escreva para{' '}
+          <ContactEmail /> a partir do e-mail da conta. Respondemos em até 15 dias. Se o pedido vier
+          de outro endereço, podemos pedir uma confirmação de que a conta é sua.
         </p>
       </LegalSection>
 
@@ -208,8 +218,9 @@ export default function PrivacyPage() {
       <LegalSection id="tcc" title="Uso no trabalho de conclusão de curso">
         <p>
           Como projeto acadêmico, a {siteConfig.name} pode publicar no trabalho números agregados e
-          anônimos sobre o uso, como quantas contas existem ou quantos jogos foram avaliados. Esses
-          números nunca identificam uma pessoa. Base legal: legítimo interesse (LGPD, art. 7º, IX).
+          anônimos sobre o uso, como quantas contas existem, quantos jogos foram avaliados ou
+          quantos dos jogos recomendados recebem clique. Esses números nunca identificam uma pessoa.
+          Base legal: legítimo interesse (LGPD, art. 7º, IX).
         </p>
       </LegalSection>
 
