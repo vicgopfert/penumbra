@@ -1,4 +1,5 @@
 import {
+  type DeleteAccountInput,
   type EmailConfirmationInput,
   type LoginInput,
   type PasswordResetConfirmInput,
@@ -36,6 +37,10 @@ export const requestEmailConfirmation = () =>
 
 export const confirmEmail = (input: EmailConfirmationInput) =>
   apiFetch('/auth/email-confirmation/confirm', { method: 'POST', body: input });
+
+// Exclusão imediata e definitiva da conta da sessão (B-52).
+export const deleteAccount = (input: DeleteAccountInput) =>
+  apiFetch('/me', { method: 'DELETE', body: input });
 
 // Uma sessão que já venceu também termina sem sessão: o 401 aqui não é falha.
 export async function logout() {

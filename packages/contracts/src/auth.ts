@@ -75,6 +75,16 @@ export const LoginSchema = z.object({
 
 export type LoginInput = z.infer<typeof LoginSchema>;
 
+// A exclusão da conta pede a senha atual (B-52). Como no login, só o teto, sem a política de tamanho.
+export const DeleteAccountSchema = z.object({
+  password: z
+    .string({ error: 'Informe a sua senha.' })
+    .min(1, { error: 'Informe a sua senha.' })
+    .max(PASSWORD_MAX_LENGTH, { error: 'Senha incorreta.' }),
+});
+
+export type DeleteAccountInput = z.infer<typeof DeleteAccountSchema>;
+
 export const PasswordResetRequestSchema = z.object({ email: EmailSchema });
 
 export type PasswordResetRequestInput = z.infer<typeof PasswordResetRequestSchema>;

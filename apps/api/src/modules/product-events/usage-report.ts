@@ -96,6 +96,15 @@ export async function usageReport(
       'passados: um evento num dia seguinte ao do cadastro, até 7 dias depois dele.',
   );
   out();
+  // As datas de AccountDeletion já estão no dia de Brasília (B-52).
+  const deletions = await count(Prisma.sql`
+    SELECT count(*) AS count FROM "AccountDeletion"
+    WHERE "deletedOn" >= ${from.label}::date AND "deletedOn" < ${to.label}::date`);
+  out(
+    `Contas excluídas no período: ${deletions}. Os cadastros acima contam só as contas que ainda ` +
+      'existem, e a exclusão não guarda a data do cadastro.',
+  );
+  out();
 
   const listRows = await prisma.$queryRaw<
     { list: string; mode: string | null; shown: bigint; clicks: bigint; wants: bigint }[]

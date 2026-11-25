@@ -121,6 +121,36 @@ Ajustes do autor no texto da política, na aprovação do plano:
 - **Seção "Cookies":** diz que o navegador guarda só a marca de início de visita, sem dado pessoal, que some ao fechar a aba.
 - **Limite de envio das métricas:** a política declara a base como legítimo interesse, com o IP só na memória por até 1 minuto.
 
+## Conferência em produção (25/11/2026)
+
+PR #106. Depois do merge, o job de migrations da CI criou a tabela e a coluna no Neon, e a API subiu com o índice recarregado. A política no ar mostra a vigência de 25/11/2026.
+
+Um script no navegador conferiu 25 de 25 itens contra https://penumbraindie.com.br, das 16:53:37 às 16:54:49 UTC. Ele lê os pedidos a `/api/events` e as respostas, porque o banco de produção não é lido daqui.
+
+- **Sem conta, 1280 px:**
+  - três páginas vistas, só a primeira abre a visita, com origem direta;
+  - a ficha leva o jogo;
+  - os semelhantes abaixo da dobra só contam depois de rolar (6 jogos, sem modo);
+  - o clique de saída leva a loja;
+  - os 5 envios responderam 204;
+  - o navegador guarda só a marca `penumbra:visita`, sem cookie e sem `localStorage`.
+- **API:** tipo inventado e campo a mais (`ip`) respondem 400; o envio sem a origem do site responde 403.
+- **Conta sem consentimento, 390 px:**
+  - a caixa do cadastro começa desmarcada, e a conta fica sem a data;
+  - o navegador não manda nada;
+  - uma aba nova nem marca a visita.
+- **Conta com consentimento, 390 px:**
+  - a data fica gravada no cadastro;
+  - a exibição da principal conta 3 jogos visíveis, com o modo;
+  - o clique na principal fica na posição 1, sem página;
+  - o "quero jogar" leva a lista de origem;
+  - o clique na página 2 do "ver mais" leva `listPage` 2;
+  - os 7 envios responderam 204;
+  - o perfil mostra a data da permissão;
+  - desligar zera a permissão, e depois nada mais é enviado.
+
+As duas contas `@example.com` criadas entram na lista do B-52. Os eventos da conta com consentimento foram apagados ao desligar a permissão. Ficam no banco só os eventos anônimos do visitante do script, que o relatório da semana deve descontar.
+
 ## Limitações
 
 - **Quem recusa não aparece.** As métricas de recomendação contam só quem consentiu.

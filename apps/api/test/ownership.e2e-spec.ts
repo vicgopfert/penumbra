@@ -9,9 +9,9 @@ import {
   UserSchema,
 } from '@indie/contracts';
 import { type INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import type { Application } from 'express';
-import type { Test } from 'supertest';
 import type { App } from 'supertest/types';
 import { BackgroundTasks } from '../src/common/background-tasks';
 import { MAILER } from '../src/modules/mail/mailer';
@@ -37,12 +37,14 @@ const ALLOWED_PATH_PARAMS = new Set(['slug', 'list', 'key']);
 const SAMPLE_PARAMS: Record<string, string> = { slug: 'celeste', list: 'favorite', key: 'main' };
 
 type Client = ReturnType<ReturnType<typeof sessionHelpers>['as']>;
+type Send = () => PromiseLike<{ status: number }>;
 
 // Cada rota que exige sessão, com o que a Jogadora faz por ela sobre os mesmos jogos da Outra. O
 // inventário confere que esta lista é exatamente a das rotas com sessão: uma rota nova com sessão
-// precisa entrar aqui. O logout vem por último, porque encerra a sessão da Jogadora. Cada
-// requisição é criada só na hora de enviar: o supertest abre e fecha o servidor em cada uma.
-const SESSION_ROUTES: Record<string, (as: Client) => (() => Test)[]> = {
+// precisa entrar aqui. O logout e a exclusão da conta vêm por último, porque encerram a sessão da
+// Jogadora; a exclusão entra de novo para ter uma sessão. Cada requisição é criada só na hora de
+// enviar: o supertest abre e fecha o servidor em cada uma.
+const SESSION_ROUTES: Record<string, (as: Client, signIn: () => Promise<Client>) => Send[]> = {
   'PUT /api/me/ratings/:slug': (as) =>
     GAMES.map((slug) => () => as.put(`/api/me/ratings/${slug}`, { score: 1 })),
   'DELETE /api/me/ratings/:slug': (as) =>
@@ -67,6 +69,9 @@ const SESSION_ROUTES: Record<string, (as: Client) => (() => Test)[]> = {
   'GET /api/recommendations': (as) => [() => as.get('/api/recommendations')],
   'GET /api/recommendations/lists/:key': (as) => [() => as.get('/api/recommendations/lists/main')],
   'POST /api/auth/logout': (as) => [() => as.post('/api/auth/logout')],
+  'DELETE /api/me': (_, signIn) => [
+    async () => (await signIn()).delete('/api/me', { password: 'senha-forte' }),
+  ],
 };
 
 describe('Posse dos dados: uma pessoa não altera nem lê a biblioteca de outra (B-30)', () => {
@@ -128,6 +133,15 @@ describe('Posse dos dados: uma pessoa não altera nem lê a biblioteca de outra 
     return { cookie, id: me.id };
   }
 
+  async function signInJogadora() {
+    const response = await helpers
+      .server()
+      .post('/api/auth/login')
+      .set('Origin', app.get(ConfigService).getOrThrow<string>('WEB_ORIGIN'))
+      .send({ email: 'jogadora@example.com', password: 'senha-forte' });
+    return helpers.as(String(response.headers['set-cookie']).split(';')[0]!);
+  }
+
   // Tudo o que está gravado da pessoa no banco, inclusive as sessões e os links enviados por e-mail.
   const rowsOf = (userId: string) =>
     Promise.all([
@@ -165,7 +179,7 @@ describe('Posse dos dados: uma pessoa não altera nem lê a biblioteca de outra 
     const view = await viewOf(outra.cookie);
 
     for (const [route, act] of Object.entries(SESSION_ROUTES)) {
-      for (const send of act(helpers.as(jogadora.cookie))) {
+      for (const send of act(helpers.as(jogadora.cookie), signInJogadora)) {
         const { status } = await send();
         expect([route, status < 300]).toEqual([route, true]);
       }

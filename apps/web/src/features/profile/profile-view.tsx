@@ -10,6 +10,7 @@ import { usePreferences } from '@/features/onboarding/hooks';
 import { onboardingHref } from '@/features/onboarding/paths';
 import { PROFILE_PATH } from './paths';
 import { ListSection, RatingsSection, TastesSection } from './profile-sections';
+import { DeleteAccountSection } from './delete-account-section';
 import { UsageMetricsSection } from './usage-metrics-section';
 import { UserAvatar } from './user-avatar';
 
@@ -46,6 +47,7 @@ function Profile({ user }: { user: User }) {
         />
       )}
       <UsageMetricsSection user={user} />
+      <DeleteAccountSection />
     </div>
   );
 }

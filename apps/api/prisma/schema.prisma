@@ -408,6 +408,15 @@ model IngestionReviewFlag {
   @@index([kind])
 }
 
+// Só a data de cada exclusão de conta (B-52), no horário de Brasília, sem nada que identifique a
+// conta: o relatório de uso conta o abandono, e os cadastros do funil não somem sem explicação.
+model AccountDeletion {
+  id        BigInt   @id @default(autoincrement())
+  deletedOn DateTime @db.Date
+
+  @@index([deletedOn])
+}
+
 // Métricas de uso (B-100). Nenhuma coluna de IP, e-mail, navegador ou identificador de visita; a
 // conta só vem com o consentimento dela. Os campos de cada tipo seguem o contrato (events.ts).
 model ProductEvent {

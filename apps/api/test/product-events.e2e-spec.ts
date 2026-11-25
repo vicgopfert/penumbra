@@ -32,7 +32,7 @@ describe('Eventos de uso (POST /api/events)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.$executeRaw`TRUNCATE "User", "Game", "Feature", "Company", "ProductEvent" CASCADE`;
+    await prisma.$executeRaw`TRUNCATE "User", "Game", "Feature", "Company", "ProductEvent", "AccountDeletion" CASCADE`;
     const catalog = new CatalogBuilder(prisma);
     await catalog.game({ name: 'Celeste', genres: ['Platform'] });
     await catalog.game({ name: 'Hades', genres: ['Roguelike'] });
@@ -270,6 +270,10 @@ describe('Eventos de uso (POST /api/events)', () => {
       ],
     });
 
+    await prisma.accountDeletion.createMany({
+      data: [{ deletedOn: at('2026-11-03') }, { deletedOn: at('2026-11-08') }],
+    });
+
     const report = await usageReport(
       prisma,
       { label: '2026-11-01', at: at('2026-11-01T03:00:00Z') },
@@ -287,6 +291,7 @@ describe('Eventos de uso (POST /api/events)', () => {
     expect(report).toContain('| MAIN | 1 a 5 | 1 |');
     expect(report).toContain('| INTEREST | 21 a 50 | 1 |');
     expect(report).toContain('Contas com consentimento: 2 de 3.');
+    expect(report).toContain('Contas excluídas no período: 1.');
   });
 });
 

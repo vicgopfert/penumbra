@@ -124,6 +124,35 @@ Registrados também como R-26 na seção 16 da proposta técnica, com a sugestã
 
 A seção de transferência internacional, com o DPA de cada provedor, e o teste de balanceamento foram pedidos pelo autor na aprovação do plano.
 
+## Exclusão da conta (B-52)
+
+A pessoa exclui a própria conta no perfil, confirmando com a senha atual (`DELETE /api/me`):
+- A exclusão é imediata e definitiva.
+- Um único `DELETE` do `User` apaga, pela cascata, as sessões, os links enviados por e-mail, as avaliações, as listas, os gostos e os eventos de uso ligados à conta.
+- Um teste da API falha se uma relação com o `User` não for em cascata. Um e2e lê do schema os modelos ligados ao `User` e confere que nenhuma linha da conta sobra.
+
+O que fica fora do banco segue os prazos já declarados: o histórico de 6 horas do Neon, os e-mails no Resend por 30 dias, os registros técnicos da Vercel (1 hora) e do Render (7 dias), e as mensagens ao e-mail de contato, por 1 ano.
+
+**Aviso por e-mail:** vai só para endereço confirmado, depois de a conta ser apagada, sem nenhum texto digitado pela pessoa. O Resend guarda o endereço por 30 dias, como os outros e-mails da conta.
+
+**Contagem das exclusões:** cada exclusão grava uma linha em `AccountDeletion`, só com a data (no dia de Brasília), sem hora e sem nada da conta. Não é dado pessoal: a conta já não existe, e a data sozinha não leva a ninguém. Serve à linha "Contas excluídas no período" do relatório de uso (`docs/metricas-de-uso.md`). Fica fora do inventário, porque não se liga ao `User`.
+
+A senha errada responde 400 no campo, e não 401, que na web quer dizer sessão vencida. A rota tem os mesmos limites do login.
+
+Decisões do autor em 25/11/2026, todas na recomendação do plano:
+1. confirmação pela senha atual;
+2. `DELETE /api/me` com os limites do login;
+3. exclusão imediata, sem carência;
+4. aviso só para endereço confirmado;
+5. contagem só pela data;
+6. página `/conta-excluida`, sem indexação;
+7. a guarda da cascata no teste;
+8. as contas de teste de produção apagadas por SQL, menos a `+b98`, que o autor exclui pela interface;
+9. exclusão no perfil, com o e-mail de contato só para cópia e correção;
+10. conclusão com a conferência em produção e as contas de teste apagadas.
+
+Uma conta criada sem senha, como a do login com Google (B-68), vai precisar de outra confirmação, como um link por e-mail. A nota está registrada no B-68.
+
 ## Regra de revisão
 
 Todo item que gravar dado pessoal novo, ou usar um dado de outro jeito, atualiza no mesmo PR:
@@ -137,5 +166,6 @@ O teste falha sozinho quando um campo novo aparece no schema. Um dado fora do ba
 
 | Data | Mudança |
 | --- | --- |
+| 26/11/2026 | Exclusão da conta no perfil (B-52): aviso por e-mail, contagem das exclusões só pela data e termos atualizados |
 | 25/11/2026 | Métricas de uso (B-100): eventos anônimos sem conta, ligados à conta só com consentimento, marca de visita no `sessionStorage` e limite de envio por IP, por legítimo interesse; inventário, bases legais, balanceamento, transferência e riscos atualizados |
 | 24/11/2026 | Primeira versão da política e dos termos (B-101) |

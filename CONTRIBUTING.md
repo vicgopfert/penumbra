@@ -85,7 +85,9 @@ Item que grave dado pessoal novo, ou use um dado de outro jeito, atualiza no
 mesmo PR a política de privacidade (`/privacidade`), a data de vigência e o
 inventário de [`docs/privacidade.md`](./docs/privacidade.md), antes de coletar.
 O teste `personal-data-inventory.spec.ts` da API falha quando o schema ganha um
-campo pessoal fora do inventário.
+campo pessoal fora do inventário, e também quando uma relação com o `User` não
+é apagada em cascata: a exclusão da conta (B-52) apaga só o `User` e confia na
+cascata para todo o resto.
 
 Não há meta de cobertura de testes nem de desempenho: o critério é cobrir o que
 pode quebrar a demonstração ou a tese central do trabalho.

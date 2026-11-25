@@ -2,6 +2,7 @@ import type { User } from '@indie/contracts';
 import { type QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   confirmEmail,
+  deleteAccount,
   getSession,
   login,
   logout,
@@ -35,6 +36,9 @@ export function useLogout() {
 }
 
 export const useRequestPasswordReset = () => useMutation({ mutationFn: requestPasswordReset });
+
+// Quem chama limpa a conta depois de sair do perfil, para a página não mostrar o convite a entrar.
+export const useDeleteAccount = () => useMutation({ mutationFn: deleteAccount });
 
 // A redefinição encerra todas as sessões da conta, inclusive a deste navegador, se houver.
 export function useResetPassword() {

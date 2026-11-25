@@ -75,6 +75,18 @@ export class UsersRepository {
     });
   }
 
+  // Numa transação: apaga a conta, que leva pela cascata tudo o que é dela (um teste confere que
+  // toda relação com o User é em cascata), e conta a exclusão só pela data. false se a conta já
+  // tinha sido apagada por outro pedido.
+  deleteAccount(id: string, deletedOn: Date) {
+    return this.prisma.$transaction(async (tx) => {
+      const { count } = await tx.user.deleteMany({ where: { id } });
+      if (count === 0) return false;
+      await tx.accountDeletion.create({ data: { deletedOn } });
+      return true;
+    });
+  }
+
   // Numa transação: o consentimento dado de novo mantém a data do primeiro, e o retirado apaga os
   // eventos de uso ligados à conta (B-100).
   update(id: string, { discoveryMode, usageMetricsConsent }: UserChanges, now: Date) {

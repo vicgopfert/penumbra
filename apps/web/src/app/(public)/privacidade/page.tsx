@@ -44,8 +44,8 @@ export default function PrivacyPage() {
           </li>
           <li>Os dados ficam em servidores nos Estados Unidos, nos provedores listados abaixo.</li>
           <li>
-            Você pode pedir uma cópia, a correção ou a exclusão dos seus dados pelo e-mail{' '}
-            <ContactEmail />.
+            Você exclui a sua conta, com todos os dados dela, no seu perfil. Uma cópia ou a correção
+            dos dados você pede pelo e-mail <ContactEmail />.
           </li>
         </ul>
       </LegalSection>
@@ -107,9 +107,10 @@ export default function PrivacyPage() {
       <LegalSection id="emails" title="E-mails">
         <p>
           Mandamos só os e-mails da conta: a confirmação do e-mail no cadastro, o link de
-          redefinição quando você pede e o aviso de que a senha mudou. São mensagens só de texto,
-          sem imagens e sem rastreamento de abertura ou de clique. O envio é feito pelo Resend, que
-          recebe o seu endereço e o texto da mensagem e os guarda por 30 dias.
+          redefinição quando você pede, o aviso de que a senha mudou e o aviso de que a conta foi
+          excluída. São mensagens só de texto, sem imagens e sem rastreamento de abertura ou de
+          clique. O envio é feito pelo Resend, que recebe o seu endereço e o texto da mensagem e os
+          guarda por 30 dias.
         </p>
       </LegalSection>
 
@@ -157,7 +158,11 @@ export default function PrivacyPage() {
 
       <LegalSection id="retencao" title="Por quanto tempo guardamos">
         <ul className="list-disc space-y-1 pl-6">
-          <li>Conta, biblioteca e gostos: até a exclusão da conta.</li>
+          <li>Conta, biblioteca e gostos: até você excluir a conta no seu perfil.</li>
+          <li>
+            Da conta excluída, fica só a data da exclusão, sem nada que identifique a conta, para
+            contarmos quantas contas saem.
+          </li>
           <li>Sessões e links enviados por e-mail: pelos prazos descritos acima.</li>
           <li>Métricas de uso: até 12 meses.</li>
           <li>
@@ -190,10 +195,12 @@ export default function PrivacyPage() {
         <p>
           Notas, listas e gostos você muda a qualquer momento no próprio site, e a sua biblioteca
           aparece no seu perfil, que só você vê, com a sua conta aberta. A permissão das métricas de
-          uso você liga e desliga no perfil, e desligar apaga o que estava ligado à sua conta. Para
-          o resto, como uma cópia dos dados, a correção do nome ou a exclusão da conta, escreva para{' '}
-          <ContactEmail /> a partir do e-mail da conta. Respondemos em até 15 dias. Se o pedido vier
-          de outro endereço, podemos pedir uma confirmação de que a conta é sua.
+          uso você liga e desliga no perfil, e desligar apaga o que estava ligado à sua conta. A
+          exclusão da conta, com todos os dados dela, você faz no perfil, confirmando com a senha: é
+          imediata, e você recebe um último e-mail de aviso, se o endereço estiver confirmado. Para
+          o resto, como uma cópia dos dados ou a correção do nome, escreva para <ContactEmail /> a
+          partir do e-mail da conta. Respondemos em até 15 dias. Se o pedido vier de outro endereço,
+          podemos pedir uma confirmação de que a conta é sua.
         </p>
       </LegalSection>
 

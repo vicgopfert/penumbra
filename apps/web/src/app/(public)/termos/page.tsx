@@ -47,7 +47,12 @@ export default function TermsPage() {
             ilegal.
           </li>
           <li>
-            Você pode pedir a exclusão da conta a qualquer momento pelo e-mail <ContactEmail />.
+            Você pode excluir a conta a qualquer momento no seu perfil, confirmando com a senha. A
+            exclusão é imediata e apaga todos os dados da conta (veja a{' '}
+            <Link href={PRIVACY_PATH} className="underline">
+              Política de privacidade
+            </Link>
+            ).
           </li>
         </ul>
       </LegalSection>

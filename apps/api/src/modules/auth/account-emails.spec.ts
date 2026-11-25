@@ -1,4 +1,5 @@
 import {
+  accountDeletedEmail,
   confirmBeforeResetEmail,
   emailConfirmationEmail,
   emailConfirmationLink,
@@ -14,6 +15,7 @@ describe('e-mails de conta', () => {
   it.each([
     ['pedido de redefinição', passwordResetEmail('jogadora@example.com', 'https://link')],
     ['senha alterada', passwordChangedEmail('jogadora@example.com', CHANGED_AT, ORIGIN)],
+    ['conta excluída', accountDeletedEmail('jogadora@example.com', CHANGED_AT, ORIGIN)],
     ['confirmação do e-mail', emailConfirmationEmail('jogadora@example.com', 'https://link')],
     [
       'confirmação antes da redefinição',
@@ -78,5 +80,15 @@ describe('e-mails de conta', () => {
     expect(passwordChangedEmail('jogadora@example.com', CHANGED_AT, ORIGIN).text).toContain(
       '17 de novembro de 2026 às 15:30',
     );
+  });
+
+  it('conta excluída: a hora em Brasília, o que foi apagado e onde ler o resto', () => {
+    const { subject, text } = accountDeletedEmail('jogadora@example.com', CHANGED_AT, ORIGIN);
+
+    expect(subject).toBe('A sua conta na Penumbra foi excluída');
+    expect(text).toContain('17 de novembro de 2026 às 15:30');
+    expect(text).toContain('Não dá para desfazer.');
+    expect(text).toContain(`${ORIGIN}/privacidade`);
+    expect(text).toContain('Troque a senha do seu e-mail e a de outros sites');
   });
 });
