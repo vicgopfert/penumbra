@@ -7,8 +7,8 @@ describe('TermsPage', () => {
     render(<TermsPage />);
 
     expect(screen.getByRole('heading', { level: 1, name: 'Termos de uso' })).toBeInTheDocument();
-    expect(screen.getByText('Em vigor desde 25 de novembro de 2026.')).toBeInTheDocument();
-    expect(screen.getByText('25 de novembro de 2026: Primeira versão.')).toBeInTheDocument();
+    expect(screen.getByText('Em vigor desde 24 de novembro de 2026.')).toBeInTheDocument();
+    expect(screen.getByText('24 de novembro de 2026: Primeira versão.')).toBeInTheDocument();
   });
 
   it('exige 18 anos para criar conta e leva à política de privacidade', () => {

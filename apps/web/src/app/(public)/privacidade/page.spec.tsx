@@ -10,7 +10,7 @@ describe('PrivacyPage', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: 'Política de privacidade' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Em vigor desde 25 de novembro de 2026.')).toBeInTheDocument();
+    expect(screen.getByText('Em vigor desde 24 de novembro de 2026.')).toBeInTheDocument();
   });
 
   it('identifica o controlador e dá o contato', () => {

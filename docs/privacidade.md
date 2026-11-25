@@ -130,4 +130,4 @@ O teste falha sozinho quando um campo novo aparece no schema. Um dado fora do ba
 
 | Data | Mudança |
 | --- | --- |
-| 25/11/2026 | Primeira versão da política e dos termos (B-101) |
+| 24/11/2026 | Primeira versão da política e dos termos (B-101) |

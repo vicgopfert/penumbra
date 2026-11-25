@@ -6,6 +6,6 @@ export type LegalHistory = [LegalChange, ...LegalChange[]];
 export const legalConfig = {
   controllerName: 'Victor Gopfert Ferreira Figueiredo',
   contactEmail: 'penumbraindie@gmail.com',
-  privacyHistory: [{ date: '2026-11-25', change: 'Primeira versão.' }] as LegalHistory,
-  termsHistory: [{ date: '2026-11-25', change: 'Primeira versão.' }] as LegalHistory,
+  privacyHistory: [{ date: '2026-11-24', change: 'Primeira versão.' }] as LegalHistory,
+  termsHistory: [{ date: '2026-11-24', change: 'Primeira versão.' }] as LegalHistory,
 };
