@@ -19,6 +19,20 @@ async function submit(password = 'senha-forte') {
 }
 
 describe('RegisterForm', () => {
+  it('leva aos termos e à política em outra aba, com a declaração de idade', () => {
+    renderWithQuery(<RegisterForm redirectTo="/" />);
+
+    expect(screen.getByText(/declara ter 18 anos ou mais/)).toBeInTheDocument();
+    for (const [name, href] of [
+      [/^Termos de uso ?\(abre em nova aba\)$/, '/termos'],
+      [/^Política de privacidade ?\(abre em nova aba\)$/, '/privacidade'],
+    ] as const) {
+      const link = screen.getByRole('link', { name });
+      expect(link).toHaveAttribute('href', href);
+      expect(link).toHaveAttribute('target', '_blank');
+    }
+  });
+
   it('mostra o tamanho mínimo da senha e recusa uma curta sem chamar a API', async () => {
     const fetchMock = stubFetch(() => Response.json(sampleUser, { status: 201 }));
     renderWithQuery(<RegisterForm redirectTo="/" />);

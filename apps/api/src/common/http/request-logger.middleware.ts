@@ -3,7 +3,8 @@ import type { NextFunction, Request, Response } from 'express';
 
 const logger = new Logger('HTTP');
 
-// Só metadados: corpo, consulta, cookies e cabeçalhos ficam fora, porque levam senha e token.
+// Só metadados: corpo, consulta, cookies e cabeçalhos ficam fora, porque levam senha e token, e o
+// IP também, porque o log fica nos EUA sem mecanismo de transferência para ele (docs/privacidade.md).
 export function logRequests(request: Request, response: Response, next: NextFunction) {
   const startedAt = performance.now();
   response.on('finish', () => {
@@ -13,7 +14,6 @@ export function logRequests(request: Request, response: Response, next: NextFunc
       path: request.path,
       status: response.statusCode,
       durationMs: Math.round(performance.now() - startedAt),
-      ip: request.ip,
       // Tamanho da lista X-Forwarded-For recebida: mostra se TRUST_PROXY_HOPS ainda bate com os proxies.
       forwardedFor: request.get('x-forwarded-for')?.split(',').length ?? 0,
     });

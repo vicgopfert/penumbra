@@ -284,9 +284,11 @@ Entrega: linha de base com jogadores reais, decisão de hospedagem e política d
   - [ ] Opção, custo mensal e período registrados na proposta técnica
   - [ ] Com a opção (a), visão geral medida em produção pela metodologia do B-33, com p95 abaixo de 1 s (regra 1 do B-76)
 - [ ] **B-101** (P, E14) Política de privacidade e termos de uso (F-58). Acrescentado em 24/11/2026, P0 com aprovação explícita do autor (D1). O site grava e-mail, nome, gostos e biblioteca, e vai gravar eventos (B-100) e mandar e-mails de produto (B-123), sem página que diga o quê, para quê, por quanto tempo e como apagar, como a LGPD pede. Páginas `/privacidade` e `/termos` em linguagem simples: dados coletados, finalidade, base legal de cada uso (prestação do serviço, legítimo interesse para métricas agregadas, consentimento para o Radar), provedores (Neon, Render, Vercel, Resend), retenção, direitos e como exercê-los. Não substitui orientação jurídica. Sem dependências; revisada a cada item que grave dado novo
-  - [ ] Páginas públicas, com data de vigência
-  - [ ] Links no rodapé e no formulário de cadastro
-  - [ ] Todo campo com dado pessoal do `schema.prisma` aparece na política (conferência campo a campo)
+  - [x] Páginas públicas, com data de vigência — `/privacidade` e `/termos`, estáticas, com o histórico de versões no fim; controlador, contato, 18 anos e aceite sem caixa de seleção por decisão do autor; fontes, bases legais, teste de balanceamento, transferência internacional e riscos em `docs/privacidade.md`
+  - [x] Links no rodapé e no formulário de cadastro — no cadastro, um texto abaixo do botão, com os links em outra aba
+  - [x] Todo campo com dado pessoal do `schema.prisma` aparece na política (conferência campo a campo) — inventário em `docs/privacidade.md` e teste da API que falha com campo pessoal fora dele
+  - [x] IP fora do log de pedidos da API (acrescentado em 24/11/2026, decisão do autor: o legítimo interesse não tem mecanismo claro de transferência para os EUA)
+  - [ ] Conferência no navegador em produção
 
 ## Fase 1 — Base
 
