@@ -4,6 +4,7 @@ import type { Library, Preferences, User } from '@indie/contracts';
 import { useIsMutating } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useState } from 'react';
+import { LoadingMessage } from '@/components/loading-message';
 import { SessionGate, useClearAccountWhenUnauthorized } from '@/features/auth/session-gate';
 import { LIBRARY_QUERY_KEY, useLibrary } from '@/features/library/hooks';
 import { usePreferences } from '@/features/onboarding/hooks';
@@ -34,7 +35,7 @@ function Profile({ user }: { user: User }) {
         <p className="text-lg font-medium break-words">{user.displayName}</p>
       </div>
       {library.isPending || preferences.isPending ? (
-        <p className="text-sm text-muted-foreground">Carregando o seu perfil…</p>
+        <LoadingMessage>Carregando o seu perfil…</LoadingMessage>
       ) : library.isError || preferences.isError ? (
         <p role="alert" className="text-sm text-destructive">
           Não foi possível carregar o seu perfil; recarregue a página.

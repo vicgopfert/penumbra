@@ -1,5 +1,6 @@
 'use client';
 
+import { LoadingMessage } from '@/components/loading-message';
 import {
   type FeatureOption,
   PREFERENCES_MIN,
@@ -24,7 +25,7 @@ export function PreferencesStep({ next, onSaved }: { next: string; onSaved: () =
   const current = usePreferences();
 
   if (options.isPending || current.isPending) {
-    return <p className="text-sm text-muted-foreground">Carregando as opções…</p>;
+    return <LoadingMessage>Carregando as opções…</LoadingMessage>;
   }
   if (options.isError || current.isError) {
     return (

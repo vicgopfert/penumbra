@@ -90,4 +90,52 @@ describe('apiFetch', () => {
 
     expect(error.messages).toEqual([UNEXPECTED_ERROR_MESSAGE]);
   });
+
+  it('com cache, pede ao Next que guarde o dado com o prazo e as tags', async () => {
+    const fetchMock = stubFetch(() => Response.json(sampleUser));
+
+    await apiFetch('/games/celeste', {
+      schema: UserSchema,
+      cache: { revalidate: 86400, tags: ['games'] },
+    });
+
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
+      next: { revalidate: 86400, tags: ['games'] },
+    });
+  });
+
+  it('sem cache, não passa opção de cache nenhuma', async () => {
+    const fetchMock = stubFetch(() => Response.json(sampleUser));
+
+    await apiFetch('/auth/me', { schema: UserSchema });
+
+    expect(fetchMock.mock.calls[0]?.[1]).not.toHaveProperty('next');
+    expect(fetchMock.mock.calls[0]?.[1]).not.toHaveProperty('cache');
+  });
+
+  it('dado guardado fora do contrato (de antes de um deploy): busca de novo, sem cache', async () => {
+    const replies = [Response.json({ id: 1 }), Response.json(sampleUser)];
+    const fetchMock = stubFetch(() => replies.shift()!);
+
+    const user = await apiFetch('/games/celeste', {
+      schema: UserSchema,
+      cache: { revalidate: 86400, tags: ['games'] },
+    });
+
+    expect(user).toEqual(sampleUser);
+    expect(fetchMock.mock.calls.map(([, init]) => init?.cache)).toEqual([undefined, 'no-store']);
+  });
+
+  it('se o dado sem cache também estiver fora do contrato, vira a mensagem genérica', async () => {
+    stubFetch(() => Response.json({ id: 1 }));
+
+    const error = await failure(
+      apiFetch('/games/celeste', {
+        schema: UserSchema,
+        cache: { revalidate: 86400, tags: ['games'] },
+      }),
+    );
+
+    expect(error.messages).toEqual([UNEXPECTED_ERROR_MESSAGE]);
+  });
 });

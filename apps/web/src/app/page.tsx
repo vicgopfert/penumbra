@@ -6,8 +6,9 @@ import { listCollectionsOrNull } from '@/features/collections/api';
 import { CollectionShowcase } from '@/features/collections/collection-showcase';
 import { COLLECTIONS_LOADING } from '@/features/collections/collection-states';
 
-// A cada requisição: gerada no build, a vitrine guardaria a resposta da API daquele momento.
-export const dynamic = 'force-dynamic';
+// Renderizada a cada pedido, sem ir à API quando as coleções estão no cache de dados (B-102).
+// Gerada no build, guardaria a resposta da API daquele momento; e force-dynamic desligaria o cache.
+export const revalidate = 0;
 
 // A vitrine vem num Suspense: com a API acordando, o resto da página não espera por ela.
 export default function HomePage() {

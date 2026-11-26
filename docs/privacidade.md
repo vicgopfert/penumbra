@@ -151,6 +151,15 @@ Decisões do autor em 25/11/2026, todas na recomendação do plano:
 9. exclusão no perfil, com o e-mail de contato só para cópia e correção;
 10. conclusão com a conferência em produção e as contas de teste apagadas.
 
+**Conferência em produção (25/11/2026, PR #107).** O job de migrations criou a tabela `AccountDeletion` no Neon. Um script no navegador conferiu 10 de 10 itens, das 19:25:13 às 19:25:33 UTC, a 390 px, com uma conta `@example.com` com avaliações, lista e gostos:
+- a seção do perfil traz o texto aprovado;
+- a senha errada respondeu 400 no campo, com o corpo do `DELETE` passando pelo proxy da Vercel, e a conta continuou;
+- a senha certa respondeu 204 e levou à `/conta-excluida`, sem indexação;
+- depois, `/auth/me` e o login responderam 401;
+- a política e os termos estão no ar com o texto novo.
+
+No mesmo dia, o autor excluiu pela interface uma conta secundária do Gmail dele, com o endereço confirmado, e o aviso "A sua conta na Penumbra foi excluída" chegou. A exclusão das contas de teste por SQL fica para depois (decisão do autor).
+
 Uma conta criada sem senha, como a do login com Google (B-68), vai precisar de outra confirmação, como um link por e-mail. A nota está registrada no B-68.
 
 ## Regra de revisão

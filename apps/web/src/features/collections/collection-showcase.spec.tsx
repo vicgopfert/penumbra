@@ -1,10 +1,15 @@
 import type { CollectionSummary } from '@indie/contracts';
 import { screen } from '@testing-library/react';
 import { Suspense } from 'react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { sampleCollection } from '@/test/catalog';
 import { renderAwaitingData } from '@/test/render';
 import { CollectionLinks, CollectionShowcase } from './collection-showcase';
+
+vi.mock('next/navigation', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next/navigation')>()),
+  useRouter: () => ({ refresh: vi.fn() }),
+}));
 
 const renderShowcase = (collections: CollectionSummary[] | null) =>
   renderAwaitingData(
@@ -40,14 +45,16 @@ describe('CollectionShowcase', () => {
     expect(screen.getByText('1 jogo')).toBeInTheDocument();
   });
 
-  it('se a API falhar, avisa e oferece tentar de novo na mesma página', async () => {
+  it('se a API falhar, avisa que o servidor está acordando, sem tirar a página do índice', async () => {
     await renderShowcase(null);
 
     expect(await screen.findByText(/Não foi possível carregar as coleções/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Tentar de novo' })).toHaveAttribute(
-      'href',
-      '/colecoes',
-    );
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent('Não foi possível carregar as coleções');
+    expect(alert).toHaveTextContent('O servidor está acordando');
+    // Só depois das tentativas automáticas o link aparece (/colecoes).
+    expect(screen.queryByRole('link', { name: 'Tentar de novo' })).not.toBeInTheDocument();
+    expect(document.head.querySelector('meta[name="robots"][content="noindex"]')).toBeNull();
   });
 });
 

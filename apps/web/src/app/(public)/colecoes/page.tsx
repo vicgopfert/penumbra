@@ -11,8 +11,9 @@ export const metadata: Metadata = {
     'Coleções curadas de jogos independentes em que a cultura está no centro: mitologia, folclore, história e cotidiano.',
 };
 
-// A cada requisição: gerada no build, a página guardaria a resposta da API daquele momento.
-export const dynamic = 'force-dynamic';
+// Renderizada a cada pedido, sem ir à API quando as coleções estão no cache de dados (B-102).
+// Gerada no build, guardaria a resposta da API daquele momento; e force-dynamic desligaria o cache.
+export const revalidate = 0;
 
 export default function CollectionsPage() {
   return (
@@ -27,6 +28,7 @@ export default function CollectionsPage() {
           collections={listCollectionsOrNull()}
           titleAs="h2"
           retryHref={COLLECTIONS_PATH}
+          noindexWhenUnavailable
         />
       </Suspense>
     </main>

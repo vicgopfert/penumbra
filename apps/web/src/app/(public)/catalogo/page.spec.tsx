@@ -5,6 +5,11 @@ import { apiError, stubFetch } from '@/test/fetch';
 import { renderAwaitingData } from '@/test/render';
 import CatalogPage from './page';
 
+vi.mock('next/navigation', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next/navigation')>()),
+  useRouter: () => ({ refresh: vi.fn() }),
+}));
+
 vi.mock('next/form', () => import('@/test/next-form'));
 
 const page = (items = [sampleGame()], total = items.length, pageNumber = 1) => ({
@@ -121,17 +126,18 @@ describe('CatalogPage', () => {
     expect(screen.getByRole('group', { name: /^Gênero/ })).toBeInTheDocument();
   });
 
-  it('se a API falhar, avisa e oferece tentar de novo na mesma busca', async () => {
+  it('se a API falhar, avisa que o servidor está acordando, fora do índice dos buscadores', async () => {
     stubFetch(() => {
       throw new TypeError('fetch failed');
     });
 
     await renderPage({ genre: 'puzzle' });
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível carregar o catálogo');
-    expect(screen.getByRole('link', { name: 'Tentar de novo' })).toHaveAttribute(
-      'href',
-      '/catalogo?genre=puzzle',
-    );
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent('Não foi possível carregar o catálogo');
+    expect(alert).toHaveTextContent('O servidor está acordando');
+    // Só depois das tentativas automáticas o link aparece (/catalogo?genre=puzzle).
+    expect(screen.queryByRole('link', { name: 'Tentar de novo' })).not.toBeInTheDocument();
+    expect(document.head.querySelector('meta[name="robots"][content="noindex"]')).not.toBeNull();
   });
 });

@@ -2,6 +2,7 @@
 
 import type { DiscoveryMode, RecommendationOverview } from '@indie/contracts';
 import Link from 'next/link';
+import { LoadingMessage } from '@/components/loading-message';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { ONBOARDING_PATH } from '@/features/onboarding/paths';
@@ -15,7 +16,7 @@ type Basis = RecommendationOverview['basis'];
 export const RECOMMENDATIONS_INVITE = 'para ver suas recomendações.';
 
 export function RecommendationsLoading() {
-  return <p className="text-sm text-muted-foreground">Carregando suas recomendações…</p>;
+  return <LoadingMessage>Carregando suas recomendações…</LoadingMessage>;
 }
 
 export function RecommendationsError({

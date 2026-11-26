@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ServerWaking } from '@/components/server-waking';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CATALOG_PATH } from './search-params';
 
@@ -42,16 +43,5 @@ export function InvalidFilters({ errors }: { errors: string[] }) {
 }
 
 export function CatalogUnavailable({ retryHref }: { retryHref: string }) {
-  return (
-    <Alert variant="destructive">
-      <AlertTitle>Não foi possível carregar o catálogo</AlertTitle>
-      <AlertDescription>
-        <p>O servidor não respondeu; tente de novo em instantes.</p>
-        {/* Recarrega a página inteira: uma navegação para a mesma URL poderia reusar o resultado. */}
-        <a href={retryHref} className="underline">
-          Tentar de novo
-        </a>
-      </AlertDescription>
-    </Alert>
-  );
+  return <ServerWaking title="Não foi possível carregar o catálogo" retryHref={retryHref} />;
 }
