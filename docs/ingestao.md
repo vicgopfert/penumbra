@@ -122,6 +122,19 @@ de "Em breve" a lançado e nenhum no sentido contrário. Uma consulta por janela
 lançado com data depois da execução anterior) acharia 44: deixaria de fora, por exemplo, um jogo
 cuja data a IGDB antecipou para 13/11.
 
+**Primeira execução agendada, 26/11/2026** (execução 45865005061, `main` em `ab9cdcc`, antes do
+B-102, então ainda sem a revalidação das páginas): bem-sucedida, sem aviso de ressalvas e sem issue.
+- **Atraso:** marcada para 06:23 UTC, começou às 17:07 UTC (14:07 de Brasília), 10 h 44 min depois,
+  e foi a única execução agendada do dia. O GitHub avisa que execuções agendadas podem atrasar em
+  horários de carga e até ser descartadas; o horário de madrugada não evitou o atraso desta vez.
+- **Duração:** 14 min 17 s no job, dos quais 12 min 57 s na ingestão; 2.541 jogos entraram pelo
+  "Want to Play", os ids da Steam levaram 30 s, as etiquetas da loja 458 s (22.448 jogos pela Steam,
+  490 pela reserva da IGDB, 886 sem nenhuma) e a gravação 25 s.
+- **Resultado:** 23.824 jogos no catálogo e 125 alertas, dos quais 87 `RELEASE_STATUS_CHANGED`,
+  todos de "Em breve" a lançado e nenhum no sentido contrário; 8 sessões vencidas removidas, nenhum
+  token e nenhum evento de uso com mais de 12 meses.
+- **Recarga do índice:** 23.824 jogos e 399 características em 10,6 s, com 186 MB de memória.
+
 Limitação registrada: o GitHub desliga o agendamento de um repositório público depois de 60
 dias sem atividade nele, e reativar é manual, na aba Actions.
 

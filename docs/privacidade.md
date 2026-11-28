@@ -160,6 +160,8 @@ Decisões do autor em 25/11/2026, todas na recomendação do plano:
 
 No mesmo dia, o autor excluiu pela interface uma conta secundária do Gmail dele, com o endereço confirmado, e o aviso "A sua conta na Penumbra foi excluída" chegou. A exclusão das contas de teste por SQL fica para depois (decisão do autor).
 
+Em 27/11/2026, o autor apagou por SQL, no Neon, 19 contas de teste `@example.com` das conferências em produção, conferidas antes por um `SELECT` com a mesma lista; as duas da medição do M2 já não existiam. Das duas contas `b76`, das medições do B-76, a `b76-producao-2-2026-11-05@example.com` fica como conta de medição, e a outra, sem senha guardada, o autor apagou à parte no mesmo dia (decisões do autor). A conta secundária do Gmail excluída pela interface era a `+b98`. A exclusão por SQL não grava linha em `AccountDeletion`, que conta só exclusões de pessoas.
+
 Uma conta criada sem senha, como a do login com Google (B-68), vai precisar de outra confirmação, como um link por e-mail. A nota está registrada no B-68.
 
 ## Regra de revisão

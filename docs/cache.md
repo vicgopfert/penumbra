@@ -87,3 +87,24 @@ Fora da conta:
 - **2 inconclusivas, com o índice ainda carregando:** `celeste` às 20:50 (56,1 s) e `hollow-knight` às 22:34 (36,8 s). A API tinha acabado de acordar, mas não há prova de que foi pelo pedido medido.
 
 Os dados brutos estão em `~/indie-discovery-b102/medicao/antes.jsonl`, fora do repositório.
+
+### Depois (produção com o B-102)
+
+Medido entre 26/11/2026, às 20:56 UTC, e 27/11/2026, às 02:48 UTC, com cada ficha visitada antes da espera de 20 minutos: 18 tentativas, todas com status 200, o `<h1>` do jogo no HTML e o primeiro byte entre 0,38 e 1,69 s, abaixo do critério de 3 s.
+
+| Ficha | Início da rodada (UTC) | Primeiro byte | Índice carregado em (UTC) | Condição |
+| --- | --- | --- | --- | --- |
+| `celeste` | 23:20:25 | 1,29 s | 23:21:05 | `api-fria` |
+| `hollow-knight` | 00:42:43 | 1,17 s | 00:43:18 | `api-fria` |
+| `stardew-valley` | 01:04:00 | 1,24 s | — (carregando) | `sem-pedido-no-log` |
+
+As 3 rodadas ficaram abaixo de 3 s: o critério foi atingido. Nas duas validadas pelo `loadedAt`, a API acordou com a leitura da rota de saúde feita logo depois do pedido medido, e não com a página. Com a ficha no cache, o primeiro visitante espera cerca de 1,2 s, contra 42 a 44 s no "antes".
+
+**Conferência do log, `stardew-valley`:** em 27/11/2026, o autor buscou `stardew-valley` no log do Render entre 22:00 e 23:50 de Brasília de 26/11, que cobre as 6 janelas da ficha, e não apareceu nenhuma linha. Como controle, a busca por `/api/health` no mesmo período mostrou as leituras da rota de saúde: o log cobre o período, e a busca funciona. Pela segunda condição, as 6 rodadas da ficha valem; a primeira, às 01:04:00, entra na tabela.
+
+Fora da conta, sem prova pela regra do `loadedAt`, com o primeiro byte entre 0,38 e 1,69 s:
+- **9 com o índice ainda carregando ou com falha logo depois do pedido:** `celeste` às 20:56, 21:17, 21:38, 21:58, 22:39 e 22:59 (falha); `hollow-knight` às 23:41, 00:01 (falha) e 00:22. A falha é a nova tentativa de carga do índice que já existia na API, que depois ficou pronto.
+- **1 com a API acordada:** `celeste` às 22:19.
+- **5 de `stardew-valley` além da primeira** (01:24, 01:44, 02:04, 02:25 e 02:46), válidas pelo log, mas fora da tabela, que tem uma rodada por ficha.
+
+As de `celeste` e `hollow-knight` não tiveram o log conferido, porque cada uma dessas fichas já tem uma rodada válida. Os dados brutos estão em `~/indie-discovery-b102/medicao/depois.jsonl`, fora do repositório.
