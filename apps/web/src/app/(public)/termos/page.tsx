@@ -3,11 +3,12 @@ import Link from 'next/link';
 import { legalConfig } from '@/config/legal';
 import { siteConfig } from '@/config/site';
 import { ContactEmail, LegalPage, LegalSection } from '@/features/legal/legal-page';
-import { PRIVACY_PATH } from '@/features/legal/paths';
+import { PRIVACY_PATH, TERMS_PATH } from '@/features/legal/paths';
 
 export const metadata: Metadata = {
   title: 'Termos de uso',
   description: `As regras de uso da ${siteConfig.name}: quem pode usar, a conta, o uso aceitável e os limites do serviço.`,
+  alternates: { canonical: TERMS_PATH },
 };
 
 export default function TermsPage() {

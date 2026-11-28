@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: 'Explore por cultura',
   description:
     'Coleções curadas de jogos independentes em que a cultura está no centro: mitologia, folclore, história e cotidiano.',
+  alternates: { canonical: COLLECTIONS_PATH },
 };
 
 // Renderizada a cada pedido, sem ir à API quando as coleções estão no cache de dados (B-102).
