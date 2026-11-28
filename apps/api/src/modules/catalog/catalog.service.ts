@@ -11,6 +11,7 @@ import type {
   GameSearchQuery,
   GameSummary,
   PlatformOption,
+  Sitemap,
 } from '@indie/contracts';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
@@ -38,6 +39,8 @@ const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompar
 
 // Código do site oficial na IGDB (website_types).
 const OFFICIAL_WEBSITE = 1;
+
+const byCodeUnit = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 
 const sortedNames = (names: string[]) => names.sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
@@ -140,6 +143,12 @@ export class CatalogService {
       gameCount: _count.games,
       coverImageIds: games.map(({ game }) => game.coverImageId),
     }));
+  }
+
+  // Ordem por código de caractere: a do banco depende da collation, que muda entre ambientes.
+  async listSitemap(): Promise<Sitemap> {
+    const { games, collections } = await this.catalog.listSitemapSlugs();
+    return { games: games.sort(byCodeUnit), collections: collections.sort(byCodeUnit) };
   }
 
   // A coleção sem jogo no catálogo responde como inexistente, porque a lista também a esconde.
