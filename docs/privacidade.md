@@ -173,6 +173,8 @@ Todo item que gravar dado pessoal novo, ou usar um dado de outro jeito, atualiza
 
 O teste falha sozinho quando um campo novo aparece no schema. Um dado fora do banco, como um log novo, um provedor novo ou um recurso de terceiros, depende da revisão do PR. A regra também está no `CONTRIBUTING.md`.
 
+**Conferido no B-114 (27/11/2026):** o Google Search Console não muda a política. A propriedade é verificada por um registro TXT no DNS, sem nenhum recurso no site, e o Google não recebe dado de quem visita por causa dele; o sitemap, o `robots.txt` e os dados estruturados das fichas só têm dados públicos do catálogo (decisão do autor, `docs/seo.md`).
+
 ## Histórico
 
 | Data | Mudança |

@@ -14,6 +14,7 @@
 | `precos.md` | Preços e demos da Steam (B-86 a B-88, B-90 e B-91): as decisões, a arquitetura da coleta em lote, a análise de viabilidade da GG.deals, as alternativas, os riscos e os dois caminhos para as demos |
 | `privacidade.md` | Privacidade e termos de uso (B-101): as fontes consultadas, o inventário campo a campo dos dados pessoais, as bases legais, o teste de balanceamento do legítimo interesse, a transferência internacional por provedor, os riscos que ficaram e a regra de revisão |
 | `cache.md` | Páginas públicas servidas de cache (B-102): o cache de dados do Next no lugar do ISR de página inteira, os prazos e as tags, a revalidação depois da ingestão, o aviso de servidor acordando e o `noindex`, e a medição da primeira resposta com a API fria |
+| `seo.md` | SEO das fichas e sitemap (B-114): o título e a descrição da ficha, os dados estruturados `VideoGame` e `WebSite`, o *canonical*, o `robots.txt`, o sitemap com a rota da API e o 503, o risco do estado "servidor acordando" com a regra fixada antes de medir, o Search Console e as conferências |
 | `metricas-de-uso.md` | Métricas de uso (B-100): o que é registrado e o que fica de fora, a conta só com consentimento, a visita sem identificador, o envio, o limite, a retenção, as definições do relatório e as limitações |
 | `m0-relatorio-igdb.md` | Relatório do marco M0 (B-07): termos da IGDB, cobertura dos campos, recortes do catálogo e decisões de dados |
 
