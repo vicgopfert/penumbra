@@ -2,11 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+import { JsonLd } from '@/components/json-ld';
 import { CATALOG_PATH } from '@/features/catalog/search-params';
 import { getGame } from '@/features/games/api';
 import { GameDetails } from '@/features/games/game-details';
-import { metaDescription } from '@/features/games/game-facts';
+import { gameDescription, gameJsonLd, gameTitle } from '@/features/games/game-seo';
 import { GameUnavailable } from '@/features/games/game-states';
+import { gameHref } from '@/features/games/paths';
 import { SimilarGames } from '@/features/games/similar-games';
 import { ApiRequestError } from '@/lib/api-client';
 import { igdbImageUrl } from '@/lib/igdb';
@@ -26,12 +28,14 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
   const { game, missing } = await loadGame((await params).slug);
   if (!game) return { title: missing ? 'Jogo não encontrado' : 'Jogo' };
 
-  const description = metaDescription(game.summary);
+  const title = gameTitle(game);
+  const description = gameDescription(game);
   return {
-    title: game.name,
+    title,
     description,
+    alternates: { canonical: gameHref(game.slug) },
     openGraph: {
-      title: game.name,
+      title,
       description,
       ...(game.coverImageId && { images: [igdbImageUrl(game.coverImageId, 'cover_big_2x')] }),
     },
@@ -53,13 +57,14 @@ export default async function GamePage({ params }: GamePageProps) {
       </Link>
       {game ? (
         <>
+          <JsonLd data={gameJsonLd(game)} />
           <GameDetails game={game} />
           <Suspense fallback={null}>
             <SimilarGames slug={game.slug} />
           </Suspense>
         </>
       ) : (
-        <GameUnavailable retryHref={`/jogos/${encodeURIComponent(slug)}`} />
+        <GameUnavailable retryHref={gameHref(slug)} />
       )}
     </main>
   );

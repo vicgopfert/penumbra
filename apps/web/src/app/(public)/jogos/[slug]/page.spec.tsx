@@ -244,19 +244,37 @@ describe('GamePage', () => {
     expect(screen.queryByRole('link', { name: 'Tentar de novo' })).not.toBeInTheDocument();
     expect(document.head.querySelector('meta[name="robots"][content="noindex"]')).not.toBeNull();
     expect(screen.queryByTestId('similar-games')).not.toBeInTheDocument();
+    expect(document.querySelector('script[type="application/ld+json"]')).toBeNull();
+  });
+
+  it('descreve o jogo para os buscadores em dados estruturados', async () => {
+    stubGame(sampleGameDetail());
+
+    const { container } = await renderPage();
+
+    const script = container.querySelector('script[type="application/ld+json"]');
+    expect(JSON.parse(script?.textContent ?? '')).toMatchObject({
+      '@type': 'VideoGame',
+      name: 'Celeste',
+      url: 'https://penumbraindie.com.br/jogos/celeste',
+    });
   });
 });
 
 describe('generateMetadata', () => {
-  it('usa o nome, o resumo e a capa grande do jogo', async () => {
+  it('responde no título e na descrição o que a ficha mostra, com o canonical e a capa grande', async () => {
     stubGame(sampleGameDetail());
 
+    const title = 'Celeste: tem português? Onde jogar e jogos parecidos';
+    const description =
+      'Celeste tem português do Brasil: interface e legendas. Para PC e Switch. Veja onde jogar e jogos parecidos.';
     expect(await generateMetadata(props())).toEqual({
-      title: 'Celeste',
-      description: 'Ajude Madeline a escalar a montanha Celeste.',
+      title,
+      description,
+      alternates: { canonical: '/jogos/celeste' },
       openGraph: {
-        title: 'Celeste',
-        description: 'Ajude Madeline a escalar a montanha Celeste.',
+        title,
+        description,
         images: ['https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3byy.jpg'],
       },
     });

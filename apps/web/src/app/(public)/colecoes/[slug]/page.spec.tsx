@@ -113,6 +113,15 @@ describe('CollectionPage', () => {
     expect(await generateMetadata(props())).toEqual({
       title: 'Brasil',
       description: 'Folclore, povos originários, história e cotidiano do Brasil.',
+      alternates: { canonical: '/colecoes/brasil' },
     });
+  });
+
+  it('a partir da página 2, o canonical é a própria página', async () => {
+    stubCollection(sampleCollectionDetail([sampleGame()], { page: 2, total: 30 }));
+
+    const metadata = await generateMetadata(props('2'));
+
+    expect(metadata.alternates).toEqual({ canonical: '/colecoes/brasil?page=2' });
   });
 });

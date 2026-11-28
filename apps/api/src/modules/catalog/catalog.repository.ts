@@ -207,6 +207,23 @@ export class CatalogRepository {
     });
   }
 
+  async listSitemapSlugs(): Promise<{ games: string[]; collections: string[] }> {
+    const [games, collections] = await this.prisma.$transaction([
+      this.prisma.game.findMany({
+        where: { inCatalog: true },
+        select: { slug: true },
+      }),
+      this.prisma.collection.findMany({
+        where: { games: { some: inCatalog } },
+        select: { slug: true },
+      }),
+    ]);
+    return {
+      games: games.map(({ slug }) => slug),
+      collections: collections.map(({ slug }) => slug),
+    };
+  }
+
   async findCollectionGames(
     slug: string,
     { page, pageSize }: CollectionPageQuery,

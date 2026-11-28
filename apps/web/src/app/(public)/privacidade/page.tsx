@@ -3,12 +3,13 @@ import Link from 'next/link';
 import { legalConfig } from '@/config/legal';
 import { siteConfig } from '@/config/site';
 import { ContactEmail, LegalPage, LegalSection } from '@/features/legal/legal-page';
-import { TERMS_PATH } from '@/features/legal/paths';
+import { PRIVACY_PATH, TERMS_PATH } from '@/features/legal/paths';
 import { PERSONAL_DATA } from '@/features/legal/personal-data';
 
 export const metadata: Metadata = {
   title: 'Política de privacidade',
   description: `Que dados pessoais a ${siteConfig.name} guarda, para quê, por quanto tempo, com quem e como pedir acesso ou exclusão.`,
+  alternates: { canonical: PRIVACY_PATH },
 };
 
 const PROVIDERS = [

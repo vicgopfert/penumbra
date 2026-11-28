@@ -226,3 +226,11 @@ export const CollectionDetailSchema = CollectionSummarySchema.omit({
 }).extend({ games: GamePageSchema });
 
 export type CollectionDetail = z.infer<typeof CollectionDetailSchema>;
+
+// Só os slugs, para o sitemap da web listar as fichas e as coleções (B-114).
+export const SitemapSchema = z.object({
+  games: z.array(z.string()),
+  collections: z.array(z.string()),
+});
+
+export type Sitemap = z.infer<typeof SitemapSchema>;

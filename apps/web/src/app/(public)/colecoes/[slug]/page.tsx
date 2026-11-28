@@ -35,7 +35,11 @@ async function loadCollection({ params, searchParams }: CollectionPageProps) {
 export async function generateMetadata(props: CollectionPageProps): Promise<Metadata> {
   const { collection, missing } = await loadCollection(props);
   if (!collection) return { title: missing ? 'Coleção não encontrada' : 'Coleção' };
-  return { title: collection.name, description: collection.description };
+  return {
+    title: collection.name,
+    description: collection.description,
+    alternates: { canonical: collectionHref(collection.slug, collection.games.page) },
+  };
 }
 
 // Sem loading.tsx, como a ficha do jogo: com ele, o 404 sairia com status 200.

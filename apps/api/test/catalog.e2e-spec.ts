@@ -7,6 +7,7 @@ import {
   GameDetailSchema,
   GamePageSchema,
   PlatformOptionSchema,
+  SitemapSchema,
 } from '@indie/contracts';
 import request from 'supertest';
 import type { App } from 'supertest/types';
@@ -568,6 +569,25 @@ describe('Catálogo', () => {
       const response = await collectionPage('plataformas', { pageSize: '49' });
 
       expect(response.status).toBe(400);
+    });
+  });
+
+  describe('GET /api/sitemap', () => {
+    it('é público e lista em ordem alfabética os jogos do catálogo e as coleções com jogos nele', async () => {
+      const response = await request(app.getHttpServer()).get('/api/sitemap').expect(200);
+
+      expect(SitemapSchema.parse(response.body)).toEqual({
+        games: [
+          '100-orange-juice',
+          '1000xresist',
+          'baba-is-you',
+          'celeste',
+          'hollow-knight',
+          'hollow-knight-silksong',
+          'outer-wilds',
+        ],
+        collections: ['plataformas', 'quebra-cabecas'],
+      });
     });
   });
 

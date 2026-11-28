@@ -247,4 +247,15 @@ export class CatalogController {
   listPlatforms() {
     return this.catalog.listPlatforms();
   }
+
+  @Public()
+  @Get('sitemap')
+  @ApiOkResponse({
+    description:
+      'Slugs de todos os jogos do catálogo e das coleções com jogos nele, em ordem alfabética, para o sitemap da web',
+    schema: { example: { games: ['celeste', 'hollow-knight'], collections: ['brasil'] } },
+  })
+  listSitemap() {
+    return this.catalog.listSitemap();
+  }
 }

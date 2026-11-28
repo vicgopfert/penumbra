@@ -160,6 +160,8 @@ Decisões do autor em 25/11/2026, todas na recomendação do plano:
 
 No mesmo dia, o autor excluiu pela interface uma conta secundária do Gmail dele, com o endereço confirmado, e o aviso "A sua conta na Penumbra foi excluída" chegou. A exclusão das contas de teste por SQL fica para depois (decisão do autor).
 
+Em 27/11/2026, o autor apagou por SQL, no Neon, 19 contas de teste `@example.com` das conferências em produção, conferidas antes por um `SELECT` com a mesma lista; as duas da medição do M2 já não existiam. Das duas contas `b76`, das medições do B-76, a `b76-producao-2-2026-11-05@example.com` fica como conta de medição, e a outra, sem senha guardada, o autor apagou à parte no mesmo dia (decisões do autor). A conta secundária do Gmail excluída pela interface era a `+b98`. A exclusão por SQL não grava linha em `AccountDeletion`, que conta só exclusões de pessoas.
+
 Uma conta criada sem senha, como a do login com Google (B-68), vai precisar de outra confirmação, como um link por e-mail. A nota está registrada no B-68.
 
 ## Regra de revisão
@@ -170,6 +172,8 @@ Todo item que gravar dado pessoal novo, ou usar um dado de outro jeito, atualiza
 - o inventário deste documento e o do teste da API.
 
 O teste falha sozinho quando um campo novo aparece no schema. Um dado fora do banco, como um log novo, um provedor novo ou um recurso de terceiros, depende da revisão do PR. A regra também está no `CONTRIBUTING.md`.
+
+**Conferido no B-114 (27/11/2026):** o Google Search Console não muda a política. A propriedade é verificada por um registro TXT no DNS, sem nenhum recurso no site, e o Google não recebe dado de quem visita por causa dele; o sitemap, o `robots.txt` e os dados estruturados das fichas só têm dados públicos do catálogo (decisão do autor, `docs/seo.md`).
 
 ## Histórico
 

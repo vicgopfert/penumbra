@@ -7,7 +7,9 @@ import { EmailConfirmationBanner } from '@/features/auth/email-confirmation-bann
 import { Providers } from './providers';
 import './globals.css';
 
+// Sem canonical aqui: a página que não define o seu herdaria o da raiz.
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: { default: siteConfig.name, template: `%s · ${siteConfig.name}` },
   description: siteConfig.description,
 };

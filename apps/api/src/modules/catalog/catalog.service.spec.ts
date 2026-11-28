@@ -139,6 +139,7 @@ class FakeCatalog implements Pick<
   | 'countGamesByPlatform'
   | 'listCollections'
   | 'findCollectionGames'
+  | 'listSitemapSlugs'
 > {
   constructor(
     private readonly games: { total: number; games: GameSummaryRow[] },
@@ -148,7 +149,12 @@ class FakeCatalog implements Pick<
     private readonly collections: CollectionSummaryRow[] = [],
     private readonly collectionGames: CollectionGamesRow | null = null,
     private readonly platforms: PlatformCountRow[] = [],
+    private readonly sitemap = { games: [] as string[], collections: [] as string[] },
   ) {}
+
+  listSitemapSlugs() {
+    return Promise.resolve(this.sitemap);
+  }
 
   countGamesByPlatform() {
     return Promise.resolve(this.platforms);
@@ -464,6 +470,20 @@ describe('CatalogService', () => {
         { code: 'PH', name: 'Filipinas', gameCount: 20 },
         { code: 'MY', name: 'Malásia', gameCount: 21 },
       ]);
+    });
+  });
+
+  describe('listSitemap', () => {
+    it('ordena os slugs por código de caractere, sem depender da collation do banco', async () => {
+      const catalog = new FakeCatalog({ total: 0, games: [] }, [], null, [], [], null, [], {
+        games: ['outer-wilds', '1000xresist', 'celeste', '100-orange-juice'],
+        collections: ['plataformas', 'brasil'],
+      });
+
+      expect(await service(catalog).listSitemap()).toEqual({
+        games: ['100-orange-juice', '1000xresist', 'celeste', 'outer-wilds'],
+        collections: ['brasil', 'plataformas'],
+      });
     });
   });
 

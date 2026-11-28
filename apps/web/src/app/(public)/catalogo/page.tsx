@@ -18,6 +18,7 @@ import {
 } from '@/features/catalog/catalog-states';
 import { GameCard } from '@/features/games/game-card';
 import {
+  CATALOG_PATH,
   type CatalogSearchParams,
   catalogHref,
   parseCatalogParams,
@@ -27,6 +28,8 @@ export const metadata: Metadata = {
   title: 'Catálogo',
   description:
     'Jogos independentes com filtros de plataforma, gênero, tema, etiqueta, situação, português e país.',
+  // Os filtros ficam fora do rastreamento (robots.ts): o catálogo indexado é o sem parâmetros.
+  alternates: { canonical: CATALOG_PATH },
 };
 
 export default async function CatalogPage({
