@@ -12,6 +12,7 @@ export const PUBLIC_CACHE = {
   collections: { revalidate: HOUR, tags: ['collections'] },
   catalogSearch: { revalidate: HOUR, tags: ['catalog'] },
   catalogOptions: { revalidate: DAY, tags: ['catalog'] },
+  sitemap: { revalidate: DAY, tags: ['catalog'] },
 } satisfies Record<string, PublicCache>;
 
 // Sem o dado no cache, a página espera a API até este limite e depois avisa que o servidor está
